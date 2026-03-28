@@ -19,7 +19,7 @@ if (isset($_POST['login'])) {
             if ($user['role'] === 'admin') {
                 header("Location: admin_dashboard.php");
             } else {
-                header("Location: index.php");
+                header("Location: student_dashboard.php");
             }
             exit();
         } else {
