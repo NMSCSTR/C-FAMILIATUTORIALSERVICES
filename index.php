@@ -160,7 +160,7 @@
                     <span class="text-blue-700 font-bold"><?= substr($name, 0, 1) ?></span>
                 </div>
                 <p class="font-bold text-slate-800"><?= $name ?></p>
-                <p class="text-xs text-blue-600 uppercase font-semibold mt-1">LPT Passer</p>
+                <p class="text-xs text-blue-600 uppercase font-semibold mt-1">PASSERS</p>
             </div>
             <?php endforeach; ?>
         </div>
