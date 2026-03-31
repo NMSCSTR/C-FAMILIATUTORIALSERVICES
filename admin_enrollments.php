@@ -3,10 +3,8 @@ session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
 
-// Helper for Sidebar Active State
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Logic to Approve Enrollment
 if (isset($_GET['approve'])) {
     $id = mysqli_real_escape_string($conn, $_GET['approve']);
     mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE id = '$id'");

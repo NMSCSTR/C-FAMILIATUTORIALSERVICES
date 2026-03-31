@@ -109,7 +109,7 @@ if (isset($_GET['verify'])) {
                                     <td class="px-8 py-5 font-mono text-xs text-slate-600"><?= $row['reference_number'] ?></td>
                                     <td class="px-8 py-5 font-bold text-slate-900">₱<?= number_format($row['amount'], 2) ?></td>
                                     <td class="px-8 py-5">
-                                        <a href="uploads/<?= $row['receipt'] ?>" target="_blank" class="text-blue-600 font-bold text-xs hover:underline flex items-center gap-1">
+                                        <a href="uploads/receipts/<?= $row['receipt'] ?>" target="_blank" class="text-blue-600 font-bold text-xs hover:underline flex items-center gap-1">
                                             View Image
                                         </a>
                                     </td>

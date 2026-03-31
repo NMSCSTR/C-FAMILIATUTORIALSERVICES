@@ -5,7 +5,6 @@ include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Handle Upload
 if (isset($_POST['add_passer'])) {
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $program = mysqli_real_escape_string($conn, $_POST['program']);

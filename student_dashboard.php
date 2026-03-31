@@ -2,7 +2,7 @@
 session_start();
 include 'db.php';
 
-// 1. Security Check: Redirect if not logged in as a student
+// 1. Security Check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
     header("Location: login.php");
     exit();
@@ -10,19 +10,29 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 
 $user_id = $_SESSION['user_id'];
 
-// 2. Fetch User Data
+// 2. Fetch User Personal Data
 $user_query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
 $user = mysqli_fetch_assoc($user_query);
 
-// 3. Calculate Total Paid (Only counting 'paid' status)
-$payment_total_query = mysqli_query($conn, "SELECT SUM(amount) as total FROM payments WHERE user_id = '$user_id' AND status = 'paid'");
-$payment_total = mysqli_fetch_assoc($payment_total_query);
-$total_paid = $payment_total['total'] ?? 0;
+// 3. Fetch Enrollment Data (Checks if they have submitted the form)
+$enroll_query = mysqli_query($conn, "SELECT * FROM enrollments WHERE user_id = '$user_id' AND status != 'completed' LIMIT 1");
+$is_enrolled = mysqli_num_rows($enroll_query) > 0;
+$enroll = mysqli_fetch_assoc($enroll_query);
 
-// 4. Fetch Payment History
+// 4. Calculate Financials (Only if enrolled)
+$total_paid = 0;
+$balance = 0;
+$total_fee = $enroll['total_fee'] ?? 0;
+
+if ($is_enrolled) {
+    $payment_total_query = mysqli_query($conn, "SELECT SUM(amount) as total FROM payments WHERE user_id = '$user_id' AND status = 'paid'");
+    $payment_data = mysqli_fetch_assoc($payment_total_query);
+    $total_paid = $payment_data['total'] ?? 0;
+    $balance = $total_fee - $total_paid;
+}
+
+// 5. Fetch Payment History & Announcements
 $payments_query = mysqli_query($conn, "SELECT * FROM payments WHERE user_id = '$user_id' ORDER BY created_at DESC");
-
-// 5. Fetch Announcements
 $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_at DESC LIMIT 3");
 ?>
 
@@ -36,9 +46,6 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
     <title>Student Dashboard | C-Familia</title>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -46,21 +53,21 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
     <div class="flex min-h-screen">
         <aside class="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col sticky top-0 h-screen">
             <div class="p-8">
-                <a href="index.php" class="flex items-center gap-3">
-                    <img src="cuevaslogo.jpg" class="w-10 h-10 rounded-xl shadow-sm" alt="Logo">
-                    <span class="font-bold text-blue-700 text-xl tracking-tight">C-Familia</span>
-                </a>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-200">C</div>
+                    <span class="font-bold text-slate-800 text-lg tracking-tight">C-Familia</span>
+                </div>
             </div>
             
             <nav class="flex-1 px-4 space-y-2">
-                <a href="student_dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-200 transition-all">
-                    <span class="text-lg">🏠</span> Dashboard
+                <a href="student_dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-100 transition-all">
+                    <span>🏠</span> Dashboard
                 </a>
-                <a href="student_resources.php" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-blue-600 rounded-2xl font-semibold transition-all group">
-                    <span class="text-lg group-hover:scale-110 transition">📚</span> My Resources
+                <a href="student_resources.php" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-2xl font-semibold transition-all group">
+                    <span class="group-hover:scale-110 transition">📚</span> My Resources
                 </a>
-                <a href="student_profile.php" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-blue-600 rounded-2xl font-semibold transition-all group">
-                    <span class="text-lg group-hover:scale-110 transition">👤</span> Profile Settings
+                <a href="student_profile.php" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-2xl font-semibold transition-all group">
+                    <span class="group-hover:scale-110 transition">👤</span> Profile
                 </a>
             </nav>
 
@@ -71,138 +78,121 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto custom-scrollbar">
+        <main class="flex-1">
             <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-5 flex justify-between items-center sticky top-0 z-30">
                 <div>
-                    <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Student Portal</h2>
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Overview & Progress</p>
+                    <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">Student Dashboard</h2>
                 </div>
                 
-                <div class="flex items-center gap-4 bg-slate-50 p-1.5 pr-4 rounded-2xl border border-slate-100">
+                <div class="flex items-center gap-3 bg-slate-100 p-1.5 pr-4 rounded-2xl">
                     <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['name']).'&background=random' ?>" 
-                         class="w-10 h-10 rounded-xl object-cover shadow-sm">
-                    <div class="hidden sm:block">
-                        <p class="text-sm font-bold text-slate-800 leading-none"><?= $user['name'] ?></p>
-                        <p class="text-[10px] text-blue-600 font-black uppercase mt-1">Active Student</p>
-                    </div>
+                         class="w-9 h-9 rounded-xl object-cover">
+                    <span class="text-xs font-bold text-slate-700"><?= explode(' ', $user['name'])[0] ?></span>
                 </div>
             </header>
 
             <div class="p-8 space-y-8">
-                <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-blue-200">
-                    <div class="relative z-10">
-                        <h1 class="text-3xl font-black mb-2">Welcome back, <?= explode(' ', $user['name'])[0] ?>!</h1>
-                        <p class="text-blue-100 opacity-80 max-w-md">Your future starts here. Check your resources and stay updated with your payment records.</p>
+                
+                <?php if (!$is_enrolled): ?>
+                    <div class="bg-white rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-200">
+                        <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">📝</div>
+                        <h2 class="text-3xl font-black text-slate-800 mb-4">You're not enrolled yet!</h2>
+                        <p class="text-slate-500 max-w-md mx-auto mb-8">To access review materials, track your progress, and join a batch, please complete the enrollment form.</p>
+                        <a href="enroll.php" class="inline-block px-10 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition shadow-xl shadow-blue-200">
+                            Start Enrollment Now
+                        </a>
                     </div>
-                    <div class="absolute right-[-10%] top-[-20%] w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                </div>
+                <?php else: ?>
+                    <div class="bg-gradient-to-br from-slate-900 to-blue-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-blue-100">
+                        <div class="relative z-10">
+                            <h1 class="text-3xl font-black mb-2">Hello, <?= explode(' ', $user['name'])[0] ?>! 👋</h1>
+                            <p class="text-blue-200 opacity-90 max-w-md">Your enrollment for <span class="text-white font-bold"><?= $enroll['program_type'] ?></span> is currently <span class="uppercase"><?= $enroll['status'] ?></span>.</p>
+                        </div>
+                        <div class="absolute right-[-5%] top-[-10%] w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
+                    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm group hover:border-blue-300 transition-all">
-                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Enrolled Since</p>
-                        <h3 class="text-lg font-bold text-slate-800"><?= date('M d, Y', strtotime($user['created_at'])) ?></h3>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm group hover:border-green-300 transition-all">
-                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Total Investment</p>
-                        <h3 class="text-2xl font-black text-green-600">₱<?= number_format($total_paid, 2) ?></h3>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm group hover:border-indigo-300 transition-all">
-                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Files Accessed</p>
-                        <h3 class="text-2xl font-black text-indigo-600">12 Available</h3>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm group hover:border-orange-300 transition-all">
-                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Account Status</p>
-                        <span class="inline-flex items-center px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-lg uppercase">Verified</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-                            <div class="p-6 border-b border-slate-50 flex justify-between items-center">
-                                <h3 class="font-bold text-slate-800">Board News</h3>
-                                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            </div>
-                            <div class="p-6 space-y-4">
-                                <?php if(mysqli_num_rows($ann_query) > 0): ?>
-                                    <?php while($ann = mysqli_fetch_assoc($ann_query)): ?>
-                                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-md transition-all cursor-default group">
-                                        <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition"><?= $ann['title'] ?></h4>
-                                        <p class="text-xs text-slate-500 mt-1 line-clamp-2"><?= $ann['message'] ?></p>
-                                        <p class="text-[9px] font-black text-slate-300 uppercase mt-3"><?= date('F d', strtotime($ann['created_at'])) ?></p>
-                                    </div>
-                                    <?php endwhile; ?>
-                                <?php else: ?>
-                                    <p class="text-center text-slate-400 text-sm italic">No news today.</p>
-                                <?php endif; ?>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Total Course Fee</p>
+                            <h3 class="text-xl font-bold text-slate-800">₱<?= number_format($total_fee, 2) ?></h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Paid Amount</p>
+                            <h3 class="text-xl font-bold text-green-600">₱<?= number_format($total_paid, 2) ?></h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Balance Due</p>
+                            <h3 class="text-xl font-bold text-red-500">₱<?= number_format($balance, 2) ?></h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-3">Review Batch</p>
+                            <h3 class="text-sm font-bold text-blue-600"><?= $enroll['batch'] ?></h3>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-2">
-                        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-                            <div class="p-8 border-b border-slate-50 flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-bold text-lg text-slate-800 tracking-tight">Payment Ledger</h3>
-                                    <p class="text-xs text-slate-400 font-medium">History of your financial transactions</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+                                <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+                                    <h3 class="font-bold text-slate-800">Latest News</h3>
+                                    <span class="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                                </div>
+                                <div class="p-6 space-y-4">
+                                    <?php while($ann = mysqli_fetch_assoc($ann_query)): ?>
+                                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                            <h4 class="font-bold text-slate-800 text-sm"><?= $ann['title'] ?></h4>
+                                            <p class="text-[11px] text-slate-500 mt-1 line-clamp-2"><?= $ann['message'] ?></p>
+                                        </div>
+                                    <?php endwhile; ?>
                                 </div>
                             </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left">
-                                    <thead>
-                                        <tr class="bg-slate-50/50">
-                                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date & Reference</th>
-                                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Method</th>
-                                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Amount</th>
-                                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        <?php if(mysqli_num_rows($payments_query) > 0): ?>
-                                            <?php while($pay = mysqli_fetch_assoc($payments_query)): ?>
-                                            <tr class="hover:bg-slate-50/30 transition-colors group">
-                                                <td class="px-8 py-5">
-                                                    <p class="text-sm font-bold text-slate-700">
-                                                        <?= $pay['payment_date'] ? date('M d, Y', strtotime($pay['payment_date'])) : date('M d, Y', strtotime($pay['created_at'])) ?>
-                                                    </p>
-                                                    <p class="text-[10px] text-slate-400 font-medium">REF: <?= $pay['reference_number'] ?? 'WALK-IN' ?></p>
-                                                </td>
-                                                <td class="px-8 py-5">
-                                                    <p class="text-xs font-bold text-slate-600 uppercase tracking-tighter"><?= $pay['payment_method'] ?? 'Cash' ?></p>
-                                                    <p class="text-[9px] text-blue-500 font-black uppercase"><?= $pay['payment_type'] ?></p>
-                                                </td>
-                                                <td class="px-8 py-5">
-                                                    <p class="text-sm font-black text-slate-900 italic">₱<?= number_format($pay['amount'], 2) ?></p>
-                                                </td>
-                                                <td class="px-8 py-5">
-                                                    <?php 
-                                                        $colors = [
-                                                            'paid' => 'bg-green-100 text-green-700',
-                                                            'pending' => 'bg-amber-100 text-amber-700',
-                                                            'failed' => 'bg-red-100 text-red-700'
-                                                        ];
-                                                        $st = $pay['status'];
-                                                    ?>
-                                                    <span class="px-3 py-1.5 <?= $colors[$st] ?> text-[9px] font-black rounded-lg uppercase tracking-tighter">
-                                                        <?= $st ?>
-                                                    </span>
-                                                </td>
+                        </div>
+
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+                                <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+                                    <h3 class="font-bold text-slate-800">My Payments</h3>
+                                    <a href="upload_payment.php" class="text-xs font-black text-blue-600 uppercase tracking-widest">+ Submit Receipt</a>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead>
+                                            <tr class="bg-slate-50/50">
+                                                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Date/Ref</th>
+                                                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Amount</th>
+                                                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Status</th>
                                             </tr>
-                                            <?php endwhile; ?>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="4" class="px-8 py-16 text-center">
-                                                    <div class="bg-slate-50 w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl">💳</div>
-                                                    <p class="text-slate-400 text-sm font-medium italic">You haven't made any payments yet.</p>
-                                                </td>
-                                            </tr>
-                                        <?php endif; ?>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100">
+                                            <?php if(mysqli_num_rows($payments_query) > 0): ?>
+                                                <?php while($pay = mysqli_fetch_assoc($payments_query)): ?>
+                                                <tr>
+                                                    <td class="px-6 py-4">
+                                                        <p class="text-xs font-bold text-slate-700"><?= date('M d, Y', strtotime($pay['created_at'])) ?></p>
+                                                        <p class="text-[10px] text-slate-400">#<?= $pay['reference_number'] ?? 'N/A' ?></p>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-xs font-black text-slate-900 italic">
+                                                        ₱<?= number_format($pay['amount'], 2) ?>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <?php 
+                                                            $st = $pay['status'];
+                                                            $cl = ($st == 'paid') ? 'bg-green-100 text-green-700' : (($st == 'pending') ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700');
+                                                        ?>
+                                                        <span class="px-2 py-1 <?= $cl ?> text-[9px] font-black rounded-lg uppercase"><?= $st ?></span>
+                                                    </td>
+                                                </tr>
+                                                <?php endwhile; ?>
+                                            <?php else: ?>
+                                                <tr><td colspan="3" class="p-10 text-center text-xs text-slate-400 italic">No transactions found.</td></tr>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>
