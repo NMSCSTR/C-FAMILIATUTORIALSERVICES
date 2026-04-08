@@ -223,7 +223,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
             <div class="text-slate-400 text-sm text-center md:text-left">
                 Main: Ozamiz City, Philippines • Branch: Oroquieta City
             </div>
-        </div>1
+        </div>
         <div class="text-center text-slate-500 text-xs border-t border-white/5 pt-8 uppercase tracking-[0.2em] font-medium">
             &copy; <?= date("Y") ?> C-Familia Tutorial Services. All rights reserved.
         </div>
