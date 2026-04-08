@@ -4,6 +4,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Locati
 include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
+$total_students = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'student'"))['total'];
+$pending_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'"))['total'];
+
 
 // --- Logic to Verify Payment ---
 if (isset($_GET['verify'])) {
@@ -62,83 +65,6 @@ $pending_verification = $pending_row['count'] ?? 0;
     </div>
 
     <?php include 'aside.php';?>
-
-    <div class="flex min-h-screen">
-        <aside class="w-72 bg-slate-950 text-white hidden lg:flex flex-col sticky top-0 h-screen">
-            <div class="p-8">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-blue-600/20 text-white">
-                        C</div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight">C-Familia</h1>
-                        <p class="text-[10px] text-slate-500 uppercase font-black tracking-widest mt-1">Admin Suite</p>
-                    </div>
-                </div>
-            </div>
-
-            <nav class="flex-1 px-6 space-y-1.5 overflow-y-auto text-sm">
-                <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 px-4">Main Menu</p>
-
-                <a href="admin_dashboard.php"
-                    class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_dashboard.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
-                    Dashboard
-                </a>
-
-                <a href="admin_enrollments.php"
-                    class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_enrollments.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                    </svg>
-                    Enrollments
-                </a>
-
-                <a href="admin_payments.php"
-                    class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_payments.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Payments
-                </a>
-
-                <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-8 mb-4 px-4">Communication
-                </p>
-                <a href="admin_announcements.php"
-                    class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold text-slate-400 hover:text-white hover:bg-white/5 group">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                    </svg>
-                    Announcements
-                </a>
-                <a href="admin_posts.php"
-                    class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold text-slate-400 hover:text-white hover:bg-white/5 group">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 2v4h4" />
-                    </svg>
-                    Posts
-                </a>
-            </nav>
-
-            <div class="p-6 border-t border-white/5 bg-slate-900/50">
-                <a href="logout.php"
-                    class="flex items-center gap-3 py-3 px-4 text-red-400 hover:bg-red-500/10 rounded-xl transition font-bold text-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Sign Out
-                </a>
-            </div>
-        </aside>
 
         <main class="flex-1 w-full">
             <header

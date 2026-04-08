@@ -5,6 +5,9 @@ include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 $view = isset($_GET['view']) ? $_GET['view'] : 'pending';
+$total_students = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'student'"))['total'];
+$pending_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'"))['total'];
+
 
 // Handle Approval
 if (isset($_GET['approve'])) {
@@ -33,47 +36,7 @@ if (isset($_GET['approve'])) {
 <body class="bg-[#f8fafc] text-slate-900">
 
     <div id="overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity"></div>
-
-    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-950 text-white z-50 transform -translate-x-full transition-transform duration-300 lg:hidden flex flex-col">
-        <div class="p-8 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-xl text-white">C</div>
-                <h1 class="text-xl font-bold">C-Familia</h1>
-            </div>
-            <button id="closeMenu" class="p-2 text-slate-400 hover:text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-        </div>
-        <nav class="flex-1 px-6 space-y-1.5 overflow-y-auto text-sm">
-            <a href="admin_dashboard.php" class="flex items-center gap-3 py-3 px-4 rounded-xl font-semibold <?= ($current_page == 'admin_dashboard.php') ? 'sidebar-link-active' : 'text-slate-400' ?>">Dashboard</a>
-            <a href="admin_enrollments.php" class="flex items-center gap-3 py-3 px-4 rounded-xl font-semibold <?= ($current_page == 'admin_enrollments.php') ? 'sidebar-link-active' : 'text-slate-400' ?>">Enrollments</a>
-            <a href="admin_payments.php" class="flex items-center gap-3 py-3 px-4 rounded-xl font-semibold text-slate-400">Payments</a>
-        </nav>
-    </aside>
-
-    <div class="flex min-h-screen">
-        <aside class="w-72 bg-slate-950 text-white hidden lg:flex flex-col sticky top-0 h-screen">
-            <div class="p-8">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-blue-600/20 text-white">C</div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight">C-Familia</h1>
-                        <p class="text-[10px] text-slate-500 uppercase font-black tracking-widest leading-none mt-1">Admin Suite</p>
-                    </div>
-                </div>
-            </div>
-
-            <nav class="flex-1 px-6 space-y-1.5 overflow-y-auto text-sm">
-                <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 px-4">Main Menu</p>
-                <a href="admin_dashboard.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold <?= ($current_page == 'admin_dashboard.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">Dashboard</a>
-                <a href="admin_enrollments.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold <?= ($current_page == 'admin_enrollments.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">Enrollments</a>
-                <a href="admin_payments.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold text-slate-400 hover:text-white hover:bg-white/5">Payments</a>
-            </nav>
-
-            <div class="p-6 border-t border-white/5 bg-slate-900/50">
-                <a href="logout.php" class="flex items-center gap-3 py-3 px-4 text-red-400 hover:bg-red-500/10 rounded-xl transition font-bold text-sm">Sign Out</a>
-            </div>
-        </aside>
+    <?php include 'aside.php';?>
 
         <main class="flex-1 w-full overflow-x-hidden">
             <header class="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">

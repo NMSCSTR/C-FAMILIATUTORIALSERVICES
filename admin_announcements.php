@@ -5,6 +5,10 @@ include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
+$total_students = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'student'"))['total'];
+$pending_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'"))['total'];
+
+
 // Logic to Post Announcement
 if (isset($_POST['post_announcement'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
@@ -43,31 +47,7 @@ if (isset($_GET['delete'])) {
 <body class="bg-[#f8fafc] text-slate-900">
 
     <div class="flex min-h-screen">
-        <aside class="w-72 bg-slate-950 text-white hidden lg:flex flex-col sticky top-0 h-screen">
-            <div class="p-8">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-blue-600/20">C</div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight">C-Familia</h1>
-                        <p class="text-[10px] text-slate-500 uppercase font-black tracking-widest mt-1">Admin Suite</p>
-                    </div>
-                </div>
-            </div>
-
-            <nav class="flex-1 px-6 space-y-1.5 overflow-y-auto text-sm">
-                <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 px-4">Main Menu</p>
-                <a href="admin_dashboard.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_dashboard.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">Dashboard</a>
-                <a href="admin_enrollments.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_enrollments.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">Enrollments</a>
-                <a href="admin_payments.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_payments.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">Payments</a>
-                <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-8 mb-4 px-4">Communication</p>
-                <a href="admin_announcements.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_announcements.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">Announcements</a>
-                <a href="admin_posts.php" class="flex items-center gap-3 py-3 px-4 rounded-xl transition-all font-semibold group <?= ($current_page == 'admin_posts.php') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">Posts</a>
-            </nav>
-
-            <div class="p-6 border-t border-white/5">
-                <a href="logout.php" class="flex items-center gap-3 py-3.5 px-4 text-red-400 hover:bg-red-500/10 rounded-xl transition font-bold text-sm">Sign Out</a>
-            </div>
-        </aside>
+        <?php include 'aside.php';?>
 
         <main class="flex-1 p-6 lg:p-10">
             <div class="max-w-4xl mx-auto">

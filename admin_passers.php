@@ -4,6 +4,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Locati
 include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
+$total_students = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'student'"))['total'];
+$pending_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'"))['total'];
+
 
 if (isset($_POST['add_passer'])) {
     $name = mysqli_real_escape_string($conn, $_POST['name']);

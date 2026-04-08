@@ -4,6 +4,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Locati
 include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
+$total_students = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'student'"))['total'];
+$pending_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'"))['total'];
 
 // Logic to Save Post
 if (isset($_POST['save_post'])) {
