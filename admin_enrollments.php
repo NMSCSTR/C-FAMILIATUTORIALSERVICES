@@ -1,153 +1,160 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { 
+    header("Location: login.php"); 
+    exit(); 
+}
 include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
-$view = isset($_GET['view']) ? $_GET['view'] : 'pending';
-$total_students = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'student'"))['total'];
-$pending_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'"))['total'];
+$view = isset($_GET['view']) ? $_GET['view'] : 'all'; 
+$batch_filter = isset($_GET['batch']) ? mysqli_real_escape_string($conn, $_GET['batch']) : '';
+$base_fee = 5000; // Standard program fee
 
-
-// Handle Approval
+// --- ACTION HANDLER: APPROVAL ---
 if (isset($_GET['approve'])) {
     $id = mysqli_real_escape_string($conn, $_GET['approve']);
     mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE id = '$id'");
-    header("Location: admin_enrollments.php?success=1&view=pending");
+    header("Location: " . $current_page . "?success=1&view=" . $view . "&batch=" . $batch_filter);
     exit();
 }
+
+// Fetch distinct batches for the dropdown
+$batches_res = mysqli_query($conn, "SELECT DISTINCT batch FROM enrollments ORDER BY batch DESC");
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>Manage Enrollments | C-Familia Admin</title>
+    <title>Registry Management | Admin Suite</title>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
-        .sidebar-link-active { background: #2563eb; color: white; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .glass-header { background: rgba(252, 252, 253, 0.8); backdrop-filter: blur(12px); }
     </style>
 </head>
+<body class="bg-[#fcfcfd] text-slate-900 custom-scrollbar">
 
-<body class="bg-[#f8fafc] text-slate-900">
+    <div class="flex min-h-screen">
+        <?php include 'aside.php';?>
 
-    <div id="overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity"></div>
-    <?php include 'aside.php';?>
-
-        <main class="flex-1 w-full overflow-x-hidden">
-            <header class="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">C</div>
-                    <span class="font-bold text-slate-900">Admin Suite</span>
-                </div>
-                <button id="openMenu" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                </button>
-            </header>
-
-            <div class="p-4 md:p-6 lg:p-10 max-w-6xl mx-auto">
-                <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <main class="flex-1 min-w-0">
+            <div class="p-6 md:p-10 max-w-7xl mx-auto">
+                
+                <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-[800] text-slate-900 tracking-tight">
-                            <?= ($view === 'pending') ? 'Enrollment Requests' : 'Enrollment History' ?>
-                        </h2>
-                        <p class="text-slate-500 mt-1 text-sm md:text-base">Review and process student applications.</p>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-lg">Admin Portal</span>
+                            <?php if(isset($_GET['success'])): ?>
+                                <span class="text-emerald-500 text-[10px] font-bold uppercase animate-pulse">✓ Registry Updated</span>
+                            <?php endif; ?>
+                        </div>
+                        <h2 class="text-4xl font-[800] text-slate-900 tracking-tight">Student Registry</h2>
+                        <p class="text-slate-500 mt-2 text-sm font-medium">Manage program approvals and monitor individual payment progress.</p>
                     </div>
-                    <?php if(isset($_GET['success'])): ?>
-                    <div class="bg-green-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-green-500/20 animate-bounce">
-                        ✓ Request Approved Successfully
+                    
+                    <div class="flex bg-slate-100 p-1.5 rounded-2xl shadow-inner">
+                        <a href="?view=all&batch=<?= $batch_filter ?>" class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all <?= ($view === 'all') ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700' ?>">All Records</a>
+                        <a href="?view=pending&batch=<?= $batch_filter ?>" class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all <?= ($view === 'pending') ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700' ?>">Pending Only</a>
                     </div>
-                    <?php endif; ?>
                 </header>
 
-                <div class="bg-white p-4 rounded-[1.5rem] shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div class="relative w-full md:w-96">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <div class="flex flex-col md:flex-row gap-4 mb-8">
+                    <div class="flex-1 relative">
+                        <span class="absolute inset-y-0 left-5 flex items-center text-slate-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </span>
-                        <input type="text" placeholder="Search by name or email..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition text-sm">
+                        <input type="text" id="studentSearch" placeholder="Search by name, email, or program..." class="w-full pl-14 pr-6 py-4 bg-white border border-slate-200 rounded-[1.5rem] focus:ring-4 focus:ring-blue-500/5 outline-none transition-all text-sm font-medium shadow-sm">
                     </div>
-                    <div class="flex bg-slate-100 p-1 rounded-xl w-full md:w-auto">
-                        <a href="?view=pending" class="flex-1 md:flex-none text-center px-6 py-1.5 rounded-lg text-xs font-bold transition-all <?= ($view === 'pending') ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-900' ?>">Pending</a>
-                        <a href="?view=history" class="flex-1 md:flex-none text-center px-6 py-1.5 rounded-lg text-xs font-bold transition-all <?= ($view === 'history') ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-900' ?>">History</a>
-                    </div>
+                    
+                    <select onchange="location.href='?view=<?= $view ?>&batch=' + this.value" class="md:w-64 px-6 py-4 bg-white border border-slate-200 rounded-[1.5rem] text-sm font-bold outline-none cursor-pointer focus:border-blue-500 transition-all shadow-sm appearance-none">
+                        <option value="">All Academic Batches</option>
+                        <?php mysqli_data_seek($batches_res, 0); while($b = mysqli_fetch_assoc($batches_res)): ?>
+                            <option value="<?= $b['batch'] ?>" <?= ($batch_filter == $b['batch']) ? 'selected' : '' ?>>Batch <?= $b['batch'] ?></option>
+                        <?php endwhile; ?>
+                    </select>
                 </div>
 
-                <div class="bg-white rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden transition-all">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left min-w-[800px]">
+                        <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-50/50 border-b border-slate-100">
-                                    <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Info</th>
-                                    <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Program Details</th>
-                                    <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Payment Status</th>
-                                    <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
+                                <tr class="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 bg-slate-50/50">
+                                    <th class="px-8 py-6">Student Profile</th>
+                                    <th class="px-8 py-6">Academic Info</th>
+                                    <th class="px-8 py-6">Payment Progress</th>
+                                    <th class="px-8 py-6 text-right">Operations</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-50">
+                            <tbody id="enrollmentTable" class="divide-y divide-slate-50">
                                 <?php
-                                $status_filter = ($view === 'pending') ? 'pending' : 'enrolled';
-                                $sql = "SELECT enrollments.*, users.name, users.email FROM enrollments 
+                                $where_clause = ($view === 'pending') ? "WHERE enrollments.status = 'pending'" : "WHERE 1=1";
+                                if ($batch_filter) { $where_clause .= " AND enrollments.batch = '$batch_filter'"; }
+
+                                $sql = "SELECT enrollments.*, users.name, users.email 
+                                        FROM enrollments 
                                         JOIN users ON enrollments.user_id = users.id 
-                                        WHERE status = '$status_filter' ORDER BY created_at DESC";
+                                        $where_clause 
+                                        ORDER BY enrollments.batch DESC, enrollments.created_at DESC";
                                 $result = mysqli_query($conn, $sql);
                                 
                                 if(mysqli_num_rows($result) > 0):
                                     while($row = mysqli_fetch_assoc($result)):
-                                        $e_id = $row['id'];
-                                        $p_res = mysqli_query($conn, "SELECT * FROM payments WHERE id = '$e_id' LIMIT 1");
-                                        $payment = mysqli_fetch_assoc($p_res);
+                                        // Dynamic Finance Calculation
+                                        $uid = $row['user_id'];
+                                        $p_sql = "SELECT SUM(amount) as paid FROM payments WHERE user_id = '$uid' AND status = 'paid'";
+                                        $total_paid = mysqli_fetch_assoc(mysqli_query($conn, $p_sql))['paid'] ?? 0;
+                                        $balance = $base_fee - $total_paid;
+                                        $progress = ($total_paid / $base_fee) * 100;
                                 ?>
-                                <tr class="hover:bg-blue-50/30 transition-colors group">
-                                    <td class="px-6 md:px-8 py-6">
+                                <tr class="hover:bg-slate-50/80 transition-all group">
+                                    <td class="px-8 py-6">
                                         <div class="flex items-center gap-4">
-                                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm shrink-0">
+                                            <div class="w-12 h-12 bg-gradient-to-tr from-slate-100 to-white text-slate-400 border border-slate-200 rounded-2xl flex items-center justify-center font-bold text-lg group-hover:border-blue-400 group-hover:text-blue-600 transition-all shadow-sm">
                                                 <?= strtoupper(substr($row['name'], 0, 1)) ?>
                                             </div>
-                                            <div class="truncate">
-                                                <p class="font-bold text-slate-900 text-sm truncate"><?= $row['name'] ?></p>
-                                                <p class="text-xs text-slate-400 mt-0.5 truncate"><?= $row['email'] ?></p>
+                                            <div>
+                                                <p class="font-bold text-slate-900 text-sm tracking-tight"><?= $row['name'] ?></p>
+                                                <p class="text-[11px] text-slate-400 font-medium"><?= $row['email'] ?></p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 md:px-8 py-6">
-                                        <div class="bg-slate-100 inline-block px-2 py-1 rounded text-[10px] font-bold text-slate-600 mb-1"><?= $row['batch'] ?></div>
-                                        <p class="text-sm font-semibold text-slate-700"><?= $row['program_type'] ?></p>
+                                    <td class="px-8 py-6">
+                                        <div class="inline-flex px-2.5 py-1 bg-slate-900 text-white text-[9px] font-black rounded-md uppercase mb-1.5">Batch <?= $row['batch'] ?></div>
+                                        <p class="text-xs font-bold text-slate-700"><?= $row['program_type'] ?></p>
                                     </td>
-                                    <td class="px-6 md:px-8 py-6">
-                                        <?php if($payment): ?>
-                                        <div class="space-y-1">
-                                            <a href="uploads/<?= $payment['receipt'] ?>" target="_blank" class="text-[10px] font-black text-blue-600 hover:text-blue-700 uppercase flex items-center gap-1">View Receipt</a>
-                                            <p class="text-xs font-bold text-slate-800">₱<?= number_format($payment['amount'], 2) ?></p>
+                                    <td class="px-8 py-6 min-w-[220px]">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-[11px] font-bold text-slate-900">₱<?= number_format($total_paid) ?> <span class="text-slate-300 font-normal">/ ₱<?= number_format($base_fee) ?></span></span>
+                                            <span class="text-[10px] font-black <?= ($balance <= 0) ? 'text-emerald-500' : 'text-blue-600' ?>"><?= round($progress) ?>%</span>
                                         </div>
-                                        <?php else: ?>
-                                        <span class="text-[10px] font-bold text-slate-400 italic">No proof yet</span>
-                                        <?php endif; ?>
+                                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                            <div class="h-full bg-blue-600 rounded-full transition-all duration-700" style="width: <?= $progress ?>%"></div>
+                                        </div>
                                     </td>
-                                    <td class="px-6 md:px-8 py-6 text-right">
-                                        <?php if($view === 'pending'): ?>
-                                            <a href="?approve=<?= $row['id'] ?>" onclick="return confirm('Confirm enrollment?')" class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 md:px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
-                                                Approve
-                                            </a>
-                                        <?php else: ?>
-                                            <span class="inline-flex items-center gap-1.5 text-green-600 font-bold text-[10px] uppercase">
-                                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Enrolled
-                                            </span>
-                                        <?php endif; ?>
+                                    <td class="px-8 py-6 text-right">
+                                        <div class="flex items-center justify-end gap-3">
+                                            <button onclick="openHistory(<?= $uid ?>, '<?= addslashes($row['name']) ?>')" class="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Payment Timeline">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            </button>
+                                            
+                                            <?php if($row['status'] === 'pending'): ?>
+                                                <a href="?approve=<?= $row['id'] ?>&view=<?= $view ?>&batch=<?= $batch_filter ?>" onclick="return confirm('Approve this enrollment?')" class="bg-blue-600 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-100">Approve</a>
+                                            <?php else: ?>
+                                                <div class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase border border-emerald-100">Verified</div>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endwhile; else: ?>
                                 <tr>
-                                    <td colspan="4" class="px-8 py-32 text-center">
-                                        <div class="inline-flex w-16 h-16 bg-slate-50 rounded-2xl items-center justify-center mb-4">
-                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
-                                        </div>
-                                        <h5 class="text-lg font-bold text-slate-800">No <?= $view ?> requests</h5>
-                                        <p class="text-slate-400 text-sm">Everything is currently up to date.</p>
+                                    <td colspan="4" class="py-32 text-center">
+                                        <p class="text-slate-300 font-bold text-sm italic">No students found matching your criteria.</p>
                                     </td>
                                 </tr>
                                 <?php endif; ?>
@@ -159,6 +166,64 @@ if (isset($_GET['approve'])) {
         </main>
     </div>
 
+    <div id="hOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
+        <div id="hSidebar" class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="p-8 border-b border-slate-100 flex items-center justify-between glass-header sticky top-0 z-10">
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">Payment Timeline</h3>
+                    <p id="hName" class="text-sm text-blue-600 font-bold mt-1"></p>
+                </div>
+                <button onclick="closeHistory()" class="p-2.5 hover:bg-slate-100 rounded-2xl transition-colors text-slate-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="hBody" class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // Real-time local filtering
+        document.getElementById('studentSearch').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#enrollmentTable tr');
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
+            });
+        });
+
+        // AJAX Sidebar Logic
+        async function openHistory(userId, name) {
+            const overlay = document.getElementById('hOverlay');
+            const sidebar = document.getElementById('hSidebar');
+            const body = document.getElementById('hBody');
+            
+            document.getElementById('hName').innerText = name;
+            body.innerHTML = '<div class="flex flex-col items-center justify-center py-20"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fetching Ledgers...</p></div>';
+            
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.add('opacity-100');
+                sidebar.classList.remove('translate-x-full');
+            }, 10);
+
+            try {
+                const response = await fetch(`get_payments.php?user_id=${userId}`);
+                body.innerHTML = await response.text();
+            } catch (err) {
+                body.innerHTML = '<p class="text-rose-500 font-bold p-10 text-center">Connection error. Could not load data.</p>';
+            }
+        }
+
+        function closeHistory() {
+            const overlay = document.getElementById('hOverlay');
+            const sidebar = document.getElementById('hSidebar');
+            overlay.classList.remove('opacity-100');
+            sidebar.classList.add('translate-x-full');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    </script>
+
     <script>
         const openBtn = document.getElementById('openMenu');
         const closeBtn = document.getElementById('closeMenu');
@@ -166,14 +231,15 @@ if (isset($_GET['approve'])) {
         const overlay = document.getElementById('overlay');
 
         function toggleMenu() {
+            if(!mobileSidebar || !overlay) return;
             mobileSidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
             document.body.classList.toggle('overflow-hidden');
         }
 
-        openBtn.addEventListener('click', toggleMenu);
-        closeBtn.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', toggleMenu);
+        if(openBtn) openBtn.addEventListener('click', toggleMenu);
+        if(closeBtn) closeBtn.addEventListener('click', toggleMenu);
+        if(overlay) overlay.addEventListener('click', toggleMenu);
     </script>
 </body>
 </html>
