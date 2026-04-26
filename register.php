@@ -95,7 +95,7 @@ if (isset($_POST['register'])) {
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Password</label>
-                        <input type="password" name="password" required 
+                        <input type="password" name="password" required s
                                class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
                     </div>
                     <div>
