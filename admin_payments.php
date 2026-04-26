@@ -128,9 +128,8 @@ $total_tx = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FRO
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-sm">
                                 <?php
-                                $sql = "SELECT payments.*, users.name, users.email FROM payments 
-                                        JOIN users ON payments.user_id = users.id 
-                                        ORDER BY payments.created_at DESC";
+                                $sql = "SELECT payments.*, users.firstname, users.middlename, users.lastname, users.email FROM payments 
+                                        JOIN users ON payments.user_id = users.id WHERE users.role != 'admin'                                        ORDER BY payments.created_at DESC";
                                 $res = mysqli_query($conn, $sql);
                                 
                                 if(mysqli_num_rows($res) > 0):
@@ -138,7 +137,7 @@ $total_tx = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FRO
                                 ?>
                                 <tr class="hover:bg-slate-50/80 transition-all duration-200 group">
                                     <td class="px-10 py-7">
-                                        <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors"><?= $row['name'] ?></div>
+                                        <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors"><?= $row['firstname'] ?></div>
                                         <div class="text-[10px] text-slate-400 mt-1 font-medium italic"><?= date('F j, Y • g:i a', strtotime($row['created_at'])) ?></div>
                                     </td>
                                     <td class="px-10 py-7 font-mono text-xs text-slate-500">
