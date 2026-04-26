@@ -3,7 +3,10 @@ include 'db.php';
 $message = ""; $error = "";
 
 if (isset($_POST['register'])) {
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    // Sanitize multi-part name inputs
+    $firstname = mysqli_real_escape_string($conn, $_POST['firstname']);
+    $middlename = mysqli_real_escape_string($conn, $_POST['middlename']);
+    $lastname = mysqli_real_escape_string($conn, $_POST['lastname']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
@@ -11,17 +14,22 @@ if (isset($_POST['register'])) {
     if ($password !== $confirm_password) {
         $error = "Passwords do not match!";
     } else {
+        // Check if email already exists
         $check_email = mysqli_query($conn, "SELECT id FROM users WHERE email = '$email'");
         if (mysqli_num_rows($check_email) > 0) {
             $error = "Email is already registered!";
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $role = 'student';
-            $sql = "INSERT INTO users (name, email, password, role) VALUES ('$name', '$email', '$hashed_password', '$role')";
+            
+            // Updated SQL to match your database columns: firstname, middlename, lastname
+            $sql = "INSERT INTO users (firstname, middlename, lastname, email, password, role) 
+                    VALUES ('$firstname', '$middlename', '$lastname', '$email', '$hashed_password', '$role')";
+            
             if (mysqli_query($conn, $sql)) {
                 $message = "Registration successful! You can now <a href='login.php' class='underline font-bold'>Login</a>.";
             } else {
-                $error = "Registration failed. Please try again.";
+                $error = "Registration failed: " . mysqli_error($conn);
             }
         }
     }
@@ -39,7 +47,7 @@ if (isset($_POST['register'])) {
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 flex items-center justify-center min-h-screen py-10 px-4">
-    <div class="max-w-md w-full">
+    <div class="max-w-xl w-full">
         <div class="text-center mb-8">
             <img src="cuevaslogo.jpg" alt="Logo" class="w-16 h-16 mx-auto rounded-xl shadow-md mb-4 object-contain bg-white p-2">
             <h2 class="text-3xl font-[800] text-slate-800 tracking-tight">Create Account</h2>
@@ -60,10 +68,22 @@ if (isset($_POST['register'])) {
             <?php endif; ?>
 
             <form action="" method="POST" class="space-y-5">
-                <div>
-                    <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Full Name</label>
-                    <input type="text" name="name" required placeholder="Juan Dela Cruz"
-                           class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">First Name</label>
+                        <input type="text" name="firstname" required placeholder="Juan"
+                               class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Middle Name</label>
+                        <input type="text" name="middlename" placeholder="Dela"
+                               class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Last Name</label>
+                        <input type="text" name="lastname" required placeholder="Cruz"
+                               class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                    </div>
                 </div>
 
                 <div>

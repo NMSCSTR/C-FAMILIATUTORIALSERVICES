@@ -140,3 +140,23 @@ Dashboard
 Students List
 
 Enrollments List
+
+
+
+#ADDITIONAL PASSEERS
+FILTER = ENROLLED BY CITY
+
+INSURANCE IF INCLUDED
+
+#I=Diagnostic exam, pre board exam, compre exam then 
+view all student info
+Branch
+full details -- DONE
+
+
+picture by batch()
+
+Picture for Top Passers
+Testimonials
+
+payment admin side
