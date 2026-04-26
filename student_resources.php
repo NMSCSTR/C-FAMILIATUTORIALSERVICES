@@ -87,10 +87,10 @@ function getFileStyle($filename) {
                 </div>
                 
                 <div class="flex items-center gap-4">
-                    <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['name']).'&background=4f46e5&color=fff' ?>" 
+                    <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=4f46e5&color=fff' ?>" 
                          class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-50">
                     <div>
-                        <span class="text-xs font-bold text-slate-900 block"><?= $user['name'] ?></span>
+                        <span class="text-xs font-bold text-slate-900 block"><?= $user['firstname'] ?> <?= $user['middlename'] ?> <?= $user['lastname'] ?></span>
                         <span class="text-[10px] font-semibold text-indigo-600">Active Student</span>
                     </div>
                 </div>
