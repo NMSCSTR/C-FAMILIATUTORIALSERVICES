@@ -6,6 +6,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 include 'db.php';
 
+// --- AJAX HANDLER FOR INSURANCE UPDATE ---
+if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
+    $enrollment_id = intval($_POST['enrollment_id']);
+    $is_insured = intval($_POST['insured']);
+    
+    $update_sql = "UPDATE enrollments SET insured = $is_insured WHERE id = $enrollment_id";
+    if (mysqli_query($conn, $update_sql)) {
+        echo "success";
+    } else {
+        echo "error";
+    }
+    exit(); // Stop execution here for AJAX requests
+}
+
+// Handle traditional approval if needed
+if (isset($_GET['approve'])) {
+    $id = intval($_GET['approve']);
+    mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE id = $id");
+    header("Location: admin_enrollments.php");
+    exit();
+}
+
 $current_page = basename($_SERVER['PHP_SELF']);
 $view = isset($_GET['view']) ? $_GET['view'] : 'all'; 
 $batch_filter = isset($_GET['batch']) ? mysqli_real_escape_string($conn, $_GET['batch']) : '';
@@ -29,6 +51,14 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
         .registry-card { background: white; border: 1px solid #f1f5f9; border-radius: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .stat-badge { font-feature-settings: "tnum"; }
         .modal-slide { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Checkbox Styling */
+        .insurance-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased">
@@ -44,7 +74,7 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
                         <div>
                             <span class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-2 block">System Administration</span>
                             <h1 class="text-4xl font-[800] text-slate-900 tracking-tight">Student Registry</h1>
-                            <p class="text-slate-500 mt-1 font-medium italic">Displaying student profiles and center-specific enrollment data.</p>
+                            <p class="text-slate-500 mt-1 font-medium italic">Displaying student profiles and insurance status.</p>
                         </div>
                         <div class="inline-flex p-1 bg-slate-100 rounded-2xl border border-slate-200">
                             <a href="?view=all" class="px-6 py-2 rounded-xl text-xs font-bold transition-all <?= $view == 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900' ?>">All Students</a>
@@ -80,6 +110,7 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
                             <thead>
                                 <tr class="bg-slate-50/50 border-b border-slate-100">
                                     <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Identity</th>
+                                    <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 text-center">Insured</th>
                                     <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Enrollment & Status</th>
                                     <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Financial Progress</th>
                                     <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 text-right">Operations</th>
@@ -114,6 +145,12 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
                                                 <p class="text-[11px] text-slate-400 font-medium"><?= $row['email'] ?></p>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td class="px-8 py-6 text-center">
+                                        <input type="checkbox" 
+                                               class="insurance-checkbox" 
+                                               onchange="toggleInsurance(<?= $row['id'] ?>, this.checked)"
+                                               <?= $row['insured'] ? 'checked' : '' ?>>
                                     </td>
                                     <td class="px-8 py-6">
                                         <div class="flex flex-col gap-1">
@@ -157,12 +194,34 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <div id="modalBody" class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                </div>
+            <div id="modalBody" class="flex-1 overflow-y-auto p-8 custom-scrollbar"></div>
         </div>
     </div>
 
     <script>
+        // NEW: Toggle Insurance via AJAX
+        async function toggleInsurance(enrollmentId, isChecked) {
+            const formData = new FormData();
+            formData.append('action', 'update_insurance');
+            formData.append('enrollment_id', enrollmentId);
+            formData.append('insured', isChecked ? 1 : 0);
+
+            try {
+                const response = await fetch('admin_enrollments.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.text();
+                
+                if (result.trim() !== 'success') {
+                    alert('Failed to update insurance status.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Connection error.');
+            }
+        }
+
         async function viewDetails(userId) {
             const modal = document.getElementById('detailsModal');
             const overlay = document.getElementById('modalOverlay');

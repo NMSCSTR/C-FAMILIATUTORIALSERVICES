@@ -30,7 +30,7 @@ if (isset($_POST['submit_enrollment'])) {
     $program = mysqli_real_escape_string($conn, $_POST['program_type']);
     $batch = mysqli_real_escape_string($conn, $_POST['batch']);
     $location = mysqli_real_escape_string($conn, $_POST['enrolled_at']);
-    $insured = isset($_POST['insured']) ? 1 : 0; // Map checkbox to tinyint(1)
+    // $insured = isset($_POST['insured']) ? 1 : 0; // Map checkbox to tinyint(1)
     
     // Dynamically assign fee based on the selected program
     $fee = isset($programs[$program]) ? $programs[$program]['fee'] : 5000.00;
@@ -42,8 +42,8 @@ if (isset($_POST['submit_enrollment'])) {
         $error = "You already have an active application for the $program.";
     } else {
         // Updated SQL to include insured and enrolled_at (location) columns
-        $sql = "INSERT INTO enrollments (user_id, program_type, batch, total_fee, status, enrollment_date, enrolled_at, insured) 
-                VALUES ('$user_id', '$program', '$batch', '$fee', 'pending', CURDATE(), '$location', '$insured')";
+        $sql = "INSERT INTO enrollments (user_id, program_type, batch, total_fee, status, enrollment_date, enrolled_at) 
+                VALUES ('$user_id', '$program', '$batch', '$fee', 'pending', CURDATE(), '$location')";
 
         if (mysqli_query($conn, $sql)) {
             $message = "Your application for <b>$program</b> has been submitted successfully.";
@@ -192,14 +192,14 @@ if (isset($_POST['submit_enrollment'])) {
                                 </div>
                             </div>
 
-                            <label class="flex items-center gap-4 p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-100 transition group">
+                            <!-- <label class="flex items-center gap-4 p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-100 transition group">
                                 <input type="checkbox" name="insured" class="w-6 h-6 rounded-lg border-2 border-slate-300 text-blue-600 focus:ring-blue-500">
                                 <div class="flex-1">
                                     <p class="text-sm font-extrabold text-slate-800">Add Student Insurance</p>
                                     <p class="text-[11px] text-slate-400 font-medium italic">Recommended for off-site review sessions</p>
                                 </div>
                                 <span class="text-2xl group-hover:animate-bounce">🛡️</span>
-                            </label>
+                            </label> -->
 
                             <div class="bg-slate-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-900/20">
                                 <div class="relative z-10 flex justify-between items-center">
