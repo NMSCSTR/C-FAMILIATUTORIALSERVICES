@@ -17,7 +17,7 @@ $enrollee_name = $user_data['firstname'] . ' ' . ($user_data['middlename'] ? $us
 
 // 2. Configuration for Dynamic Programs & Fees
 $programs = [
-    "Criminology Review" => ["fee" => 5500.00, "desc" => "Comprehensive CLE board preparation.", "icon" => "👮"],
+    "Criminology Review" => ["fee" => 16500.00, "desc" => "Comprehensive CLE board preparation.", "icon" => "👮"],
     "LET Review"         => ["fee" => 4500.00, "desc" => "Professional Education and Gen Ed focus.", "icon" => "👨‍🏫"],
     "Civil Service Review" => ["fee" => 3500.00, "desc" => "Intensive prep for Professional level.", "icon" => "🏛️"]
 ];
