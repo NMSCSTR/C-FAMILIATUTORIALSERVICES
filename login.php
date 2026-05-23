@@ -48,7 +48,7 @@ if (isset($_POST['login'])) {
             <a href="index.php inline-block">
                 <img src="cuevaslogo.jpg" alt="Logo" class="w-20 h-20 mx-auto rounded-2xl shadow-lg mb-4 object-contain bg-white p-2">
             </a>
-            <h2 class="text-3xl font-extrabold text-slate-800">Welcome Back  Cfam Student</h2>
+            <h2 class="text-3xl font-extrabold text-slate-800">Welcome Back</h2>
             <p class="text-slate-500 mt-2">Login to your C-Familia account</p>
         </div>
 
