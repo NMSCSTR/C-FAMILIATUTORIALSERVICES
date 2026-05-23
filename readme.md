@@ -173,3 +173,26 @@ sudo mkdir -p /home/rhondelp/public_html/cfam
 sudo chown -R rhondelp:rhondelp /home/rhondelp/public_html
 sudo chmod 755 /home/rhondelp
 sudo chmod 755 /home/rhondelp/public_html
+
+sudo nano /etc/apache2/sites-available/c-familia.online.conf
+
+<VirtualHost *:80>
+    ServerName c-familia.online
+    ServerAlias www.c-familia.online
+    DocumentRoot /home/rhondelp/public_html/cfam
+
+    <Directory /home/rhondelp/public_html/cfam>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/vanilla_error.log
+    CustomLog ${APACHE_LOG_DIR}/vanilla_access.log combined
+</VirtualHost>
+
+CREATE DATABASE cfam;
+CREATE USER 'rhondelp'@'localhost' IDENTIFIED BY 'StrongPass123!';
+GRANT ALL PRIVILEGES ON cfts.* TO 'rhondelp'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
