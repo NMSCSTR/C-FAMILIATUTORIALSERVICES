@@ -196,3 +196,29 @@ CREATE USER 'rhondelp'@'localhost' IDENTIFIED BY 'StrongPass123!';
 GRANT ALL PRIVILEGES ON cfts.* TO 'rhondelp'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
+
+sudo nano /etc/nginx/sites-available/c-familia.online
+
+server {
+    listen 80;
+
+    server_name c-familia.online www.c-familia.online;
+
+    root /var/www/C-FAMILIATUTORIALSERVICES;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
+git remote add production rhondelp@72.61.116.47:/home/rhondelp/cfam.git
