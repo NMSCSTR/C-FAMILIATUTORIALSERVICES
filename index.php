@@ -47,7 +47,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         <div class="flex items-center space-x-4">
             <a href="login.php" class="text-slate-600 font-medium px-4 hover:text-blue-600 transition">Login</a>
             <a href="register.php" class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition shadow-md shadow-blue-600/20">
-                Join Us
+                Join Us 
             </a>
         </div>
     </div>
@@ -110,7 +110,6 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 $top_query = mysqli_query($conn, "SELECT * FROM passers WHERE rating >= 95 ORDER BY rating DESC");
                 if(mysqli_num_rows($top_query) > 0):
                     while($top = mysqli_fetch_assoc($top_query)):
-                        // Check if photo is in profile_pics or passers folder
                         $photoPath = file_exists("uploads/profiles/".$top['photo']) ? "uploads/profiles/".$top['photo'] : "uploads/passers/".$top['photo'];
                 ?>
                 <div class="bg-white/5 border border-white/10 p-8 rounded-[3rem] group hover:bg-white/10 transition-all border-b-4 border-b-blue-600">
@@ -138,10 +137,48 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
-    <section id="announcements" class="py-24 px-6 max-w-7xl mx-auto">
+    <section class="py-24 bg-white px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-blue-600 font-black uppercase text-xs tracking-[0.3em] mb-3 block">Student Voice</span>
+                <h3 class="text-4xl font-[800] text-slate-900 tracking-tight">Voice of Success<span class="text-blue-600">.</span></h3>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <?php 
+                $test_query = mysqli_query($conn, "SELECT t.*, u.firstname, u.lastname, u.profile_pic FROM testimonials t JOIN users u ON t.user_id = u.id ORDER BY t.created_at DESC LIMIT 6");
+                if(mysqli_num_rows($test_query) > 0):
+                    while($row = mysqli_fetch_assoc($test_query)):
+                        $userPic = !empty($row['profile_pic']) ? "uploads/profiles/".$row['profile_pic'] : "uploads/passers/default_user.jpg";
+                ?>
+                <div class="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 relative group hover:bg-blue-50 transition-colors">
+                    <div class="text-blue-200 absolute top-6 right-8 text-6xl font-serif opacity-30 group-hover:opacity-60 transition-opacity">“</div>
+                    <div class="relative z-10">
+                        <p class="text-slate-600 italic leading-relaxed mb-8">
+                            <?= htmlspecialchars($row['content']) ?>
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <img src="<?= $userPic ?>" class="w-12 h-12 rounded-2xl object-cover ring-4 ring-white shadow-sm">
+                            <div>
+                                <h5 class="font-bold text-slate-900 text-sm"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
+                                <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest">Verified Student</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endwhile; else: ?>
+                <div class="col-span-full py-12 text-center bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Awaiting student experiences...</p>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+
+    <section id="announcements" class="py-24 px-6 max-w-7xl mx-auto border-t border-slate-100">
         <div class="flex items-center gap-4 mb-12">
             <span class="w-2.5 h-10 bg-blue-600 rounded-full"></span>
-            <h3 class="text-4xl font-extrabold tracking-tight">Recent Announcements</h3>
+            <h3 class="text-4xl font-extrabold tracking-tight text-slate-900">Recent Announcements</h3>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
             <?php 
@@ -164,7 +201,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
     <section id="posts" class="py-24 px-6 max-w-7xl mx-auto border-t border-slate-200">
         <div class="flex items-center gap-4 mb-12">
             <span class="w-2.5 h-10 bg-indigo-600 rounded-full"></span>
-            <h3 class="text-4xl font-extrabold tracking-tight">Learning Materials</h3>
+            <h3 class="text-4xl font-extrabold tracking-tight text-slate-900">Learning Materials</h3>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php 
@@ -191,7 +228,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
 
     <section id="passers" class="py-24 bg-slate-100 px-6">
         <div class="max-w-7xl mx-auto text-center mb-16">
-            <h3 class="text-4xl font-extrabold mb-4 tracking-tight">The Hall of Fame</h3>
+            <h3 class="text-4xl font-extrabold mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
             <p class="text-slate-500 font-medium max-w-2xl mx-auto">Celebrating every C-Familia student who successfully conquered their board exams.</p>
         </div>
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -236,7 +273,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 </div>
             </div>
             <div class="bg-slate-50 p-10 rounded-[3rem] border border-slate-200/60 shadow-inner">
-                <h3 class="text-2xl font-bold mb-8">Get in Touch</h3>
+                <h3 class="text-2xl font-bold mb-8 text-slate-900">Get in Touch</h3>
                 <div class="space-y-4">
                     <div class="flex items-center gap-5 p-5 bg-white rounded-2xl border border-slate-200 shadow-sm transition-transform hover:translate-x-2">
                         <span class="text-2xl">📞</span>

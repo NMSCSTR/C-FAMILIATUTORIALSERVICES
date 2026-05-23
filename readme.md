@@ -160,3 +160,16 @@ Picture for Top Passers
 Testimonials
 
 payment admin side
+
+
+
+
+
+VPS
+user= rhondelp password03
+
+sudo mkdir -p /home/rhondelp/public_html/cfam
+
+sudo chown -R rhondelp:rhondelp /home/rhondelp/public_html
+sudo chmod 755 /home/rhondelp
+sudo chmod 755 /home/rhondelp/public_html
