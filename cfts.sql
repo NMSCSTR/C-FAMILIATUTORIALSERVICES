@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2026 at 09:25 PM
+-- Generation Time: May 23, 2026 at 07:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -66,9 +66,10 @@ CREATE TABLE `enrollments` (
 --
 
 INSERT INTO `enrollments` (`id`, `user_id`, `program_type`, `status`, `enrolled_at`, `enrollment_date`, `created_at`, `batch`, `insured`, `total_fee`) VALUES
-(1, 2, 'Criminology Review', 'pending', '', '2026-03-28', '2026-03-28 08:27:01', 'Batch 2026-A (April - June)', 0, 5000.00),
+(1, 2, 'Criminology Review', 'pending', '', '2026-03-28', '2026-03-28 08:27:01', 'Batch 2026-A (April - June)', 1, 5000.00),
 (2, 3, 'Criminology Review', 'enrolled', 'Oroqueta', '2026-03-28', '2026-03-28 10:27:48', 'Batch 2026-A (April - June)', 0, 5500.00),
-(3, 4, 'Criminology Review', 'pending', 'Ozamis', '2026-04-14', '2026-04-14 08:55:19', 'Batch 2026-A (Morning Session)', 0, 5500.00);
+(3, 4, 'Criminology Review', 'pending', 'Ozamis', '2026-04-14', '2026-04-14 08:55:19', 'Batch 2026-A (Morning Session)', 0, 5500.00),
+(4, 5, 'Criminology Review', 'enrolled', 'Tubod', '2026-04-27', '2026-04-26 20:02:34', 'Batch 2026-A (Morning Session)', 1, 5500.00);
 
 -- --------------------------------------------------------
 
@@ -95,6 +96,7 @@ CREATE TABLE `passers` (
   `name` varchar(255) NOT NULL,
   `program` varchar(100) NOT NULL,
   `batch` varchar(50) NOT NULL,
+  `rating` decimal(4,2) DEFAULT NULL,
   `photo` varchar(255) DEFAULT 'default_user.jpg',
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -103,9 +105,8 @@ CREATE TABLE `passers` (
 -- Dumping data for table `passers`
 --
 
-INSERT INTO `passers` (`id`, `name`, `program`, `batch`, `photo`, `created_at`) VALUES
-(1, 'RHONDEL M. PAGOBO', 'CRIMINOLOGY', '2025', '1774690913_481928148_1011155720936283_6075998069416443900_n.jpg', '2026-03-28 17:41:53'),
-(2, 'JESSEL VE ALJAS', 'CRIMINOLOGY', '2025', 'default_user.jpg', '2026-04-14 16:44:03');
+INSERT INTO `passers` (`id`, `name`, `program`, `batch`, `rating`, `photo`, `created_at`) VALUES
+(3, 'RHONDEL PAGOBO', 'CRIMINOLOGY', '2026', 96.00, '1774692728_481875975_1693045591626922_5649588926967639802_n.jpg', '2026-04-29 00:17:54');
 
 -- --------------------------------------------------------
 
@@ -133,7 +134,8 @@ CREATE TABLE `payments` (
 INSERT INTO `payments` (`id`, `user_id`, `amount`, `payment_method`, `status`, `reference_number`, `receipt`, `payment_date`, `created_at`, `payment_type`) VALUES
 (1, 2, 5000.00, 'GCash', 'pending', 'saddasfwrg', '1774689474_FhbtNbUWYAEbVCV.jpeg', '2026-03-28', '2026-03-28 09:17:54', 'full'),
 (2, 3, 1500.00, 'GCash', 'paid', 'TARA831979', '1774972065_Snapchat_330830312.jpg', '2026-03-31', '2026-03-31 15:47:45', 'full'),
-(3, 3, 250.00, 'GCash', 'paid', 'sampleref', '1775654790_FhbtNbUWYAEbVCV.jpeg', NULL, '2026-04-08 13:26:30', 'installment');
+(3, 3, 250.00, 'GCash', 'paid', 'sampleref', '1775654790_FhbtNbUWYAEbVCV.jpeg', NULL, '2026-04-08 13:26:30', 'installment'),
+(5, 5, 3000.00, 'Walk-in Cash', 'paid', 'OR-0001', NULL, '2026-04-27', '2026-04-26 21:14:11', 'installment');
 
 -- --------------------------------------------------------
 
@@ -155,8 +157,27 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `title`, `content`, `author`, `file_path`, `created_at`) VALUES
-(1, 'PASSING PERCENTAGE', 'This passing percentage is a manifestation of the hard work and dedication of our lecturers. Some may say that our lecturers are “purely local,” but the results speak for themselves.\r\nSuccess does not depend on where the lecturers come from, but on their genuine intention to share their knowledge and sincerely help the reviewees succeed. Today, we see the fruit of that commitment and dedication.\r\nDaghang salamant\r\nJose Cuevas Jr. Edmar Daniel Kris Tality EL Mie Teopisto Yray Culanag Jr. Bernaflor Canape Sagi Ttario Mat Jumawan Heyrosa Aldrin Tactacon Fiona Ivana Detalla Xians Estares Reynold Jay Bahunsua Reymark Labitad Reymark Ragmac  Rey Niño Buenaventura Abucay Ricky Jean Alegrado Angelyn Pacatang Ar-jay Patalinghug Jerry Besiohan Alizter Singidas Llorong', 'Admin', '1774690342_J.jpg', '2026-03-28 17:32:22'),
 (2, 'SAMPLE CV', 'PLEASE CREATE A SAMPLE CV LIKE THIS FORMAT.', 'Admin', '1775655752_RHONDELPAGOBOCV (2).pdf', '2026-04-08 21:42:32');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `testimonials`
+--
+
+CREATE TABLE `testimonials` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `testimonials`
+--
+
+INSERT INTO `testimonials` (`id`, `user_id`, `content`, `created_at`) VALUES
+(1, 5, 'C-Familia is more than just a review center; it\'s a family. The lecturers genuinely care about our success and break down complex concepts into terms I can finally understand. I owe my license to their dedication.', '2026-04-28 16:36:16');
 
 -- --------------------------------------------------------
 
@@ -182,8 +203,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `firstname`, `middlename`, `lastname`, `email`, `password`, `role`, `profile_pic`, `created_at`) VALUES
 (2, 'SHIELA MARIS', 'GWAPA', 'CUEVAS', 'admin@cfamilia.com', '$2y$10$CJtl6AjNJxe69F52XbhkYuYDkJHI70sT6ioTd0Up9KMU7/bWVX5x.', 'admin', NULL, '2026-03-28 08:17:28'),
-(3, 'RHONDEL M. PAGOBO', 'MEPARANUM', 'PAGOBO', 'rhondelpagobo19@gmail.com', '$2y$10$Apiso9PAv5YQ0J/VKR8YMOBY4f/Mai6yBzUOqKqiMNVN52oeH8Jli', 'student', '1774692728_481875975_1693045591626922_5649588926967639802_n.jpg', '2026-03-28 10:04:59'),
-(4, 'RODRIGO', 'ROA', 'DUTERTE', 'rodrigoroa@gmail.com', '$2y$10$l9ULzzNjGPKrXAw9hScm8u1hdL6g5QvI3Qb38b8vOVEFpSw99RNQa', 'student', NULL, '2026-04-14 08:53:49');
+(3, 'RHONDEL', 'MEPARANUM', 'PAGOBO', 'rhondelpagobo19@gmail.com', '$2y$10$Apiso9PAv5YQ0J/VKR8YMOBY4f/Mai6yBzUOqKqiMNVN52oeH8Jli', 'student', '1774692728_481875975_1693045591626922_5649588926967639802_n.jpg', '2026-03-28 10:04:59'),
+(4, 'RODRIGO', 'ROA', 'DUTERTE', 'rodrigoroa@gmail.com', '$2y$10$l9ULzzNjGPKrXAw9hScm8u1hdL6g5QvI3Qb38b8vOVEFpSw99RNQa', 'student', NULL, '2026-04-14 08:53:49'),
+(5, 'Aldril', 'Remitar', 'Catigum', 'aldrilrcatigum@gmail.com', '$2y$10$6IDigpSSnMxV4/dPNUkxBO5yevLVNaViYwSq6uhHI6A3HiVw5RRvq', 'student', '1777394943_CICT_LOGO.png', '2026-04-26 19:34:55');
 
 --
 -- Indexes for dumped tables
@@ -229,6 +251,13 @@ ALTER TABLE `posts`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `testimonials`
+--
+ALTER TABLE `testimonials`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -249,7 +278,7 @@ ALTER TABLE `announcements`
 -- AUTO_INCREMENT for table `enrollments`
 --
 ALTER TABLE `enrollments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `exam_result`
@@ -261,13 +290,13 @@ ALTER TABLE `exam_result`
 -- AUTO_INCREMENT for table `passers`
 --
 ALTER TABLE `passers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `posts`
@@ -276,10 +305,16 @@ ALTER TABLE `posts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `testimonials`
+--
+ALTER TABLE `testimonials`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
@@ -302,6 +337,12 @@ ALTER TABLE `exam_result`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `testimonials`
+--
+ALTER TABLE `testimonials`
+  ADD CONSTRAINT `testimonials_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
