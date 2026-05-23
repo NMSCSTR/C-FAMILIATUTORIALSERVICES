@@ -53,6 +53,7 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
     <title>Financial Ledger | Review Center Admin</title>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; background-color: #fcfcfd; }

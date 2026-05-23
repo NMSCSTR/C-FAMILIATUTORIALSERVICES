@@ -15,7 +15,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">k
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
     <title>C-Familia Tutorial Services</title>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
