@@ -161,6 +161,13 @@ Testimonials
 
 payment admin side
 
+previous passers and pictures
+Hide Learning Materials
+POST same as fb e.g documentation
+what school, phone number, 
+Announcement for specific
+PASSING RATE BY BATCH & YEAR 
+
 
 
 
