@@ -10,7 +10,7 @@ if (isset($_POST['post_announcement'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $message = mysqli_real_escape_string($conn, $_POST['message']);
     $category = mysqli_real_escape_string($conn, $_POST['category']);
-    $audience = mysqli_real_escape_string($conn, $_POST['audience']); // New field captured
+    $audience = mysqli_real_escape_string($conn, $_POST['audience']); 
     
     $sql = "INSERT INTO announcements (title, message, category, audience, created_at) VALUES ('$title', '$message', '$category', '$audience', NOW())";
     if (mysqli_query($conn, $sql)) {
