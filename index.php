@@ -183,7 +183,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
         <div class="grid md:grid-cols-3 gap-8">
             <?php 
-            $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_at DESC LIMIT 3");
+            $ann_query = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'General' ORDER BY created_at DESC LIMIT 3");
             while($ann = mysqli_fetch_assoc($ann_query)):
                 $is_urgent = ($ann['category'] == 'Urgent');
             ?>

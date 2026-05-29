@@ -42,7 +42,7 @@ if(isset($_POST['submit_testimonial'])) {
 
 // 5. Fetch Data for UI
 $payments_query = mysqli_query($conn, "SELECT * FROM payments WHERE user_id = '$user_id' ORDER BY created_at DESC");
-$ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_at DESC LIMIT 3");
+$ann_query = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'Students' ORDER BY created_at DESC LIMIT 3");
 ?>
 
 <!DOCTYPE html>
