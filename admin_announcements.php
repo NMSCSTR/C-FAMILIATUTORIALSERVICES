@@ -10,7 +10,7 @@ if (isset($_POST['post_announcement'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $message = mysqli_real_escape_string($conn, $_POST['message']);
     $category = mysqli_real_escape_string($conn, $_POST['category']);
-    $audience = mysqli_real_escape_string($conn, $_POST['audience']);
+    $audience = mysqli_real_escape_string($conn, $_POST['audience']); // New field captured
     
     $sql = "INSERT INTO announcements (title, message, category, audience, created_at) VALUES ('$title', '$message', '$category', '$audience', NOW())";
     if (mysqli_query($conn, $sql)) {
@@ -46,60 +46,25 @@ if (isset($_GET['delete'])) {
 </head>
 <body class="bg-[#f8fafc] text-slate-900 antialiased">
 
-    <div class="flex min-h-screen relative overflow-x-hidden">
-        
-        <!-- Sidebar Backdrop Overlay matching student portal style -->
-        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300"></div>
+    <div class="flex min-h-screen relative">
+        <?php include 'aside.php';?>
 
-        <!-- Sidebar Navigation Element with layout states matching provided structure -->
-        <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
-            <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100 overflow-hidden">
-                        <img src="cuevaslogo.jpg" alt="" class="w-full h-full object-cover">
-                    </div>
-                    <span class="font-extrabold text-slate-950 text-xl tracking-tight">C-Familia</span>
-                </div>
-                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-xl bg-slate-50">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Context navigation wrapper referencing aside fallback structural items -->
-            <div class="flex-1 pt-8">
-                <?php include 'aside.php';?>
-            </div>
-        </aside>
+        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
 
-        <!-- Main Workspace Flow -->
-        <main class="flex-1 min-w-0 w-full">
-            
-            <!-- Sticky header mirroring structure layout components -->
-            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Broadcast Center</h2>
-                </div>
-                <div class="hidden sm:flex items-center gap-2">
-                    <span class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100 uppercase tracking-widest">System Administrator</span>
-                </div>
-            </header>
-
-            <div class="p-4 sm:p-10 max-w-4xl mx-auto space-y-10">
+        <main class="flex-1 p-4 md:p-8 lg:p-12">
+            <div class="max-w-4xl mx-auto">
                 
-                <div class="text-center lg:text-left">
-                    <h1 class="text-3xl font-extrabold text-slate-950 tracking-tight">Broadcast Management</h1>
-                    <p class="text-slate-500 mt-1">Keep students and public portal visitors informed with targeted records.</p>
-                </div>
+                <header class="mb-8 md:mb-12 flex items-center justify-between">
+                    <div class="lg:text-center w-full">
+                        <h2 class="text-3xl font-[800] text-slate-900 tracking-tight">Broadcast Center</h2>
+                        <p class="text-slate-500 mt-1">Keep students informed with real-time updates.</p>
+                    </div>
+                    <button id="openMenu" class="lg:hidden p-3 bg-white border border-slate-200 rounded-2xl shadow-sm ml-4">
+                        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                    </button>
+                </header>
 
-                <!-- Input Workspace Card -->
-                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 md:p-10">
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 md:p-10 mb-10">
                     <form action="" method="POST" class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="space-y-2">
@@ -134,7 +99,6 @@ if (isset($_GET['delete'])) {
                     </form>
                 </div>
 
-                <!-- Feed History Flow Container -->
                 <div class="space-y-6">
                     <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Post History</h4>
                     <div class="grid grid-cols-1 gap-4">
@@ -157,7 +121,7 @@ if (isset($_GET['delete'])) {
                                     <div class="flex items-center gap-3 flex-wrap">
                                         <h5 class="font-bold text-slate-900"><?= htmlspecialchars($row['title']) ?></h5>
                                         <span class="text-[9px] font-black uppercase text-<?= $color ?>-500 tracking-widest bg-<?= $color ?>-50 px-2 py-0.5 rounded-lg border border-<?= $color ?>-100"><?= $row['category'] ?></span>
-                                        <span class="text-[9px] font-black uppercase text-slate-600 tracking-widest bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">To: <?= $row['audience'] ?></span>
+                                        <span class="text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg border border-slate-200">Visible To: <?= $row['audience'] ?></span>
                                     </div>
                                     <p class="text-sm text-slate-500 mt-2 leading-relaxed max-w-xl"><?= htmlspecialchars($row['message']) ?></p>
                                     <div class="flex items-center gap-2 mt-4 text-slate-400 font-bold text-[10px] uppercase tracking-tighter">
@@ -166,7 +130,7 @@ if (isset($_GET['delete'])) {
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="confirmDeletion(<?= $row['id'] ?>)" class="self-end md:self-center p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all md:opacity-0 md:group-hover:opacity-100">
+                            <button onclick="deletePost(<?= $row['id'] ?>)" class="self-end md:self-center p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all md:opacity-0 md:group-hover:opacity-100">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
@@ -178,26 +142,12 @@ if (isset($_GET['delete'])) {
     </div>
 
     <script>
-        // Responsive Sidebar Mechanics matching your layout architecture
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebarMenu');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        // SweetAlert2 Action Toast Confirmations
+        // Setup SweetAlert2 Toast Layout Base Configurations
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
-            timer: 3000,
+            timer: 2800,
             timerProgressBar: true,
             didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -205,30 +155,38 @@ if (isset($_GET['delete'])) {
             }
         });
 
+        // Parse URL Parameters to trigger toasts dynamically
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('posted')) {
-            Toast.fire({ icon: 'success', title: 'Announcement broadcasted successfully!' });
+        if (urlParams.get('posted') === '1') {
+            Toast.fire({
+                icon: 'success',
+                title: 'Announcement posted successfully'
+            });
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-        if (urlParams.has('deleted')) {
-            Toast.fire({ icon: 'info', title: 'Announcement has been removed.' });
+        if (urlParams.get('deleted') === '1') {
+            Toast.fire({
+                icon: 'info',
+                title: 'Announcement has been deleted'
+            });
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
-        function confirmDeletion(id) {
+        // Intercept Deletions using styled confirmation dialogs
+        function deletePost(id) {
             Swal.fire({
-                title: 'Remove Broadcast?',
-                text: "This update will vanish from its assigned dashboards immediately.",
+                title: 'Are you sure?',
+                text: "You are about to remove this announcement entry permanently.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#4f46e5',
+                confirmButtonColor: '#0f172a',
                 cancelButtonColor: '#f1f5f9',
-                confirmButtonText: 'Yes, delete',
+                confirmButtonText: 'Yes, delete it!',
                 cancelButtonText: 'Cancel',
                 customClass: {
-                    title: 'font-extrabold text-slate-900',
-                    confirmButton: 'rounded-xl font-bold px-6 py-3 text-sm',
-                    cancelButton: 'rounded-xl font-bold px-6 py-3 text-sm text-slate-600'
+                    title: 'font-bold text-slate-900',
+                    confirmButton: 'rounded-xl font-bold px-5 py-3 text-sm tracking-tight',
+                    cancelButton: 'rounded-xl font-bold px-5 py-3 text-sm text-slate-600'
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -236,6 +194,28 @@ if (isset($_GET['delete'])) {
                 }
             });
         }
+
+        // Menu Toggle Logic
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu');
+        const sidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar?.classList.remove('-translate-x-full');
+                overlay?.classList.remove('hidden');
+                setTimeout(() => overlay?.classList.add('opacity-100'), 10);
+            } else {
+                sidebar?.classList.add('-translate-x-full');
+                overlay?.classList.remove('opacity-100');
+                setTimeout(() => overlay?.classList.add('hidden'), 300);
+            }
+        }
+
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
     </script>
 </body>
 </html>
