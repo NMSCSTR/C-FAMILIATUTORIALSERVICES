@@ -15,6 +15,14 @@ if (isset($_POST['update_profile'])) {
     $middle = mysqli_real_escape_string($conn, $_POST['middlename']);
     $last = mysqli_real_escape_string($conn, $_POST['lastname']);
     
+    // Sanitize newly added fields
+    $birthday = mysqli_real_escape_string($conn, $_POST['birthday']);
+    $cellphone_no = mysqli_real_escape_string($conn, $_POST['cellphone_no']);
+    $address = mysqli_real_escape_string($conn, $_POST['address']);
+    $parents_name_guardian = mysqli_real_escape_string($conn, $_POST['parents_name_guardian']);
+    $parents_phone_no = mysqli_real_escape_string($conn, $_POST['parents_phone_no']);
+    $fb_messenger_account = mysqli_real_escape_string($conn, $_POST['fb_messenger_account']);
+    
     // Handle Profile Picture Upload
     if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === 0) {
         $filename = time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "_", $_FILES['profile_pic']['name']);
@@ -23,11 +31,17 @@ if (isset($_POST['update_profile'])) {
         }
     }
 
-    // Update the separate name columns based on the SQL schema
+    // Update profile columns including the new fields
     $update_query = "UPDATE users SET 
                     firstname = '$first', 
                     middlename = '$middle', 
-                    lastname = '$last' 
+                    lastname = '$last',
+                    birthday = '$birthday',
+                    cellphone_no = '$cellphone_no',
+                    address = '$address',
+                    parents_name_guardian = '$parents_name_guardian',
+                    parents_phone_no = '$parents_phone_no',
+                    fb_messenger_account = '$fb_messenger_account'
                     WHERE id = '$user_id'";
     
     if(mysqli_query($conn, $update_query)) {
@@ -103,7 +117,7 @@ $user = mysqli_fetch_assoc($user_query);
                     <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=4f46e5&color=fff' ?>" 
                          class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-50">
                     <div>
-                        <span class="text-xs font-bold text-slate-900 block"><?= $user['firstname'] ?> <?= $user['lastname'] ?></span>
+                        <span class="text-xs font-bold text-slate-900 block"><?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></span>
                         <span class="text-[10px] font-semibold text-indigo-600">Active Student</span>
                     </div>
                 </div>
@@ -136,37 +150,81 @@ $user = mysqli_fetch_assoc($user_query);
                         </div>
                     </div>
 
-                    <div class="glass-card rounded-[2.5rem] p-10">
+                    <div class="glass-card rounded-[2.5rem] p-10 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">First Name</label>
-                                <input type="text" name="firstname" value="<?= $user['firstname'] ?>" required 
+                                <input type="text" name="firstname" value="<?= htmlspecialchars($user['firstname']) ?>" required 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                             </div>
 
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Middle Name</label>
-                                <input type="text" name="middlename" value="<?= $user['middlename'] ?>" 
+                                <input type="text" name="middlename" value="<?= htmlspecialchars($user['middlename']) ?>" 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                             </div>
 
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Last Name</label>
-                                <input type="text" name="lastname" value="<?= $user['lastname'] ?>" required 
+                                <input type="text" name="lastname" value="<?= htmlspecialchars($user['lastname']) ?>" required 
+                                       class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Birthday</label>
+                                <input type="date" name="birthday" value="<?= htmlspecialchars($user['birthday'] ?? '') ?>" required
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                             </div>
 
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Cellphone #</label>
+                                <input type="text" name="cellphone_no" value="<?= htmlspecialchars($user['cellphone_no'] ?? '') ?>" required placeholder="0917XXXXXXX"
+                                       class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">FB / Messenger Account</label>
+                                <input type="text" name="fb_messenger_account" value="<?= htmlspecialchars($user['fb_messenger_account'] ?? '') ?>" placeholder="Profile link or username"
+                                       class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="md:col-span-2">
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Email Address</label>
-                                <input type="email" value="<?= $user['email'] ?>" disabled 
+                                <input type="email" value="<?= htmlspecialchars($user['email']) ?>" disabled 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-100 text-slate-400 font-bold cursor-not-allowed">
                             </div>
 
                             <div class="md:col-span-1">
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Account Type</label>
-                                <div class="px-6 py-4 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-black text-xs flex items-center gap-3">
+                                <div class="px-6 py-4 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-black text-xs flex items-center gap-3 h-[58px]">
                                     <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
                                     OFFICIAL STUDENT
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Full Address</label>
+                            <textarea name="address" required rows="2" placeholder="House No., Street, Barangay, City, Province"
+                                      class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700 resize-none"><?= htmlspecialchars($user['address'] ?? '') ?></textarea>
+                        </div>
+
+                        <div class="pt-6 border-t border-dashed border-slate-200">
+                            <p class="text-xs font-black uppercase text-indigo-600 tracking-wider mb-4">Parent / Guardian Information</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Parent / Guardian Name</label>
+                                    <input type="text" name="parents_name_guardian" value="<?= htmlspecialchars($user['parents_name_guardian'] ?? '') ?>" required
+                                           class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Parent Phone Number</label>
+                                    <input type="text" name="parents_phone_no" value="<?= htmlspecialchars($user['parents_phone_no'] ?? '') ?>" required
+                                           class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                                 </div>
                             </div>
                         </div>
