@@ -74,16 +74,24 @@ $user = mysqli_fetch_assoc($user_query);
 </head>
 <body class="bg-[#fcfcfd] text-slate-900">
 
-    <div class="flex min-h-screen">
-        <aside class="w-72 bg-white border-r border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen z-50">
-            <div class="p-8 pb-12 border-b border-slate-50">
+    <div class="flex min-h-screen relative overflow-x-hidden">
+        
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300"></div>
+
+        <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
+            <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100">C</div>
                     <span class="font-extrabold text-slate-950 text-xl tracking-tight">C-Familia</span>
                 </div>
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-xl bg-slate-50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
             
-            <nav class="flex-1 pt-8 px-4 space-y-2">
+            <nav class="flex-1 pt-8 px-4 space-y-2 overflow-y-auto">
                 <a href="student_dashboard.php" class="flex items-center gap-3.5 px-6 py-4 text-slate-600 hover:bg-slate-50 rounded-xl font-semibold transition-all group">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     <span>Dashboard</span>
@@ -106,24 +114,31 @@ $user = mysqli_fetch_assoc($user_query);
             </div>
         </aside>
 
-        <main class="flex-1 min-w-0">
-            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-10 py-6 flex justify-between items-center sticky top-0 z-40">
-                <div>
-                    <h2 class="text-xl font-black text-slate-900 tracking-tight">Account Settings</h2>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Manage your profile</p>
+        <main class="flex-1 min-w-0 w-full">
+            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-slate-900 tracking-tight">Account Settings</h2>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Manage your profile</p>
+                    </div>
                 </div>
                 
                 <div class="flex items-center gap-4">
                     <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=4f46e5&color=fff' ?>" 
                          class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-50">
-                    <div>
+                    <div class="hidden sm:block">
                         <span class="text-xs font-bold text-slate-900 block"><?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></span>
                         <span class="text-[10px] font-semibold text-indigo-600">Active Student</span>
                     </div>
                 </div>
             </header>
 
-            <div class="p-10 max-w-8xl mx-auto">
+            <div class="p-4 sm:p-10 max-w-8xl mx-auto">
                 <?php if($success_msg): ?>
                 <div class="mb-8 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl flex items-center gap-3">
                     <span class="text-lg">✨</span>
@@ -132,7 +147,7 @@ $user = mysqli_fetch_assoc($user_query);
                 <?php endif; ?>
 
                 <form action="" method="POST" enctype="multipart/form-data" class="space-y-8">
-                    <div class="glass-card rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center gap-8">
+                    <div class="glass-card rounded-[2.5rem] p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8">
                         <div class="relative group">
                             <div class="w-32 h-32 rounded-[2.5rem] overflow-hidden ring-4 ring-slate-50 shadow-inner">
                                 <img id="preview" src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'] . ' ' . $user['lastname']).'&background=4f46e5&color=fff' ?>" 
@@ -150,7 +165,7 @@ $user = mysqli_fetch_assoc($user_query);
                         </div>
                     </div>
 
-                    <div class="glass-card rounded-[2.5rem] p-10 space-y-6">
+                    <div class="glass-card rounded-[2.5rem] p-6 sm:p-10 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">First Name</label>
@@ -174,19 +189,19 @@ $user = mysqli_fetch_assoc($user_query);
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Birthday</label>
-                                <input type="date" name="birthday" value="<?= htmlspecialchars($user['birthday'] ?? '') ?>" required
+                                <input type="date" name="birthday" value="<?= htmlspecialchars($user['birthday'] ?? '') ?>" required 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                             </div>
 
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Cellphone #</label>
-                                <input type="text" name="cellphone_no" value="<?= htmlspecialchars($user['cellphone_no'] ?? '') ?>" required placeholder="0917XXXXXXX"
+                                <input type="text" name="cellphone_no" value="<?= htmlspecialchars($user['cellphone_no'] ?? '') ?>" required placeholder="0917XXXXXXX" 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                             </div>
 
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">FB / Messenger Account</label>
-                                <input type="text" name="fb_messenger_account" value="<?= htmlspecialchars($user['fb_messenger_account'] ?? '') ?>" placeholder="Profile link or username"
+                                <input type="text" name="fb_messenger_account" value="<?= htmlspecialchars($user['fb_messenger_account'] ?? '') ?>" placeholder="Profile link or username" 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                             </div>
                         </div>
@@ -209,7 +224,7 @@ $user = mysqli_fetch_assoc($user_query);
 
                         <div>
                             <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Full Address</label>
-                            <textarea name="address" required rows="2" placeholder="House No., Street, Barangay, City, Province"
+                            <textarea name="address" required rows="2" placeholder="House No., Street, Barangay, City, Province" 
                                       class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700 resize-none"><?= htmlspecialchars($user['address'] ?? '') ?></textarea>
                         </div>
 
@@ -218,21 +233,21 @@ $user = mysqli_fetch_assoc($user_query);
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Parent / Guardian Name</label>
-                                    <input type="text" name="parents_name_guardian" value="<?= htmlspecialchars($user['parents_name_guardian'] ?? '') ?>" required
+                                    <input type="text" name="parents_name_guardian" value="<?= htmlspecialchars($user['parents_name_guardian'] ?? '') ?>" required 
                                            class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                                 </div>
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-400 mb-3 block ml-1 tracking-widest">Parent Phone Number</label>
-                                    <input type="text" name="parents_phone_no" value="<?= htmlspecialchars($user['parents_phone_no'] ?? '') ?>" required
+                                    <input type="text" name="parents_phone_no" value="<?= htmlspecialchars($user['parents_phone_no'] ?? '') ?>" required 
                                            class="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all font-bold text-slate-700">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-12 pt-8 border-t border-slate-50 flex items-center justify-end gap-4">
-                            <a href="student_dashboard.php" class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition">Cancel</a>
+                        <div class="mt-12 pt-8 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-end gap-4">
+                            <a href="student_dashboard.php" class="w-full sm:w-auto text-center px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition">Cancel</a>
                             <button type="submit" name="update_profile" 
-                                    class="px-10 py-4 bg-indigo-600 text-white text-[11px] font-black rounded-2xl hover:bg-slate-900 transition-all shadow-xl shadow-indigo-100 uppercase tracking-widest">
+                                    class="w-full sm:w-auto px-10 py-4 bg-indigo-600 text-white text-[11px] font-black rounded-2xl hover:bg-slate-900 transition-all shadow-xl shadow-indigo-100 uppercase tracking-widest">
                                 Save Changes
                             </button>
                         </div>
@@ -243,6 +258,19 @@ $user = mysqli_fetch_assoc($user_query);
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
         function confirmLogout() {
             Swal.fire({
                 title: 'Are you sure?',
