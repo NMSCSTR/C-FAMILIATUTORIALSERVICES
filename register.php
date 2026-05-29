@@ -11,6 +11,14 @@ if (isset($_POST['register'])) {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
+    // Sanitize newly added inputs
+    $birthday = mysqli_real_escape_string($conn, $_POST['birthday']);
+    $cellphone_no = mysqli_real_escape_string($conn, $_POST['cellphone_no']);
+    $address = mysqli_real_escape_string($conn, $_POST['address']);
+    $parents_name_guardian = mysqli_real_escape_string($conn, $_POST['parents_name_guardian']);
+    $parents_phone_no = mysqli_real_escape_string($conn, $_POST['parents_phone_no']);
+    $fb_messenger_account = mysqli_real_escape_string($conn, $_POST['fb_messenger_account']);
+
     if ($password !== $confirm_password) {
         $error = "Passwords do not match!";
     } else {
@@ -22,9 +30,9 @@ if (isset($_POST['register'])) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $role = 'student';
             
-            // Updated SQL to match your database columns: firstname, middlename, lastname
-            $sql = "INSERT INTO users (firstname, middlename, lastname, email, password, role) 
-                    VALUES ('$firstname', '$middlename', '$lastname', '$email', '$hashed_password', '$role')";
+            // Updated SQL query to include the new columns
+            $sql = "INSERT INTO users (firstname, middlename, lastname, email, password, role, birthday, cellphone_no, address, parents_name_guardian, parents_phone_no, fb_messenger_account) 
+                    VALUES ('$firstname', '$middlename', '$lastname', '$email', '$hashed_password', '$role', '$birthday', '$cellphone_no', '$address', '$parents_name_guardian', '$parents_phone_no', '$fb_messenger_account')";
             
             if (mysqli_query($conn, $sql)) {
                 $message = "Registration successful! You can now <a href='login.php' class='underline font-bold'>Login</a>.";
@@ -87,16 +95,57 @@ if (isset($_POST['register'])) {
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Birthday</label>
+                        <input type="date" name="birthday" required
+                               class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Cellphone #</label>
+                        <input type="text" name="cellphone_no" required placeholder="09123456789"
+                               class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Email Address</label>
                     <input type="email" name="email" required placeholder="juan@example.com"
                            class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">FB / Messenger Link or Username</label>
+                    <input type="text" name="fb_messenger_account" placeholder="https://m.me/username"
+                           class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Full Address</label>
+                    <textarea name="address" required placeholder="House No., Street, Barangay, City, Province" rows="2"
+                              class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium resize-none"></textarea>
+                </div>
+
+                <div class="pt-2 border-t border-dashed border-slate-200">
+                    <p class="text-xs font-black uppercase text-blue-500 tracking-wider mb-3">Guardian Details</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Parent / Guardian Name</label>
+                            <input type="text" name="parents_name_guardian" required placeholder="Maria Dela Cruz"
+                                   class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Parent Contact #</label>
+                            <input type="text" name="parents_phone_no" required placeholder="09987654321"
+                                   class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 pt-2">
                     <div>
                         <label class="block text-xs font-black uppercase text-slate-400 mb-2 ml-1">Password</label>
-                        <input type="password" name="password" required s
+                        <input type="password" name="password" required 
                                class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/5 outline-none transition font-medium">
                     </div>
                     <div>
@@ -107,7 +156,7 @@ if (isset($_POST['register'])) {
                 </div>
 
                 <button type="submit" name="register" 
-                        class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 transform active:scale-[0.98] mt-2">
+                        class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 transform active:scale-[0.98] mt-4">
                     Register Now
                 </button>
             </form>
