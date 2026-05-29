@@ -36,7 +36,6 @@ if (isset($_GET['delete'])) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
-    <!-- SweetAlert2 Resource Integration -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Announcements | C-Familia Admin</title>
     <style>
@@ -45,14 +44,21 @@ if (isset($_GET['delete'])) {
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 antialiased">
+<body class="bg-[#f8fafc] text-slate-900 antialiased overflow-x-hidden">
 
-    <div class="flex min-h-screen relative">
-        <?php include 'aside.php';?>
+    <!-- Parent Responsive Flexbox Layout Container -->
+    <div class="flex min-h-screen relative w-full items-start">
+        
+        <!-- Sidebar Shell wrapper Container for absolute offcanvas positioning on mobile devices -->
+        <div id="sidebarMenu" class="w-72 fixed inset-y-0 left-0 z-50 -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 h-screen transition-transform duration-300 ease-in-out shrink-0">
+            <?php include 'aside.php';?>
+        </div>
 
-        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
+        <!-- Dynamic Dark Backdrop Overlay Layer Component for mobile visibility toggles -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
 
-        <main class="flex-1 p-4 md:p-8 lg:p-12">
+        <!-- Core App Content View Dashboard Frame -->
+        <main class="flex-1 min-w-0 w-full p-4 md:p-8 lg:p-12">
             <div class="max-w-4xl mx-auto">
                 
                 <header class="mb-8 md:mb-12 flex items-center justify-between">
@@ -60,8 +66,11 @@ if (isset($_GET['delete'])) {
                         <h2 class="text-3xl font-[800] text-slate-900 tracking-tight">Broadcast Center</h2>
                         <p class="text-slate-500 mt-1">Keep students and visitors informed with targeted updates.</p>
                     </div>
-                    <button id="openMenu" class="lg:hidden p-3 bg-white border border-slate-200 rounded-2xl shadow-sm ml-4">
-                        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                    <!-- Fixed Mobile Sidebar Menu Trigger Button Toggle Element -->
+                    <button id="openMenu" class="lg:hidden p-3 bg-white border border-slate-200 rounded-2xl shadow-sm ml-4 hover:bg-slate-50 transition-colors shrink-0">
+                        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                        </svg>
                     </button>
                 </header>
 
@@ -116,7 +125,7 @@ if (isset($_GET['delete'])) {
                         <div class="bg-white p-5 md:p-7 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group transition-all hover:shadow-md">
                             <div class="flex gap-5">
                                 <div class="w-12 h-12 bg-<?= $color ?>-50 text-<?= $color ?>-600 rounded-2xl flex items-center justify-center shrink-0 border border-<?= $color ?>-100">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67( 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-3 flex-wrap">
@@ -163,7 +172,6 @@ if (isset($_GET['delete'])) {
                 icon: 'success',
                 title: 'Announcement broadcasted successfully!'
             });
-            // Clean up address bar query parameters smoothly
             window.history.replaceState({}, document.title, window.location.pathname);
         }
         if (urlParams.has('deleted')) {
@@ -197,25 +205,31 @@ if (isset($_GET['delete'])) {
             });
         }
 
-        // Menu Toggle Logic
+        // Interactive Responsive Nav Off-Canvas Animation Scripts
         const openBtn = document.getElementById('openMenu');
         const sidebar = document.getElementById('sidebarMenu');
         const overlay = document.getElementById('sidebarOverlay');
 
         function toggleSidebar(state) {
             if(state) {
-                sidebar?.classList.remove('-translate-x-full');
-                overlay?.classList.remove('hidden');
-                setTimeout(() => overlay?.classList.add('opacity-100'), 10);
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
             } else {
-                sidebar?.classList.add('-translate-x-full');
-                overlay?.classList.remove('opacity-100');
-                setTimeout(() => overlay?.classList.add('hidden'), 300);
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
             }
         }
 
         openBtn?.addEventListener('click', () => toggleSidebar(true));
         overlay?.addEventListener('click', () => toggleSidebar(false));
+
+        // Connect fallback logic to internal responsive close buttons inside aside.php if present
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeBtn = document.getElementById('closeMenu');
+            closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        });
     </script>
 </body>
 </html>
