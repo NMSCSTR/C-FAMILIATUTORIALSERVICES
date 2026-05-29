@@ -78,18 +78,26 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
 
 <body class="bg-[#fcfcfd] text-slate-900">
 
-    <div class="flex min-h-screen">
-        <aside class="w-72 bg-white border-r border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen z-50">
-            <div class="p-8 pb-12 border-b border-slate-50">
+    <div class="flex min-h-screen relative overflow-x-hidden">
+        
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300 dynamic-overlay"></div>
+
+        <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
+            <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div
                         class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100">
                         <img src="cuevaslogo.jpg" alt=""></div>
                     <span class="font-extrabold text-slate-950 text-xl tracking-tight">C-Familia</span>
                 </div>
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-xl bg-slate-50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
 
-            <nav class="flex-1 pt-8 px-4 space-y-2">
+            <nav class="flex-1 pt-8 px-4 space-y-2 overflow-y-auto">
                 <a href="student_dashboard.php"
                     class="flex items-center gap-3.5 px-6 py-4 rounded-xl font-bold transition-all sidebar-link-active">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,14 +138,23 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
             </div>
         </aside>
 
-        <main class="flex-1 min-w-0">
+        <main class="flex-1 min-w-0 w-full">
             <header
-                class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-10 py-6 flex justify-between items-center sticky top-0 z-40">
-                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Portal Home</h2>
+                class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
+                
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Portal Home</h2>
+                </div>
+
                 <div class="flex items-center gap-4">
                     <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=4f46e5&color=fff' ?>"
                         class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-50">
-                    <div>
+                    <div class="hidden sm:block">
                         <span class="text-xs font-bold text-slate-900 block"><?= $user['firstname'] ?>
                             <?= $user['middlename'] ?> <?= $user['lastname'] ?></span>
                         <span class="text-[10px] font-semibold text-indigo-600">Active Student</span>
@@ -145,16 +162,16 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
                 </div>
             </header>
 
-            <div class="p-10 max-w-[1500px] mx-auto space-y-10">
+            <div class="p-4 sm:p-10 max-w-[1500px] mx-auto space-y-10">
 
                 <?php if (!$is_enrolled): ?>
                 <div
-                    class="bg-white rounded-3xl p-16 text-center border border-slate-100 shadow-lg shadow-slate-100/50">
+                    class="bg-white rounded-3xl p-8 sm:p-16 text-center border border-slate-100 shadow-lg shadow-slate-100/50">
                     <div
                         class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-8 font-black">
                         ?</div>
-                    <h2 class="text-4xl font-extrabold text-slate-950 mb-4 tracking-tight">Enrollment Required</h2>
-                    <p class="text-slate-500 max-w-lg mx-auto mb-12 text-lg leading-relaxed">You do not have an active
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-950 mb-4 tracking-tight">Enrollment Required</h2>
+                    <p class="text-slate-500 max-w-lg mx-auto mb-12 text-base sm:text-lg leading-relaxed">You do not have an active
                         enrollment record. To access learning materials and track your batch progress, please complete
                         the enrollment form.</p>
                     <a href="enroll.php"
@@ -170,12 +187,12 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
                 <?php else: ?>
 
                 <div
-                    class="bg-white rounded-3xl p-10 border border-slate-100 shadow-lg shadow-slate-100/50 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
-                    <div class="space-y-3">
+                    class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-100 shadow-lg shadow-slate-100/50 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+                    <div class="space-y-3 w-full lg:w-auto">
                         <div>
                             <p class="text-[10px] font-black uppercase text-indigo-600 tracking-widest mb-1">C-Familia
                                 Portal</p>
-                            <h1 class="text-4xl font-extrabold mb-1 tracking-tight text-slate-950">Welcome,
+                            <h1 class="text-3xl sm:text-4xl font-extrabold mb-1 tracking-tight text-slate-950">Welcome,
                                 <?= explode(' ', $user['firstname'])[0] ?>!</h1>
                             <div class="flex flex-wrap items-center gap-3 mt-3">
                                 <span
@@ -207,9 +224,9 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 w-full lg:w-auto">
                         <div
-                            class="px-8 py-4 bg-indigo-50 rounded-2xl border border-indigo-100 text-center min-w-[140px]">
+                            class="px-8 py-4 bg-indigo-50 rounded-2xl border border-indigo-100 text-center w-full lg:min-w-[140px]">
                             <span
                                 class="text-[10px] font-extrabold text-indigo-800 uppercase tracking-widest block mb-1">Status</span>
                             <span
@@ -218,7 +235,7 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div
                         class="bg-white p-7 rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50 stat-card flex items-center gap-5">
                         <div
@@ -262,7 +279,7 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
                     </div>
                 </div>
 
-                <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-sm border border-slate-100">
                     <h3 class="text-xl font-bold mb-4">Share Your Experience</h3>
                     <p class="text-slate-500 text-sm mb-6">Your testimonial will be featured on our landing page.</p>
                     <form action="" method="POST">
@@ -302,25 +319,25 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
 
                     <div class="lg:col-span-2">
                         <div class="bg-white rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50">
-                            <div class="px-10 py-6 border-b border-slate-100 flex justify-between items-center">
+                            <div class="px-6 sm:px-10 py-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
                                 <h3 class="font-extrabold text-slate-950 text-sm tracking-tight uppercase">My Payments
                                 </h3>
                                 <a href="upload_payment.php"
-                                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-lg text-xs transition-colors hover:bg-slate-950">+
+                                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-lg text-xs transition-colors hover:bg-slate-950">+
                                     Submit Receipt</a>
                             </div>
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left">
+                                <table class="w-full text-left min-w-[500px]">
                                     <thead>
                                         <tr>
                                             <th
-                                                class="px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                                                class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
                                                 Date / Ref</th>
                                             <th
-                                                class="px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                                                class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
                                                 Amount</th>
                                             <th
-                                                class="px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">
+                                                class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">
                                                 Status</th>
                                         </tr>
                                     </thead>
@@ -328,15 +345,15 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
                                         <?php if(mysqli_num_rows($payments_query) > 0): ?>
                                         <?php while($pay = mysqli_fetch_assoc($payments_query)): ?>
                                         <tr class="hover:bg-slate-50/50 transition-colors">
-                                            <td class="px-10 py-6">
+                                            <td class="px-6 sm:px-10 py-6">
                                                 <p class="text-xs font-bold text-slate-900">
                                                     <?= date('M d, Y', strtotime($pay['created_at'])) ?></p>
                                                 <p class="text-[10px] text-slate-400 mt-1 uppercase">Ref:
                                                     <?= $pay['reference_number'] ?: 'N/A' ?></p>
                                             </td>
-                                            <td class="px-10 py-6 font-extrabold text-slate-950 text-sm">
+                                            <td class="px-6 sm:px-10 py-6 font-extrabold text-slate-950 text-sm">
                                                 ₱<?= number_format($pay['amount'], 2) ?></td>
-                                            <td class="px-10 py-6 text-right">
+                                            <td class="px-6 sm:px-10 py-6 text-right">
                                                 <?php 
                                                     $st = $pay['status'];
                                                     $cl = ($st == 'paid') ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : (($st == 'pending') ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-rose-50 text-rose-700 border-rose-100');
@@ -365,6 +382,19 @@ $ann_query = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_a
     </div>
 
     <script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebarMenu');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        if (sidebar.classList.contains('-translate-x-full')) {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+    }
+
     function confirmLogout() {
         Swal.fire({
             title: 'Are you sure?',
