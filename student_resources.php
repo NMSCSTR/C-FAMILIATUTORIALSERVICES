@@ -48,16 +48,24 @@ function getFileStyle($filename) {
 </head>
 <body class="bg-[#fcfcfd] text-slate-900">
 
-    <div class="flex min-h-screen">
-        <aside class="w-72 bg-white border-r border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen z-50">
-            <div class="p-8 pb-12 border-b border-slate-50">
+    <div class="flex min-h-screen relative overflow-x-hidden">
+        
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300"></div>
+
+        <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
+            <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100">C</div>
                     <span class="font-extrabold text-slate-950 text-xl tracking-tight">C-Familia</span>
                 </div>
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-xl bg-slate-50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
             
-            <nav class="flex-1 pt-8 px-4 space-y-2">
+            <nav class="flex-1 pt-8 px-4 space-y-2 overflow-y-auto">
                 <a href="student_dashboard.php" class="flex items-center gap-3.5 px-6 py-4 text-slate-600 hover:bg-slate-50 rounded-xl font-semibold transition-all group">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     <span>Dashboard</span>
@@ -80,24 +88,31 @@ function getFileStyle($filename) {
             </div>
         </aside>
 
-        <main class="flex-1 min-w-0">
-            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-10 py-6 flex justify-between items-center sticky top-0 z-40">
-                <div>
-                    <h2 class="text-xl font-black text-slate-900 tracking-tight">Learning Resources</h2>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Materials & Handouts</p>
+        <main class="flex-1 min-w-0 w-full">
+            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-black text-slate-900 tracking-tight">Learning Resources</h2>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Materials & Handouts</p>
+                    </div>
                 </div>
                 
                 <div class="flex items-center gap-4">
                     <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=4f46e5&color=fff' ?>" 
                          class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-50">
-                    <div>
+                    <div class="hidden sm:block">
                         <span class="text-xs font-bold text-slate-900 block"><?= $user['firstname'] ?> <?= $user['middlename'] ?> <?= $user['lastname'] ?></span>
                         <span class="text-[10px] font-semibold text-indigo-600">Active Student</span>
                     </div>
                 </div>
             </header>
 
-            <div class="p-10 max-w-7xl mx-auto space-y-10">
+            <div class="p-4 sm:p-10 max-w-7xl mx-auto space-y-10">
                 <div class="flex flex-col md:flex-row gap-6 items-center justify-between">
                     <div class="relative w-full md:w-96 group">
                         <span class="absolute inset-y-0 left-4 flex items-center text-slate-400 group-focus-within:text-indigo-600 transition-colors">
@@ -115,7 +130,7 @@ function getFileStyle($filename) {
                         while($res = mysqli_fetch_assoc($resources_query)):
                             $style = getFileStyle($res['file_path'] ?? '');
                     ?>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-lg shadow-slate-100/50 resource-card flex flex-col <?= $style['border'] ?>">
+                    <div class="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-lg shadow-slate-100/50 resource-card flex flex-col <?= $style['border'] ?>">
                         <div class="flex justify-between items-start mb-6">
                             <div class="w-14 h-14 <?= $style['bg'] ?> <?= $style['text'] ?> rounded-2xl flex items-center justify-center text-[10px] font-black tracking-tighter border border-white/50 shadow-inner">
                                 <?= $style['label'] ?>
@@ -159,6 +174,19 @@ function getFileStyle($filename) {
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
         function confirmLogout() {
             Swal.fire({
                 title: 'Are you sure?',
