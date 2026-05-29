@@ -10,6 +10,7 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 ?>
 
 <div class="flex items-center gap-6 mb-10 p-6 bg-blue-50/50 rounded-[2rem] border border-blue-100/50">
+    <!-- User Avatar with Profile Pic check -->
     <?php if (!empty($user['profile_pic'])): ?>
         <img src="uploads/profiles/<?= $user['profile_pic'] ?>" alt="Profile Picture" class="w-20 h-20 rounded-3xl object-cover shadow-lg shadow-blue-200 ring-4 ring-white">
     <?php else: ?>
@@ -26,23 +27,24 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 </div>
 
 <div class="space-y-8">
+    <!-- Registration Section -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Registration Data</h4>
-        <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Middle Name</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Middle Name</p>
                 <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($user['middlename']) ?: '--' ?></p>
             </div>
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Insurance Status</p>
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Insurance Status</p>
                 <p class="text-sm font-bold <?= $user['insured'] ? 'text-emerald-500' : 'text-rose-500' ?>"><?= $user['insured'] ? 'Active (Insured)' : 'Not Covered' ?></p>
             </div>
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Program Type</p>
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Program Type</p>
                 <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($user['program_type']) ?></p>
             </div>
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Review Batch</p>
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Review Batch</p>
                 <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($user['batch']) ?></p>
             </div>
         </div>
@@ -50,33 +52,39 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 
     <hr class="border-slate-100">
 
+    <!-- Improved Personal Profile Details Section (Prevents collapsing) -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Personal Profile Details</h4>
-        <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Birthday</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Birthday</p>
                 <p class="text-sm font-bold text-slate-800">
                     <?= !empty($user['birthday']) ? date('F d, Y', strtotime($user['birthday'])) : '--' ?>
                 </p>
             </div>
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Cellphone Number</p>
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Cellphone Number</p>
                 <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($user['cellphone_no']) ?: '--' ?></p>
             </div>
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">FB / Messenger Account</p>
+            
+            <!-- Facebook Account: Assigned full width container to handle long strings safely -->
+            <div class="md:col-span-2 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 break-all">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">FB / Messenger Account</p>
                 <p class="text-sm font-bold text-indigo-600">
                     <?php if(!empty($user['fb_messenger_account'])): ?>
-                        <a href="<?= (filter_var($user['fb_messenger_account'], FILTER_VALIDATE_URL)) ? htmlspecialchars($user['fb_messenger_account']) : '#' ?>" target="_blank" class="hover:underline">
-                            <?= htmlspecialchars($user['fb_messenger_account']) ?>
+                        <a href="<?= (filter_var($user['fb_messenger_account'], FILTER_VALIDATE_URL)) ? htmlspecialchars($user['fb_messenger_account']) : 'https://facebook.com/'.htmlspecialchars($user['fb_messenger_account']) ?>" target="_blank" class="hover:underline inline-flex items-center gap-1.5">
+                            <svg class="w-4 h-4 flex-shrink-0 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            <span class="underline decoration-indigo-200"><?= htmlspecialchars($user['fb_messenger_account']) ?></span>
                         </a>
                     <?php else: ?>
                         --
                     <?php endif; ?>
                 </p>
             </div>
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Home Address</p>
+
+            <!-- Full Address Row -->
+            <div class="md:col-span-2 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Home Address</p>
                 <p class="text-sm font-bold text-slate-800 leading-relaxed"><?= nl2br(htmlspecialchars($user['address'])) ?: '--' ?></p>
             </div>
         </div>
@@ -84,15 +92,16 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 
     <hr class="border-slate-100">
 
+    <!-- Emergency & Guardian Section -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Emergency & Guardian Contacts</h4>
-        <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Parent Name / Guardian</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Parent Name / Guardian</p>
                 <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($user['parents_name_guardian']) ?: '--' ?></p>
             </div>
-            <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-0.5">Parent Contact Number</p>
+            <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Parent Contact Number</p>
                 <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($user['parents_phone_no']) ?: '--' ?></p>
             </div>
         </div>
@@ -100,6 +109,7 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 
     <hr class="border-slate-100">
 
+    <!-- Tuition Section -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tuition Summary</h4>
         <div class="grid grid-cols-3 gap-4">
@@ -118,6 +128,7 @@ $total_paid = $total_paid_res['paid'] ?? 0;
         </div>
     </section>
 
+    <!-- History Section -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Transaction History</h4>
         <div class="space-y-2">
