@@ -44,37 +44,62 @@ if (isset($_GET['delete'])) {
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 antialiased overflow-x-hidden">
+<body class="bg-[#f8fafc] text-slate-900 antialiased">
 
-    <!-- Parent Responsive Flexbox Layout Container -->
-    <div class="flex min-h-screen relative w-full items-start">
+    <div class="flex min-h-screen relative overflow-x-hidden">
         
-        <!-- Sidebar Shell wrapper Container for absolute offcanvas positioning on mobile devices -->
-        <div id="sidebarMenu" class="w-72 fixed inset-y-0 left-0 z-50 -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 h-screen transition-transform duration-300 ease-in-out shrink-0">
-            <?php include 'aside.php';?>
-        </div>
+        <!-- Sidebar Backdrop Overlay matching student portal style -->
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300"></div>
 
-        <!-- Dynamic Dark Backdrop Overlay Layer Component for mobile visibility toggles -->
-        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
-
-        <!-- Core App Content View Dashboard Frame -->
-        <main class="flex-1 min-w-0 w-full p-4 md:p-8 lg:p-12">
-            <div class="max-w-4xl mx-auto">
-                
-                <header class="mb-8 md:mb-12 flex items-center justify-between">
-                    <div class="lg:text-center w-full">
-                        <h2 class="text-3xl font-[800] text-slate-900 tracking-tight">Broadcast Center</h2>
-                        <p class="text-slate-500 mt-1">Keep students and visitors informed with targeted updates.</p>
+        <!-- Sidebar Navigation Element with layout states matching provided structure -->
+        <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
+            <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100 overflow-hidden">
+                        <img src="cuevaslogo.jpg" alt="" class="w-full h-full object-cover">
                     </div>
-                    <!-- Fixed Mobile Sidebar Menu Trigger Button Toggle Element -->
-                    <button id="openMenu" class="lg:hidden p-3 bg-white border border-slate-200 rounded-2xl shadow-sm ml-4 hover:bg-slate-50 transition-colors shrink-0">
-                        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                    <span class="font-extrabold text-slate-950 text-xl tracking-tight">C-Familia</span>
+                </div>
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-xl bg-slate-50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Context navigation wrapper referencing aside fallback structural items -->
+            <div class="flex-1 pt-8">
+                <?php include 'aside.php';?>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Flow -->
+        <main class="flex-1 min-w-0 w-full">
+            
+            <!-- Sticky header mirroring structure layout components -->
+            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
-                </header>
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Broadcast Center</h2>
+                </div>
+                <div class="hidden sm:flex items-center gap-2">
+                    <span class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100 uppercase tracking-widest">System Administrator</span>
+                </div>
+            </header>
 
-                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 md:p-10 mb-10">
+            <div class="p-4 sm:p-10 max-w-4xl mx-auto space-y-10">
+                
+                <div class="text-center lg:text-left">
+                    <h1 class="text-3xl font-extrabold text-slate-950 tracking-tight">Broadcast Management</h1>
+                    <p class="text-slate-500 mt-1">Keep students and public portal visitors informed with targeted records.</p>
+                </div>
+
+                <!-- Input Workspace Card -->
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 md:p-10">
                     <form action="" method="POST" class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="space-y-2">
@@ -109,6 +134,7 @@ if (isset($_GET['delete'])) {
                     </form>
                 </div>
 
+                <!-- Feed History Flow Container -->
                 <div class="space-y-6">
                     <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Post History</h4>
                     <div class="grid grid-cols-1 gap-4">
@@ -125,7 +151,7 @@ if (isset($_GET['delete'])) {
                         <div class="bg-white p-5 md:p-7 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group transition-all hover:shadow-md">
                             <div class="flex gap-5">
                                 <div class="w-12 h-12 bg-<?= $color ?>-50 text-<?= $color ?>-600 rounded-2xl flex items-center justify-center shrink-0 border border-<?= $color ?>-100">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67( 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-3 flex-wrap">
@@ -152,7 +178,21 @@ if (isset($_GET['delete'])) {
     </div>
 
     <script>
-        // SweetAlert2 Toast Template Configurations
+        // Responsive Sidebar Mechanics matching your layout architecture
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // SweetAlert2 Action Toast Confirmations
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -165,38 +205,30 @@ if (isset($_GET['delete'])) {
             }
         });
 
-        // Trigger notifications depending on URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('posted')) {
-            Toast.fire({
-                icon: 'success',
-                title: 'Announcement broadcasted successfully!'
-            });
+            Toast.fire({ icon: 'success', title: 'Announcement broadcasted successfully!' });
             window.history.replaceState({}, document.title, window.location.pathname);
         }
         if (urlParams.has('deleted')) {
-            Toast.fire({
-                icon: 'info',
-                title: 'Announcement has been removed.'
-            });
+            Toast.fire({ icon: 'info', title: 'Announcement has been removed.' });
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
-        // Intercept Deletion links using sweetalert confirmation dialogues
         function confirmDeletion(id) {
             Swal.fire({
                 title: 'Remove Broadcast?',
                 text: "This update will vanish from its assigned dashboards immediately.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#0f172a',
+                confirmButtonColor: '#4f46e5',
                 cancelButtonColor: '#f1f5f9',
                 confirmButtonText: 'Yes, delete',
                 cancelButtonText: 'Cancel',
                 customClass: {
-                    title: 'font-bold tracking-tight text-slate-900',
-                    confirmButton: 'rounded-xl font-bold px-5 py-3 text-sm',
-                    cancelButton: 'rounded-xl font-bold px-5 py-3 text-sm text-slate-600'
+                    title: 'font-extrabold text-slate-900',
+                    confirmButton: 'rounded-xl font-bold px-6 py-3 text-sm',
+                    cancelButton: 'rounded-xl font-bold px-6 py-3 text-sm text-slate-600'
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -204,32 +236,6 @@ if (isset($_GET['delete'])) {
                 }
             });
         }
-
-        // Interactive Responsive Nav Off-Canvas Animation Scripts
-        const openBtn = document.getElementById('openMenu');
-        const sidebar = document.getElementById('sidebarMenu');
-        const overlay = document.getElementById('sidebarOverlay');
-
-        function toggleSidebar(state) {
-            if(state) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.add('opacity-100'), 10);
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.remove('opacity-100');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
-            }
-        }
-
-        openBtn?.addEventListener('click', () => toggleSidebar(true));
-        overlay?.addEventListener('click', () => toggleSidebar(false));
-
-        // Connect fallback logic to internal responsive close buttons inside aside.php if present
-        document.addEventListener('DOMContentLoaded', () => {
-            const closeBtn = document.getElementById('closeMenu');
-            closeBtn?.addEventListener('click', () => toggleSidebar(false));
-        });
     </script>
 </body>
 </html>
