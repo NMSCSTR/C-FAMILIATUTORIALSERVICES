@@ -7,7 +7,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 // --- Logic to Add Passer ---
 if (isset($_POST['add_passer'])) {
-    // If a custom name is typed, it overrides the hidden auto-selected name
+    // If a manual input name is supplied, it overrides the auto-selected user link
     $name = !empty($_POST['custom_name']) ? $_POST['custom_name'] : $_POST['name'];
     $name = mysqli_real_escape_string($conn, $name);
     
@@ -15,11 +15,9 @@ if (isset($_POST['add_passer'])) {
     $batch = mysqli_real_escape_string($conn, $_POST['batch']);
     $rating = mysqli_real_escape_string($conn, $_POST['rating']);
     $exam_date = mysqli_real_escape_string($conn, $_POST['exam_date']);
-    
-    // Default image source configuration
     $photo_name = mysqli_real_escape_string($conn, $_POST['existing_photo']);
 
-    // If a new photo binary is uploaded, it handles storage inside our local directory folder overrides
+    // Handle fresh manual file uploads
     if (!empty($_FILES['photo']['name'])) {
         $target_dir = "uploads/passers/";
         if (!is_dir($target_dir)) { mkdir($target_dir, 0777, true); }
@@ -40,7 +38,6 @@ if (isset($_GET['delete'])) {
     $result = mysqli_query($conn, "SELECT photo FROM passers WHERE id = '$id'");
     $data = mysqli_fetch_assoc($result);
     
-    // Only unlink if the photo asset was specifically uploaded inside our installers directories path
     if ($data && $data['photo'] != 'default_user.jpg' && file_exists("uploads/passers/" . $data['photo'])) {
         @unlink("uploads/passers/" . $data['photo']);
     }
@@ -49,7 +46,7 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// Fetch all system users for dynamic automated linking dropdown
+// Fetch all regular student users for linking drop-downs
 $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_pic FROM users WHERE role = 'student' ORDER BY lastname ASC");
 ?>
 
@@ -73,10 +70,10 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
 
     <div class="flex min-h-screen relative overflow-x-hidden">
         
-        <!-- Backdrop Overlay matching responsive layout requirements -->
+        <!-- Sidebar Backdrop Blur Overlay styling -->
         <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300"></div>
 
-        <!-- System Navigation Panel Container wrapper matching dashboard structure standard -->
+        <!-- System Administration Navigation Menu Component -->
         <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
             <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
@@ -96,7 +93,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             </div>
         </aside>
 
-        <!-- Main Workspace Flow -->
+        <!-- Main Content Area workspace -->
         <main class="flex-1 min-w-0 w-full">
             
             <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
@@ -113,12 +110,11 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             <div class="p-4 sm:p-10 max-w-6xl mx-auto space-y-6">
                 <div>
                     <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Hall of Fame Registry</h1>
-                    <p class="text-slate-500 mt-1">Link an existing system account or manually write in a legacy student passer profile.</p>
+                    <p class="text-slate-500 mt-1">Select an active system user or manually record details for legacy system alumni.</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
-                    <!-- Side form editor configuration panel section -->
                     <div class="lg:col-span-5">
                         <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-200 sticky top-24">
                             
@@ -137,8 +133,8 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
 
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-400 mb-1.5 block px-1">Option A: Link System Account</label>
-                                    <select id="studentSelector" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold appearance-none">
-                                        <option value="" data-photo="default_user.jpg">-- Choose registered student --</option>
+                                    <select id="studentSelector" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold appearance-none">
+                                        <option value="" data-photo="default_user.jpg">-- Choose a Student --</option>
                                         <?php while($s = mysqli_fetch_assoc($students_query)): ?>
                                             <option value="<?= $s['firstname'] . ' ' . $s['lastname'] ?>" data-photo="<?= !empty($s['profile_pic']) ? $s['profile_pic'] : 'default_user.jpg' ?>">
                                                 <?= $s['lastname'] . ', ' . $s['firstname'] ?>
@@ -147,9 +143,9 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                     </select>
                                 </div>
 
-                                <div class="relative flex py-2 items-center">
+                                <div class="relative flex py-1 items-center">
                                     <div class="flex-grow border-t border-slate-100"></div>
-                                    <span class="flex-shrink mx-4 text-[10px] font-black uppercase text-slate-300 tracking-wider">OR</span>
+                                    <span class="flex-shrink mx-4 text-[9px] font-black uppercase text-slate-300 tracking-widest">OR</span>
                                     <div class="flex-grow border-t border-slate-100"></div>
                                 </div>
 
@@ -161,11 +157,11 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="text-[10px] font-black uppercase text-slate-400 mb-1.5 block px-1">Program</label>
-                                        <input type="text" name="program" placeholder="e.g. Criminology" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold">
+                                        <input type="text" name="program" placeholder="BSIT" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold">
                                     </div>
                                     <div>
                                         <label class="text-[10px] font-black uppercase text-slate-400 mb-1.5 block px-1">Rating (%)</label>
-                                        <input type="number" step="0.01" name="rating" placeholder="95.50" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold">
+                                        <input type="number" step="0.01" name="rating" placeholder="95.5" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold">
                                     </div>
                                 </div>
 
@@ -175,9 +171,8 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                         <input type="text" name="batch" value="<?= date('Y') ?>" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold">
                                     </div>
                                     <div>
-                                        <!-- Added Exam Date Field -->
                                         <label class="text-[10px] font-black uppercase text-slate-400 mb-1.5 block px-1">Examination Date</label>
-                                        <input type="date" name="exam_date" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold text-slate-700">
+                                        <input type="date" name="exam_date" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition text-sm font-semibold text-slate-600">
                                     </div>
                                 </div>
 
@@ -193,13 +188,12 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                         </div>
                     </div>
 
-                    <!-- Display grid record block component section matrix -->
                     <div class="lg:col-span-7">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <?php
                             $res = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC");
                             while($p = mysqli_fetch_assoc($res)):
-                                // Corrected photo routing pathways logic mapping dynamically
+                                // Resolve cross-folder image location pathways safely
                                 if (file_exists("uploads/passers/" . $p['photo'])) {
                                     $computedPath = "uploads/passers/" . $p['photo'];
                                 } elseif (!empty($p['photo']) && file_exists("uploads/profiles/" . $p['photo'])) {
@@ -216,7 +210,6 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                 <div class="w-full">
                                     <img src="<?= $computedPath ?>" class="w-20 h-20 rounded-[2rem] mx-auto object-cover border-4 border-slate-50 mb-3 shadow-sm">
                                     <h5 class="font-bold text-slate-900 leading-snug px-2"><?= htmlspecialchars($p['name']) ?></h5>
-                                    
                                     <div class="flex items-center justify-center gap-2 mt-2 flex-wrap">
                                         <span class="text-[9px] font-black bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg border border-blue-100"><?= $p['rating'] ?>%</span>
                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tight"><?= htmlspecialchars($p['program']) ?></span>
@@ -243,7 +236,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
     </div>
 
     <script>
-        // Synchronized dropdown preview operations
+        // Dropdown tracking interactions
         const studentSelector = document.getElementById('studentSelector');
         const customNameInput = document.getElementById('customName');
         const previewPhoto = document.getElementById('previewPhoto');
@@ -257,22 +250,18 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             const name = this.value;
 
             if(name !== "") {
-                // Clear and lock legacy field to avoid processing errors
                 customNameInput.value = "";
                 customNameInput.placeholder = "Linked to system account...";
                 customNameInput.classList.add('opacity-50');
                 
                 studentNameInput.value = name;
                 existingPhotoInput.value = photo;
-                
-                // Route current preview target pathing values
                 previewPhoto.src = (photo === 'default_user.jpg') ? 'uploads/passers/default_user.jpg' : 'uploads/profiles/' + photo;
             } else {
                 resetSelectionState();
             }
         });
 
-        // Clear selection constraints if custom text input is focused
         customNameInput.addEventListener('input', function() {
             if(this.value.trim() !== "") {
                 studentSelector.selectedIndex = 0;
@@ -295,18 +284,15 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             previewPhoto.src = 'uploads/passers/default_user.jpg';
         }
 
-        // Live binary upload preview listener code block
         filePhotoInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewPhoto.src = e.target.result;
-                }
+                reader.onload = function(e) { previewPhoto.src = e.target.result; }
                 reader.readAsDataURL(this.files[0]);
             }
         });
 
-        // Global Sidebar Layout Navigation handlers
+        // Responsive Global Sidebar Toggle Mechanic
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebarMenu');
             const overlay = document.getElementById('sidebarOverlay');
@@ -319,7 +305,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             }
         }
 
-        // Setup SweetAlert2 Operations
+        // Setup SweetAlert2 Notifications
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -354,9 +340,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                     cancelButton: 'rounded-xl font-bold px-6 py-3 text-sm text-slate-600'
                 }
             }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `?delete=${id}`;
-                }
+                if (result.isConfirmed) { window.location.href = `?delete=${id}`; }
             });
         }
     </script>
