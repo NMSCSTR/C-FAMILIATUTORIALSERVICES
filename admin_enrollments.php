@@ -6,6 +6,35 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 include 'db.php';
 
+// --- AJAX HANDLER FOR GRADE INPUT VARIATIONS ---
+if (isset($_POST['action']) && $_POST['action'] === 'update_grades') {
+    $user_id = intval($_POST['user_id']);
+    
+    // Check if empty or whitespace, assign NULL value dynamically
+    $diagnostic = (trim($_POST['diagnostic']) === '') ? "NULL" : intval($_POST['diagnostic']);
+    $preboard   = (trim($_POST['preboard']) === '') ? "NULL" : intval($_POST['preboard']);
+    $compre     = (trim($_POST['compre']) === '') ? "NULL" : intval($_POST['compre']);
+    
+    // Check for an existing row match
+    $check = mysqli_query($conn, "SELECT exam_id FROM exam_result WHERE user_id = $user_id");
+    
+    if (mysqli_num_rows($check) > 0) {
+        $save_sql = "UPDATE exam_result 
+                     SET diagnostic_exam = $diagnostic, preboard_exam = $preboard, compre_exam = $compre 
+                     WHERE user_id = $user_id";
+    } else {
+        $save_sql = "INSERT INTO exam_result (user_id, diagnostic_exam, preboard_exam, compre_exam) 
+                     VALUES ($user_id, $diagnostic, $preboard, $compre)";
+    }
+    
+    if (mysqli_query($conn, $save_sql)) {
+        echo "success";
+    } else {
+        echo "error";
+    }
+    exit();
+}
+
 // --- AJAX HANDLER FOR INSURANCE UPDATE ---
 if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
     $enrollment_id = intval($_POST['enrollment_id']);
@@ -45,18 +74,17 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Registry Management | Admin Suite</title>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfcfd; }
         .registry-card { background: white; border: 1px solid #f1f5f9; border-radius: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .modal-slide { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Custom Scrollbar for better UX */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* Responsive Table Magic */
         @media (max-width: 768px) {
             .responsive-table thead { display: none; }
             .responsive-table tr { display: block; margin-bottom: 1rem; border: 1px solid #f1f5f9; border-radius: 16px; padding: 1rem; background: white; }
@@ -214,7 +242,6 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
     </div>
 
     <script>
-        // --- Sidebar Logic ---
         const openBtn = document.getElementById('openMenu');
         const closeBtn = document.getElementById('closeMenu');
         const sidebar = document.getElementById('mobileSidebar');
@@ -232,11 +259,10 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
             }
         }
 
-        openBtn.addEventListener('click', () => toggleSidebar(true));
-        closeBtn.addEventListener('click', () => toggleSidebar(false));
-        overlay.addEventListener('click', () => toggleSidebar(false));
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
 
-        // --- Existing AJAX Logic ---
         async function toggleInsurance(enrollmentId, isChecked) {
             const formData = new FormData();
             formData.append('action', 'update_insurance');
@@ -273,6 +299,36 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
             overlayM.classList.remove('opacity-100');
             content.classList.add('translate-x-full');
             setTimeout(() => document.getElementById('detailsModal').classList.add('hidden'), 400);
+        }
+
+        // --- Asynchronous Dynamic Grades Manager Trigger Worker ---
+        async function submitGradesForm(event, userId) {
+            event.preventDefault();
+            const form = event.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Saving Changes...';
+            
+            const formData = new FormData(form);
+            formData.append('action', 'update_grades');
+            formData.append('user_id', userId);
+            
+            try {
+                const response = await fetch('admin_enrollments.php', { method: 'POST', body: formData });
+                const result = await response.text();
+                if(result.trim() === 'success') {
+                    Swal.fire({ icon: 'success', title: 'Saved', text: 'Student metrics updated successfully.', timer: 2000, showConfirmButton: false });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Failed', text: 'Error executing backend metrics save operation.' });
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Network Failure', text: 'Connection timed out.' });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         }
 
         document.getElementById('studentSearch').addEventListener('input', function(e) {

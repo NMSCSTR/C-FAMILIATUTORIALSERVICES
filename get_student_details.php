@@ -7,10 +7,17 @@ $payments = mysqli_query($conn, "SELECT * FROM payments WHERE user_id = '$user_i
 
 $total_paid_res = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(amount) as paid FROM payments WHERE user_id = '$user_id' AND status = 'paid'"));
 $total_paid = $total_paid_res['paid'] ?? 0;
+
+// Fetch current grades if they exist
+$grades_query = mysqli_query($conn, "SELECT * FROM exam_result WHERE user_id = '$user_id' LIMIT 1");
+$grades = mysqli_fetch_assoc($grades_query);
+
+$diag = $grades['diagnostic_exam'] ?? '';
+$pree = $grades['preboard_exam'] ?? '';
+$comp = $grades['compre_exam'] ?? '';
 ?>
 
 <div class="flex items-center gap-6 mb-10 p-6 bg-blue-50/50 rounded-[2rem] border border-blue-100/50">
-    <!-- User Avatar with Profile Pic check -->
     <?php if (!empty($user['profile_pic'])): ?>
         <img src="uploads/profiles/<?= $user['profile_pic'] ?>" alt="Profile Picture" class="w-20 h-20 rounded-3xl object-cover shadow-lg shadow-blue-200 ring-4 ring-white">
     <?php else: ?>
@@ -27,7 +34,34 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 </div>
 
 <div class="space-y-8">
-    <!-- Registration Section -->
+    <section class="bg-slate-900 text-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/80">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">📊</span>
+            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Academic Grading Metric Control</h4>
+        </div>
+        <p class="text-[11px] text-slate-300 mb-6 leading-relaxed">Input grade values below. Leaving an exam field empty completely clears the target dashboard card visibility layer.</p>
+        
+        <form onsubmit="submitGradesForm(event, <?= intval($user_id) ?>)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-300 block mb-1.5 px-1">Diagnostic Exam</label>
+                    <input type="number" min="0" max="100" name="diagnostic" value="<?= htmlspecialchars($diag) ?>" placeholder="Null / Blank" class="w-full px-4 py-3 bg-white/10 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-400 outline-none text-sm font-semibold text-white transition-all placeholder:text-white/30">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-300 block mb-1.5 px-1">Preboard Exam</label>
+                    <input type="number" min="0" max="100" name="preboard" value="<?= htmlspecialchars($pree) ?>" placeholder="Null / Blank" class="w-full px-4 py-3 bg-white/10 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-400 outline-none text-sm font-semibold text-white transition-all placeholder:text-white/30">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-300 block mb-1.5 px-1">Compre Exam</label>
+                    <input type="number" min="0" max="100" name="compre" value="<?= htmlspecialchars($comp) ?>" placeholder="Null / Blank" class="w-full px-4 py-3 bg-white/10 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-400 outline-none text-sm font-semibold text-white transition-all placeholder:text-white/30">
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white font-black uppercase text-[10px] tracking-widest py-3.5 rounded-xl shadow-md hover:bg-blue-500 transition-all mt-2">
+                Commit & Save Student Metrics
+            </button>
+        </form>
+    </section>
+
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Registration Data</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -52,7 +86,6 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 
     <hr class="border-slate-100">
 
-    <!-- Improved Personal Profile Details Section (Prevents collapsing) -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Personal Profile Details</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -67,7 +100,6 @@ $total_paid = $total_paid_res['paid'] ?? 0;
                 <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($user['cellphone_no']) ?: '--' ?></p>
             </div>
             
-            <!-- Facebook Account: Assigned full width container to handle long strings safely -->
             <div class="md:col-span-2 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 break-all">
                 <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">FB / Messenger Account</p>
                 <p class="text-sm font-bold text-indigo-600">
@@ -82,7 +114,6 @@ $total_paid = $total_paid_res['paid'] ?? 0;
                 </p>
             </div>
 
-            <!-- Full Address Row -->
             <div class="md:col-span-2 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
                 <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Home Address</p>
                 <p class="text-sm font-bold text-slate-800 leading-relaxed"><?= nl2br(htmlspecialchars($user['address'])) ?: '--' ?></p>
@@ -92,7 +123,6 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 
     <hr class="border-slate-100">
 
-    <!-- Emergency & Guardian Section -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Emergency & Guardian Contacts</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -109,7 +139,6 @@ $total_paid = $total_paid_res['paid'] ?? 0;
 
     <hr class="border-slate-100">
 
-    <!-- Tuition Section -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tuition Summary</h4>
         <div class="grid grid-cols-3 gap-4">
@@ -128,22 +157,25 @@ $total_paid = $total_paid_res['paid'] ?? 0;
         </div>
     </section>
 
-    <!-- History Section -->
     <section>
         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Transaction History</h4>
         <div class="space-y-2">
-            <?php while($p = mysqli_fetch_assoc($payments)): ?>
-                <div class="p-4 border border-slate-100 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-black text-slate-900">₱<?= number_format($p['amount']) ?></p>
-                        <p class="text-[10px] text-slate-400 font-bold"><?= htmlspecialchars($p['payment_method']) ?> • <?= htmlspecialchars($p['reference_number']) ?></p>
+            <?php if(mysqli_num_rows($payments) > 0): ?>
+                <?php while($p = mysqli_fetch_assoc($payments)): ?>
+                    <div class="p-4 border border-slate-100 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-black text-slate-900">₱<?= number_format($p['amount']) ?></p>
+                            <p class="text-[10px] text-slate-400 font-bold"><?= htmlspecialchars($p['payment_method']) ?> • <?= htmlspecialchars($p['reference_number']) ?></p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded <?= $p['status'] == 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700' ?>"><?= htmlspecialchars($p['status']) ?></span>
+                            <p class="text-[9px] text-slate-300 mt-1"><?= date('M d, Y', strtotime($p['created_at'])) ?></p>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded <?= $p['status'] == 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700' ?>"><?= htmlspecialchars($p['status']) ?></span>
-                        <p class="text-[9px] text-slate-300 mt-1"><?= date('M d, Y', strtotime($p['created_at'])) ?></p>
-                    </div>
-                </div>
-            <?php endwhile; ?>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p class="text-xs text-slate-400 italic text-center py-4 font-semibold">No transactions recorded yet.</p>
+            <?php endif; ?>
         </div>
     </section>
 </div>
