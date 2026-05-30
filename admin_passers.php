@@ -68,55 +68,30 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
 </head>
 <body class="bg-[#f8fafc] text-slate-900 antialiased">
 
-    <div class="flex min-h-screen relative overflow-x-hidden">
+    <div class="flex min-h-screen relative">
+        <?php include 'aside.php';?>
         
-        <!-- Sidebar Backdrop Blur Overlay styling -->
-        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300"></div>
+        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
 
-        <!-- System Administration Navigation Menu Component -->
-        <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
-            <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100 overflow-hidden">
-                        <img src="cuevaslogo.jpg" alt="" class="w-full h-full object-cover">
+        <main class="flex-1 p-4 md:p-8 lg:p-12">
+            <div class="max-w-6xl mx-auto">
+                
+                <header class="mb-8 md:mb-12 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-3xl font-[800] text-slate-900 tracking-tight">Hall of Fame Registry</h2>
+                        <p class="text-slate-500 mt-1">Select an active system user or manually record details for legacy system alumni.</p>
                     </div>
-                    <span class="font-extrabold text-slate-950 text-xl tracking-tight">C-Familia</span>
-                </div>
-                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-xl bg-slate-50">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="flex-1 pt-8">
-                <?php include 'aside.php';?>
-            </div>
-        </aside>
-
-        <!-- Main Content Area workspace -->
-        <main class="flex-1 min-w-0 w-full">
-            
-            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    <button id="openMenu" class="lg:hidden p-3 bg-white border border-slate-200 rounded-2xl shadow-sm ml-4 shrink-0">
+                        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
                         </svg>
                     </button>
-                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Hall of Fame Manager</h2>
-                </div>
-            </header>
-
-            <div class="p-4 sm:p-10 max-w-6xl mx-auto space-y-6">
-                <div>
-                    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Hall of Fame Registry</h1>
-                    <p class="text-slate-500 mt-1">Select an active system user or manually record details for legacy system alumni.</p>
-                </div>
+                </header>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
                     <div class="lg:col-span-5">
-                        <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-200 sticky top-24">
+                        <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-200 sticky top-12">
                             
                             <div class="mb-6 text-center">
                                 <div class="relative inline-block">
@@ -193,7 +168,6 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                             <?php
                             $res = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC");
                             while($p = mysqli_fetch_assoc($res)):
-                                // Resolve cross-folder image location pathways safely
                                 if (file_exists("uploads/passers/" . $p['photo'])) {
                                     $computedPath = "uploads/passers/" . $p['photo'];
                                 } elseif (!empty($p['photo']) && file_exists("uploads/profiles/" . $p['photo'])) {
@@ -220,7 +194,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                     <div class="w-full mt-4 pt-3 border-t border-slate-50 text-[10px] text-slate-400 font-medium">
                                         Exam: <?= date('M Y', strtotime($p['exam_date'])) ?> • Batch <?= htmlspecialchars($p['batch']) ?>
                                     </div>
-                                <?php else: ?>
+                                <?php deduction: else: ?>
                                     <div class="w-full mt-4 pt-3 border-t border-slate-50 text-[10px] text-slate-400 font-medium">
                                         Batch Year: <?= htmlspecialchars($p['batch']) ?>
                                     </div>
@@ -292,18 +266,27 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             }
         });
 
-        // Responsive Global Sidebar Toggle Mechanic
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebarMenu');
-            const overlay = document.getElementById('sidebarOverlay');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
+        // Responsive Global Sidebar Toggle Mechanician (Unified with admin_announcements style layout target)
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu'); // Bound inside aside.php
+        const sidebar = document.getElementById('mobileSidebar'); // ID expected from aside.php
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar?.classList.remove('-translate-x-full');
+                overlay?.classList.remove('hidden');
+                setTimeout(() => overlay?.classList.add('opacity-100'), 10);
             } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
+                sidebar?.classList.add('-translate-x-full');
+                overlay?.classList.remove('opacity-100');
+                setTimeout(() => overlay?.classList.add('hidden'), 300);
             }
         }
+
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
 
         // Setup SweetAlert2 Notifications
         const Toast = Swal.mixin({
@@ -311,7 +294,11 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             position: 'top-end',
             showConfirmButton: false,
             timer: 2800,
-            timerProgressBar: true
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
         });
 
         const urlParams = new URLSearchParams(window.location.search);
