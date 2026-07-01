@@ -31,6 +31,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
 
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
 
+    <!-- Sticky Navigation Bar -->
     <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 px-4 py-3.5 sm:px-6 transition-all">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="index.php" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1">
@@ -56,6 +57,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </nav>
 
+    <!-- Header Section -->
     <header class="relative bg-slate-900 py-20 sm:py-24 lg:py-32 overflow-hidden flex-shrink-0">
         <div class="absolute inset-0 opacity-10 pointer-events-none">
             <img src="cuevaslogo.jpg" alt="Background Texture" class="w-full h-full object-cover filter grayscale scale-105">
@@ -98,6 +100,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </header>
 
+    <!-- Top Performance Section -->
     <section class="py-20 sm:py-24 bg-slate-950 text-white relative overflow-hidden">
         <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 relative">
@@ -158,6 +161,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Voice of Success Section -->
     <section class="py-20 sm:py-24 bg-white px-4 sm:px-6 border-b border-slate-100">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12 sm:mb-16">
@@ -214,6 +218,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Recent Announcements Section -->
     <section id="announcements" class="py-20 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto w-full">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 sm:mb-12">
             <div class="flex items-center gap-3">
@@ -251,6 +256,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Learning Materials Section -->
     <section id="posts" class="py-20 sm:py-24 bg-slate-50 border-t border-slate-200/60 px-4 sm:px-6 w-full">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 sm:mb-12">
@@ -295,18 +301,26 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- The Hall of Fame Section -->
     <section id="passers" class="py-20 sm:py-24 bg-slate-100 px-4 sm:px-6 border-t border-slate-200/40">
         <div class="max-w-7xl mx-auto text-center mb-12 sm:mb-16">
             <h3 class="text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
             <p class="text-slate-500 font-medium text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">Celebrating every C-Familia student who successfully conquered their board exams.</p>
         </div>
+        
         <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
             <?php 
-            $passers_query = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC LIMIT 20");
-            while($passer = mysqli_fetch_assoc($passers_query)): 
-                $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
+            $passers_query = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC");
+            $total_passers_count = mysqli_num_rows($passers_query);
+            $displayed_passers = 0;
+            
+            if($total_passers_count > 0):
+                while($passer = mysqli_fetch_assoc($passers_query)): 
+                    $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
+                    $displayed_passers++;
+                    if($displayed_passers <= 10):
             ?>
-            <div class="p-5 sm:p-6 bg-white rounded-3xl shadow-sm border border-slate-200 hover:border-blue-400/60 transition-colors text-center group flex flex-col justify-between">
+            <div class="p-5 sm:p-6 bg-white rounded-3xl shadow-sm border border-slate-200 hover:border-blue-400/60 transition-all duration-300 hover:-translate-y-1 text-center group flex flex-col justify-between">
                 <div>
                     <img src="<?= $pPath ?>" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 group-hover:scale-105 transition-transform shadow-sm">
                     <h5 class="font-bold text-slate-900 text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
@@ -317,10 +331,23 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                     <span class="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Rating</span>
                 </div>
             </div>
-            <?php endwhile; ?>
+            <?php 
+                    endif;
+                endwhile; 
+            endif;
+            ?>
         </div>
+
+        <?php if($total_passers_count > 10): ?>
+        <div class="mt-12 text-center">
+            <button onclick="openModal('passersModal')" class="inline-flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold rounded-xl shadow-sm transition-all text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-blue-500">
+                View All Hall of Fame Passers
+            </button>
+        </div>
+        <?php endif; ?>
     </section>
 
+    <!-- Contact & Location Section -->
     <section id="contact" class="py-20 sm:py-24 px-4 sm:px-6 bg-white border-t border-slate-100 w-full">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 sm:gap-16 items-center">
             <div class="space-y-8">
@@ -373,6 +400,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="bg-slate-950 pt-16 pb-8 px-4 sm:px-6 text-white overflow-hidden relative mt-auto">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400"></div>
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-12 relative">
@@ -389,6 +417,9 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </footer>
 
+    <!-- MODAL INTEGRATIONS -->
+
+    <!-- Top Performers See More Modal -->
     <div id="topPerformanceModal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 rounded-[2.5rem] border border-white/10 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-white/5 flex justify-between items-center flex-shrink-0">
@@ -398,7 +429,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 </div>
                 <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center text-lg font-bold focus:outline-none">✕</button>
             </div>
-            <div class="p-6 sm:p-8 overflow-y-auto space-y-6">
+            <div class="p-6 sm:p-8 overflow-y-auto">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <?php 
                     if($top_count > 0):
@@ -428,6 +459,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </div>
 
+    <!-- Testimonials See More Modal -->
     <div id="testimonialsModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
             <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
@@ -466,6 +498,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </div>
 
+    <!-- Announcements See More Modal -->
     <div id="announcementsModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
             <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
@@ -498,6 +531,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </div>
 
+    <!-- Learning Materials See More Modal -->
     <div id="postsModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
             <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
@@ -535,6 +569,45 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </div>
 
+    <!-- Passers / Hall Of Fame See More Modal -->
+    <div id="passersModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-6xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">The Complete Hall of Fame</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-1">Celebrating every successful reviewee who conquered their board examination milestones.</p>
+                </div>
+                <button onclick="closeModal('passersModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors flex items-center justify-center text-lg font-bold focus:outline-none">✕</button>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                    <?php 
+                    if($total_passers_count > 0):
+                        mysqli_data_seek($passers_query, 0);
+                        while($passer = mysqli_fetch_assoc($passers_query)): 
+                            $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
+                    ?>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center flex flex-col justify-between">
+                        <div>
+                            <img src="<?= $pPath ?>" class="w-14 h-14 rounded-full mx-auto mb-3 object-cover border-2 border-white shadow-sm">
+                            <h5 class="font-bold text-slate-900 text-xs leading-tight mb-0.5 truncate"><?= $passer['name'] ?></h5>
+                            <p class="text-[8px] text-blue-600 font-black uppercase tracking-wider mb-2 truncate"><?= $passer['program'] ?></p>
+                        </div>
+                        <div class="flex items-center justify-center gap-1 bg-white rounded-lg py-1 border border-slate-200/60">
+                            <span class="text-xs font-black text-slate-800"><?= $passer['rating'] ?>%</span>
+                            <span class="text-[7px] text-slate-400 font-bold uppercase tracking-wider">Rating</span>
+                        </div>
+                    </div>
+                    <?php 
+                        endwhile;
+                    endif;
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to Handle Modals Interactivity -->
     <script>
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
@@ -552,7 +625,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
             }
         }
 
-        // Close on background overlay click
+        // Close modal instances when clicking background overlays
         window.onclick = function(event) {
             if (event.target.classList.contains('bg-slate-950/50') || event.target.classList.contains('bg-slate-950/60')) {
                 event.target.classList.add('hidden');
