@@ -406,6 +406,13 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                             <p class="text-slate-600 font-medium text-sm sm:text-base">Oroquieta City, Misamis Occidental</p>
                         </div>
                     </div>
+                    <div class="flex items-start gap-5">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-900 border border-slate-200 rounded-xl flex items-center justify-center text-lg flex-shrink-0 shadow-sm">📍</div>
+                        <div>
+                            <p class="font-extrabold text-slate-900 uppercase text-xs tracking-wider mb-1">Tubod Campus</p>
+                            <p class="text-slate-600 font-medium text-sm sm:text-base">Tubod, Lanao Del Norte</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -438,10 +445,10 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
-    <!-- Footer -->
+<!-- Footer -->
     <footer class="bg-slate-950 pt-20 pb-10 px-4 sm:px-6 text-white overflow-hidden relative mt-auto border-t border-slate-900">
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400"></div>
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-16 relative">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-12 relative">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-lg">C</div>
                 <h1 class="text-2xl font-[900] tracking-tighter">C-Familia<span class="text-blue-500">.</span></h1>
@@ -450,6 +457,17 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 Helping Students Succeed Since 2024
             </div>
         </div>
+        
+        <!-- Developer Credit Badge -->
+        <div class="max-w-7xl mx-auto text-center mb-6 relative">
+            <p class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-900/60 border border-slate-800/80 px-4 py-2 rounded-xl backdrop-blur-sm shadow-inner">
+                Developed by 
+                <span class="font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 bg-clip-text text-transparent">
+                    Rhondel M. Pagobo
+                </span>
+            </p>
+        </div>
+
         <div class="max-w-7xl mx-auto text-center text-slate-700 text-[10px] border-t border-slate-900 pt-8 uppercase tracking-[0.3em] font-black">
             &copy; <?= date("Y") ?> C-Familia Tutorial Services • Registered School Review Center
         </div>
