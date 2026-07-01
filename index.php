@@ -4,7 +4,6 @@ include 'db.php';
 // --- Auto-Calculate Passing Rate ---
 $total_passers_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM passers");
 $total_passers = mysqli_fetch_assoc($total_passers_query)['count'];
-// Dynamic display rate logic
 $display_rate = ($total_passers > 0) ? "95%" : "0%"; 
 ?>
 <!DOCTYPE html>
@@ -19,49 +18,72 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
     <title>C-Familia Tutorial Services</title>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
-        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); }
-        .glass-dark { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(16px); }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         @keyframes pulse-slow { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
         .animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
         .modal-active { overflow: hidden; }
-        /* Hide scrollbars for navbar pill items on mobile */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 
 <body class="bg-[#f8fafc] text-slate-900 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
 
     <!-- Sticky Navigation Bar -->
-    <nav class="sticky top-0 z-40 bg-white/75 backdrop-blur-md border-b border-slate-100 px-3 py-4 sm:px-6 transition-all">
-        <div class="max-w-7xl mx-auto flex justify-between items-center gap-2">
-            <a href="index.php" class="flex items-center gap-2 shrink-0 group focus:outline-none focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1">
+    <nav class="sticky top-0 z-40 bg-white/75 backdrop-blur-md border-b border-slate-100 px-4 py-4 sm:px-6 transition-all">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- Brand Logo -->
+            <a href="index.php" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1 z-50">
                 <div class="relative overflow-hidden rounded-xl shadow-md border border-slate-100">
-                    <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-9 h-9 sm:w-10 sm:h-10 object-contain transition-transform duration-500 group-hover:scale-110">
+                    <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110">
                 </div>
-                <h1 class="text-xl sm:text-2xl font-[900] tracking-tighter text-slate-900">
+                <h1 class="text-2xl font-[900] tracking-tighter text-slate-900">
                     C-Familia<span class="text-blue-600">.</span>
                 </h1>
             </a>
 
-            <!-- Universal Horizontal Navigation Pill Menu -->
-            <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-full text-[11px] sm:text-sm font-bold text-slate-600 overflow-x-auto no-scrollbar max-w-[45%] sm:max-w-full whitespace-nowrap snap-x">
-                <a href="#announcements" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Announcements</a>
-                <a href="#posts" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Resources</a>
-                <a href="#passers" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Passers</a>
-                <a href="#contact" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Contact</a>
+            <!-- Desktop View: Premium Horizontal Pill Menu -->
+            <div class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-full text-sm font-bold text-slate-600">
+                <a href="#announcements" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Announcements</a>
+                <a href="#posts" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Resources</a>
+                <a href="#passers" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Passers</a>
+                <a href="#contact" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Contact</a>
             </div>
 
-            <div class="flex items-center space-x-1 sm:space-x-2 shrink-0">
-                <a href="login.php" class="text-slate-700 font-bold px-2 sm:px-4 py-2 hover:text-blue-600 text-xs sm:text-sm transition-colors focus:outline-none">Login</a>
-                <a href="register.php" class="px-3 py-2 sm:px-5 sm:py-2.5 bg-slate-900 text-white text-xs sm:text-sm font-bold rounded-xl hover:bg-blue-600 active:scale-98 transition-all shadow-md shadow-slate-900/10 focus:outline-none focus:ring-2 focus:ring-blue-600/40">
+            <!-- Utility CTA Items / Hamburger -->
+            <div class="flex items-center space-x-2 z-50">
+                <a href="login.php" class="hidden sm:inline-block text-slate-700 font-bold px-4 py-2 hover:text-blue-600 text-sm transition-colors focus:outline-none">Login</a>
+                <a href="register.php" class="hidden sm:inline-block px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-blue-600 active:scale-98 transition-all shadow-md shadow-slate-900/10 focus:outline-none focus:ring-2 focus:ring-blue-600/40">
                     Join Us 
                 </a>
+                
+                <!-- Mobile Menu Button Icon Trigger -->
+                <button id="mobileMenuBtn" class="flex md:hidden w-11 h-11 bg-slate-100 text-slate-900 rounded-xl items-center justify-center font-bold border border-slate-200 shadow-sm hover:bg-slate-200 transition-colors focus:outline-none" aria-label="Toggle navigation menu">
+                    <svg id="menuIconToggle" class="w-5 h-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Screen Full Overlay Navigation Drawer -->
+    <div id="mobileNavigationOverlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xl z-30 opacity-0 pointer-events-none transition-all duration-300 md:hidden flex flex-col justify-center px-6">
+        <div class="space-y-6 text-center max-w-xs mx-auto w-full">
+            <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">Platform Directories</p>
+            <div class="flex flex-col space-y-2">
+                <a onclick="toggleMobileNav()" href="#announcements" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Announcements</a>
+                <a onclick="toggleMobileNav()" href="#posts" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Resources</a>
+                <a onclick="toggleMobileNav()" href="#passers" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Passers</a>
+                <a onclick="toggleMobileNav()" href="#contact" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Contact</a>
+            </div>
+            
+            <!-- Compact inline actions on micro screens inside overlay -->
+            <div class="grid grid-cols-2 gap-3 pt-6 border-t border-slate-200/20 sm:hidden">
+                <a onclick="toggleMobileNav()" href="login.php" class="py-3 bg-white/10 text-white font-extrabold text-sm rounded-xl border border-white/10 hover:bg-white/20 transition-all">Login</a>
+                <a onclick="toggleMobileNav()" href="register.php" class="py-3 bg-blue-600 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition-all">Join Us</a>
+            </div>
+        </div>
+    </div>
 
     <!-- Header Section -->
     <header class="relative bg-slate-950 py-24 sm:py-32 overflow-hidden flex-shrink-0 border-b border-slate-900">
@@ -475,8 +497,32 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </div>
 
-    <!-- Modal Interaction Script -->
+    <!-- Interface Animation Script -->
     <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileOverlay = document.getElementById('mobileNavigationOverlay');
+        const menuIconToggle = document.getElementById('menuIconToggle');
+        let isNavOpen = false;
+
+        function toggleMobileNav() {
+            isNavOpen = !isNavOpen;
+            if (isNavOpen) {
+                mobileOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                mobileOverlay.classList.add('opacity-100', 'pointer-events-auto');
+                menuIconToggle.style.transform = 'rotate(90deg)';
+                menuIconToggle.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />';
+                document.body.classList.add('modal-active');
+            } else {
+                mobileOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+                mobileOverlay.classList.add('opacity-0', 'pointer-events-none');
+                menuIconToggle.style.transform = 'rotate(0deg)';
+                menuIconToggle.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />';
+                document.body.classList.remove('modal-active');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileNav);
+
         function openModal(id) {
             const modal = document.getElementById(id);
             if (modal) {
