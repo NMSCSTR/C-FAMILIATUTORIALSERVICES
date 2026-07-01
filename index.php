@@ -26,38 +26,44 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         @keyframes pulse-slow { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
         .animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
         .modal-active { overflow: hidden; }
+        /* Hide scrollbars for navbar pill items on mobile */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 
 <body class="bg-[#f8fafc] text-slate-900 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
 
-    <nav class="sticky top-0 z-40 bg-white/75 backdrop-blur-md border-b border-slate-100 px-4 py-4 sm:px-6 transition-all">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="index.php" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1">
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky top-0 z-40 bg-white/75 backdrop-blur-md border-b border-slate-100 px-3 py-4 sm:px-6 transition-all">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-2">
+            <a href="index.php" class="flex items-center gap-2 shrink-0 group focus:outline-none focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1">
                 <div class="relative overflow-hidden rounded-xl shadow-md border border-slate-100">
-                    <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110">
+                    <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-9 h-9 sm:w-10 sm:h-10 object-contain transition-transform duration-500 group-hover:scale-110">
                 </div>
-                <h1 class="text-2xl font-[900] tracking-tighter text-slate-900">
+                <h1 class="text-xl sm:text-2xl font-[900] tracking-tighter text-slate-900">
                     C-Familia<span class="text-blue-600">.</span>
                 </h1>
             </a>
 
-            <div class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-full text-sm font-bold text-slate-600">
-                <a href="#announcements" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Announcements</a>
-                <a href="#posts" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Resources</a>
-                <a href="#passers" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Passers</a>
-                <a href="#contact" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Contact</a>
+            <!-- Universal Horizontal Navigation Pill Menu -->
+            <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-full text-[11px] sm:text-sm font-bold text-slate-600 overflow-x-auto no-scrollbar max-w-[45%] sm:max-w-full whitespace-nowrap snap-x">
+                <a href="#announcements" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Announcements</a>
+                <a href="#posts" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Resources</a>
+                <a href="#passers" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Passers</a>
+                <a href="#contact" class="hover:text-slate-900 hover:bg-white rounded-full px-2.5 py-1.5 sm:px-4 transition-all snap-center focus:outline-none">Contact</a>
             </div>
 
-            <div class="flex items-center space-x-2">
-                <a href="login.php" class="text-slate-700 font-bold px-4 py-2 hover:text-blue-600 text-sm transition-colors focus:outline-none">Login</a>
-                <a href="register.php" class="px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-blue-600 active:scale-98 transition-all shadow-md shadow-slate-900/10 focus:outline-none focus:ring-2 focus:ring-blue-600/40">
+            <div class="flex items-center space-x-1 sm:space-x-2 shrink-0">
+                <a href="login.php" class="text-slate-700 font-bold px-2 sm:px-4 py-2 hover:text-blue-600 text-xs sm:text-sm transition-colors focus:outline-none">Login</a>
+                <a href="register.php" class="px-3 py-2 sm:px-5 sm:py-2.5 bg-slate-900 text-white text-xs sm:text-sm font-bold rounded-xl hover:bg-blue-600 active:scale-98 transition-all shadow-md shadow-slate-900/10 focus:outline-none focus:ring-2 focus:ring-blue-600/40">
                     Join Us 
                 </a>
             </div>
         </div>
     </nav>
 
+    <!-- Header Section -->
     <header class="relative bg-slate-950 py-24 sm:py-32 overflow-hidden flex-shrink-0 border-b border-slate-900">
         <div class="absolute inset-0 bg-[radial-gradient(#1e3a8a_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none"></div>
         <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/30 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
@@ -105,6 +111,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </header>
 
+    <!-- Top Performance Section -->
     <section class="py-24 sm:py-32 bg-slate-950 text-white relative overflow-hidden border-b border-slate-900">
         <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[140px] pointer-events-none"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 relative">
@@ -169,6 +176,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Voice of Success Section -->
     <section class="py-24 sm:py-32 bg-white px-4 sm:px-6 relative border-b border-slate-100">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 sm:mb-24">
@@ -225,6 +233,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Recent Announcements Section -->
     <section id="announcements" class="py-24 sm:py-32 px-4 sm:px-6 max-w-7xl mx-auto w-full">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
             <div class="flex items-center gap-3">
@@ -232,6 +241,8 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 <h3 class="text-3xl font-[900] tracking-tight text-slate-900">Recent Announcements</h3>
             </div>
             <?php 
+            $ann_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM announcements WHERE audience = 'General'");
+            $ann_count = mysqli_fetch_assoc($ann_total_query)['count'];
             if($ann_count > 3): 
             ?>
             <button onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 tracking-wider hover:text-blue-700 transition-colors flex items-center gap-1 group focus:outline-none">
@@ -260,6 +271,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Learning Materials Section -->
     <section id="posts" class="py-24 sm:py-32 bg-slate-900 text-white border-t border-slate-950 px-4 sm:px-6 w-full relative overflow-hidden">
         <div class="absolute top-0 left-1/2 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
         <div class="max-w-7xl mx-auto relative">
@@ -269,6 +281,8 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                     <h3 class="text-3xl font-[900] tracking-tight text-white">Learning Materials</h3>
                 </div>
                 <?php 
+                $posts_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM posts");
+                $posts_count = mysqli_fetch_assoc($posts_total_query)['count'];
                 if($posts_count > 6): 
                 ?>
                 <button onclick="openModal('postsModal')" class="text-xs font-black uppercase text-indigo-400 tracking-wider hover:text-indigo-300 transition-colors flex items-center gap-1 group focus:outline-none">
@@ -293,7 +307,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                     <?php if($post['file_path']): ?>
                     <div class="border-t border-slate-800/80 pt-5 mt-2">
                         <a href="uploads/resources/<?= $post['file_path'] ?>" class="inline-flex items-center gap-2 text-indigo-400 font-black text-[11px] uppercase tracking-wider hover:text-indigo-300 transition-all focus:outline-none">
-                            Download Asset Asset <span class="text-sm transition-transform group-hover:translate-x-1">→</span>
+                            Download Asset <span class="text-sm transition-transform group-hover:translate-x-1">→</span>
                         </a>
                     </div>
                     <?php endif; ?>
@@ -303,6 +317,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- The Hall of Fame Section -->
     <section id="passers" class="py-24 sm:py-32 bg-slate-50 px-4 sm:px-6 border-t border-slate-100">
         <div class="max-w-7xl mx-auto text-center mb-16 sm:mb-24">
             <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
@@ -348,6 +363,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         <?php endif; ?>
     </section>
 
+    <!-- Contact & Location Section -->
     <section id="contact" class="py-24 sm:py-32 px-4 sm:px-6 bg-white border-t border-slate-100 w-full">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <div class="space-y-10">
@@ -400,6 +416,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="bg-slate-950 pt-20 pb-10 px-4 sm:px-6 text-white overflow-hidden relative mt-auto border-t border-slate-900">
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400"></div>
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-16 relative">
@@ -416,6 +433,9 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </footer>
 
+    <!-- MODAL INTEGRATIONS -->
+
+    <!-- Top Performers See More Modal -->
     <div id="topPerformanceModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 rounded-3xl border border-slate-800 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-8 border-b border-slate-800/60 flex justify-between items-center flex-shrink-0">
@@ -455,6 +475,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </div>
 
+    <!-- Modal Interaction Script -->
     <script>
         function openModal(id) {
             const modal = document.getElementById(id);
