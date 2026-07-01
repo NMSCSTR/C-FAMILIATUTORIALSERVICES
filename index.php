@@ -41,22 +41,22 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 </h1>
             </a>
 
-            <!-- Desktop View: Premium Horizontal Pill Menu -->
+            <!-- Desktop View: Menu Options -->
             <div class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-full text-sm font-bold text-slate-600">
                 <a href="#announcements" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Announcements</a>
-                <a href="#posts" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Resources</a>
+                <a href="#posts" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Learning Materials</a>
                 <a href="#passers" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Passers</a>
                 <a href="#contact" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Contact</a>
             </div>
 
-            <!-- Utility CTA Items / Hamburger -->
+            <!-- Login / Join Links -->
             <div class="flex items-center space-x-2 z-50">
                 <a href="login.php" class="hidden sm:inline-block text-slate-700 font-bold px-4 py-2 hover:text-blue-600 text-sm transition-colors focus:outline-none">Login</a>
                 <a href="register.php" class="hidden sm:inline-block px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-blue-600 active:scale-98 transition-all shadow-md shadow-slate-900/10 focus:outline-none focus:ring-2 focus:ring-blue-600/40">
                     Join Us 
                 </a>
                 
-                <!-- Mobile Menu Button Icon Trigger -->
+                <!-- Mobile Menu Button Icon -->
                 <button id="mobileMenuBtn" class="flex md:hidden w-11 h-11 bg-slate-100 text-slate-900 rounded-xl items-center justify-center font-bold border border-slate-200 shadow-sm hover:bg-slate-200 transition-colors focus:outline-none" aria-label="Toggle navigation menu">
                     <svg id="menuIconToggle" class="w-5 h-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -66,18 +66,17 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </nav>
 
-    <!-- Mobile Screen Full Overlay Navigation Drawer -->
+    <!-- Mobile Screen Overlay Navigation Menu -->
     <div id="mobileNavigationOverlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xl z-30 opacity-0 pointer-events-none transition-all duration-300 md:hidden flex flex-col justify-center px-6">
         <div class="space-y-6 text-center max-w-xs mx-auto w-full">
-            <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">Platform Directories</p>
+            <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">Menu Options</p>
             <div class="flex flex-col space-y-2">
                 <a onclick="toggleMobileNav()" href="#announcements" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Announcements</a>
-                <a onclick="toggleMobileNav()" href="#posts" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Resources</a>
+                <a onclick="toggleMobileNav()" href="#posts" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Learning Materials</a>
                 <a onclick="toggleMobileNav()" href="#passers" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Passers</a>
                 <a onclick="toggleMobileNav()" href="#contact" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Contact</a>
             </div>
             
-            <!-- Compact inline actions on micro screens inside overlay -->
             <div class="grid grid-cols-2 gap-3 pt-6 border-t border-slate-200/20 sm:hidden">
                 <a onclick="toggleMobileNav()" href="login.php" class="py-3 bg-white/10 text-white font-extrabold text-sm rounded-xl border border-white/10 hover:bg-white/20 transition-all">Login</a>
                 <a onclick="toggleMobileNav()" href="register.php" class="py-3 bg-blue-600 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition-all">Join Us</a>
@@ -95,13 +94,13 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
             <div class="space-y-8 lg:col-span-7">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm">
                     <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
-                    <span class="text-blue-400 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Premium Platform</span>
+                    <span class="text-blue-400 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Center Platform</span>
                 </div>
                 <h2 class="text-4xl sm:text-6xl font-[900] text-white tracking-tight leading-[1.05]">
                     Your Future Starts <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 bg-clip-text text-transparent">Right Here.</span>
                 </h2>
                 <p class="text-lg sm:text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
-                    "Join our family, and together, we'll pave the way towards your professional board success."
+                    "Join our family, and together, we will help you pass your professional board exams."
                 </p>
                 <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
                     <a href="register.php" class="px-8 py-4 bg-blue-600 text-white rounded-xl text-base font-bold hover:bg-blue-500 active:scale-98 transition-all shadow-lg shadow-blue-600/20 focus:outline-none">Enroll Now</a>
@@ -124,7 +123,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                             <div class="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 w-[95%] rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)]"></div>
                         </div>
                         <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            <span>Academic Excellence</span>
+                            <span>Excellent Results</span>
                             <span>Batch 2026</span>
                         </div>
                     </div>
@@ -141,11 +140,11 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 <div>
                     <div class="flex items-center gap-2 mb-3">
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                        <span class="text-blue-400 font-black uppercase text-[11px] tracking-[0.3em]">Elite Achievers</span>
+                        <span class="text-blue-400 font-black uppercase text-[11px] tracking-[0.3em]">Top Achievers</span>
                     </div>
                     <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight">Top Performance<span class="text-blue-500">.</span></h3>
                 </div>
-                <p class="text-slate-400 max-w-sm font-medium text-sm sm:text-base leading-relaxed border-l-2 border-slate-800 pl-4">Honoring our structural reviewees who attained exceptional board ratings of 95% and above.</p>
+                <p class="text-slate-400 max-w-sm font-medium text-sm sm:text-base leading-relaxed border-l-2 border-slate-800 pl-4">Celebrating our students who got excellent board exam ratings of 95% and higher.</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -183,7 +182,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 else: 
                 ?>
                 <div class="col-span-full py-20 text-center bg-slate-900/20 rounded-3xl border border-dashed border-slate-800">
-                    <p class="text-slate-500 font-bold uppercase tracking-widest text-xs sm:text-sm">Top results are currently being verified.</p>
+                    <p class="text-slate-500 font-bold uppercase tracking-widest text-xs sm:text-sm">Top results are being checked right now.</p>
                 </div>
                 <?php endif; ?>
             </div>
@@ -240,7 +239,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 else: 
                 ?>
                 <div class="col-span-full py-20 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Awaiting student experiences...</p>
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Waiting for student stories...</p>
                 </div>
                 <?php endif; ?>
             </div>
@@ -321,7 +320,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 <article class="bg-slate-950 rounded-3xl shadow-sm border border-slate-800 overflow-hidden hover:border-slate-700 transition-all duration-300 group flex flex-col justify-between p-8 hover:-translate-y-1">
                     <div>
                         <div class="mb-4">
-                            <span class="px-2.5 py-1 bg-indigo-500/10 text-indigo-400 text-[9px] font-black rounded uppercase tracking-wider border border-indigo-500/20">Resource Module</span>
+                            <span class="px-2.5 py-1 bg-indigo-500/10 text-indigo-400 text-[9px] font-black rounded uppercase tracking-wider border border-indigo-500/20">Study File</span>
                         </div>
                         <h4 class="text-xl font-bold mb-3 group-hover:text-indigo-400 transition-colors text-white leading-snug"><?= $post['title'] ?></h4>
                         <p class="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 font-medium"><?= $post['content'] ?></p>
@@ -329,7 +328,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                     <?php if($post['file_path']): ?>
                     <div class="border-t border-slate-800/80 pt-5 mt-2">
                         <a href="uploads/resources/<?= $post['file_path'] ?>" class="inline-flex items-center gap-2 text-indigo-400 font-black text-[11px] uppercase tracking-wider hover:text-indigo-300 transition-all focus:outline-none">
-                            Download Asset <span class="text-sm transition-transform group-hover:translate-x-1">→</span>
+                            Download File <span class="text-sm transition-transform group-hover:translate-x-1">→</span>
                         </a>
                     </div>
                     <?php endif; ?>
@@ -343,7 +342,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
     <section id="passers" class="py-24 sm:py-32 bg-slate-50 px-4 sm:px-6 border-t border-slate-100">
         <div class="max-w-7xl mx-auto text-center mb-16 sm:mb-24">
             <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
-            <p class="text-slate-500 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">Celebrating structural success for every dedicated C-Familia student who conquered their board milestones.</p>
+            <p class="text-slate-500 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">Celebrating the hard work of every C-Familia student who passed their board exams.</p>
         </div>
         
         <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -353,6 +352,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
             $displayed_passers = 0;
             
             if($total_passers_count > 0):
+                mysqli_data_seek($passers_query, 0);
                 while($passer = mysqli_fetch_assoc($passers_query)): 
                     $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
                     $displayed_passers++;
@@ -396,7 +396,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                         <div>
                             <p class="font-extrabold text-slate-900 uppercase text-xs tracking-wider mb-1">Ozamiz Main Branch</p>
                             <p class="text-slate-600 font-medium text-sm sm:text-base">Ozamiz City, Philippines, 7200</p>
-                            <span class="inline-flex items-center gap-1.5 text-[9px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider mt-3 border border-emerald-100">● Core Operations</span>
+                            <span class="inline-flex items-center gap-1.5 text-[9px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider mt-3 border border-emerald-100">● Main Office</span>
                         </div>
                     </div>
                     <div class="flex items-start gap-5">
@@ -410,26 +410,26 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
             </div>
             
             <div class="bg-slate-50 p-8 sm:p-10 rounded-3xl border border-slate-100 shadow-inner">
-                <h3 class="text-2xl font-extrabold mb-6 text-slate-900 tracking-tight">Direct Connect</h3>
+                <h3 class="text-2xl font-extrabold mb-6 text-slate-900 tracking-tight">Contact Us Directly</h3>
                 <div class="space-y-4">
                     <div class="flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm transition-transform hover:translate-x-1">
                         <span class="text-xl select-none">📞</span>
                         <div>
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Phone Infrastructure</p>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Phone</p>
                             <p class="font-bold text-slate-900 text-sm sm:text-base">0910 167 6805</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm transition-transform hover:translate-x-1">
                         <span class="text-xl select-none">✉️</span>
                         <div class="min-w-0">
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Mailing Node</p>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Email</p>
                             <p class="font-bold text-slate-900 text-sm sm:text-base truncate">shielamariscuevas@gmail.com</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm transition-transform hover:translate-x-1">
                         <span class="text-xl select-none">💬</span>
                         <div>
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Social Gateway</p>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Facebook Page</p>
                             <p class="font-bold text-slate-900 text-sm sm:text-base">C-Familia Tutorial Services</p>
                         </div>
                     </div>
@@ -447,11 +447,11 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 <h1 class="text-2xl font-[900] tracking-tighter">C-Familia<span class="text-blue-500">.</span></h1>
             </div>
             <div class="text-slate-500 text-xs font-bold uppercase tracking-[0.25em] text-center md:text-left">
-                Empowering Educational Milestones Since 2024
+                Helping Students Succeed Since 2024
             </div>
         </div>
         <div class="max-w-7xl mx-auto text-center text-slate-700 text-[10px] border-t border-slate-900 pt-8 uppercase tracking-[0.3em] font-black">
-            &copy; <?= date("Y") ?> C-Familia Tutorial Services • Registered Educational Provider
+            &copy; <?= date("Y") ?> C-Familia Tutorial Services • Registered School Review Center
         </div>
     </footer>
 
@@ -463,7 +463,7 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
             <div class="p-8 border-b border-slate-800/60 flex justify-between items-center flex-shrink-0">
                 <div>
                     <h3 class="text-2xl font-[900] text-white tracking-tight">All Top Performers</h3>
-                    <p class="text-slate-400 text-sm mt-1">Honored elite reviewees with structural scores of 95% and above.</p>
+                    <p class="text-slate-400 text-sm mt-1">Our top reviewees with high scores of 95% and above.</p>
                 </div>
                 <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             </div>
@@ -491,6 +491,44 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                     <?php 
                         endwhile;
                     endif; 
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hall of Fame Passers Modal -->
+    <div id="passersModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl border border-slate-100 w-full max-w-6xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h3 class="text-2xl font-[900] text-slate-900 tracking-tight">The Complete Hall of Fame</h3>
+                    <p class="text-slate-500 text-sm mt-1">List of all certified C-Familia passers who finished their board exams successfully.</p>
+                </div>
+                <button onclick="closeModal('passersModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+            </div>
+            <div class="p-8 overflow-y-auto bg-slate-50">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <?php 
+                    if($total_passers_count > 0):
+                        mysqli_data_seek($passers_query, 0);
+                        while($passer = mysqli_fetch_assoc($passers_query)): 
+                            $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
+                    ?>
+                    <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-slate-200 transition-all text-center group flex flex-col justify-between">
+                        <div>
+                            <img src="<?= $pPath ?>" class="w-16 h-16 rounded-full mx-auto mb-3 object-cover border-4 border-slate-50 shadow-inner">
+                            <h5 class="font-bold text-slate-900 text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-3 truncate"><?= $passer['program'] ?></p>
+                        </div>
+                        <div class="flex items-center justify-center gap-1.5 bg-slate-50 rounded-xl py-2 border border-slate-100">
+                            <span class="text-sm font-[900] text-blue-600"><?= $passer['rating'] ?>%</span>
+                            <span class="text-[8px] text-slate-400 font-black uppercase tracking-widest">Score</span>
+                        </div>
+                    </div>
+                    <?php 
+                        endwhile; 
+                    endif;
                     ?>
                 </div>
             </div>
