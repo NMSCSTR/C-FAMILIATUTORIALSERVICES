@@ -1,784 +1,564 @@
-<?php
-include 'db.php';
+<?php 
+include 'db.php'; 
 
 // --- Auto-Calculate Passing Rate ---
 $total_passers_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM passers");
 $total_passers = mysqli_fetch_assoc($total_passers_query)['count'];
-$display_rate = ($total_passers > 0) ? "95%" : "0%";
-
-// --- Top performers (rating >= 95) ---
-$top_result  = mysqli_query($conn, "SELECT * FROM passers WHERE rating >= 95 ORDER BY rating DESC");
-$top_all     = $top_result ? mysqli_fetch_all($top_result, MYSQLI_ASSOC) : [];
-$top_featured = array_slice($top_all, 0, 6);
-$top_more     = array_slice($top_all, 6);
-
-// --- Recent passers (Hall of Fame strip) ---
-$passers_result = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC LIMIT 20");
-$passers_all    = $passers_result ? mysqli_fetch_all($passers_result, MYSQLI_ASSOC) : [];
-
-// --- Testimonials ---
-$test_result   = mysqli_query($conn, "SELECT t.*, u.firstname, u.lastname, u.profile_pic FROM testimonials t JOIN users u ON t.user_id = u.id ORDER BY t.created_at DESC LIMIT 24");
-$test_all      = $test_result ? mysqli_fetch_all($test_result, MYSQLI_ASSOC) : [];
-$test_featured = array_slice($test_all, 0, 6);
-$test_more     = array_slice($test_all, 6);
-
-// --- Announcements ---
-// Note: the previous query filtered on `audience`, a column that doesn't exist on
-// the `announcements` table (see schema — only `category` exists). Filtering on it
-// silently breaks the query. Ordering by category/created_at instead so announcements
-// actually render.
-$ann_result   = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_at DESC LIMIT 12");
-$ann_all      = $ann_result ? mysqli_fetch_all($ann_result, MYSQLI_ASSOC) : [];
-$ann_featured = array_slice($ann_all, 0, 3);
-$ann_more     = array_slice($ann_all, 3);
-
-// --- Posts / Learning materials ---
-$posts_result   = mysqli_query($conn, "SELECT * FROM posts ORDER BY created_at DESC LIMIT 18");
-$posts_all      = $posts_result ? mysqli_fetch_all($posts_result, MYSQLI_ASSOC) : [];
-$posts_featured = array_slice($posts_all, 0, 3);
-$posts_more     = array_slice($posts_all, 3);
-
-function photo_path($photo) {
-    if (!$photo) return "uploads/passers/default_user.jpg";
-    return file_exists("uploads/profiles/" . $photo) ? "uploads/profiles/" . $photo : "uploads/passers/" . $photo;
-}
-
-function render_passer_card($p) {
-    $path = photo_path($p['photo']);
-    ob_start();
-    ?>
-    <div class="passer-card group">
-        <div class="passer-card__photo">
-            <img src="<?= htmlspecialchars($path) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
-        </div>
-        <div class="passer-card__body">
-            <h4 class="passer-card__name"><?= htmlspecialchars($p['name']) ?></h4>
-            <p class="passer-card__program"><?= htmlspecialchars($p['program']) ?></p>
-        </div>
-        <div class="seal seal--sm">
-            <span class="seal__text"><?= number_format($p['rating'], 2) ?></span>
-        </div>
-    </div>
-    <?php
-    return ob_get_clean();
-}
-
-function render_testimonial_card($t) {
-    $pic = !empty($t['profile_pic']) ? "uploads/profiles/" . $t['profile_pic'] : "uploads/passers/default_user.jpg";
-    ob_start();
-    ?>
-    <figure class="note-card">
-        <span class="note-card__mark" aria-hidden="true">&ldquo;</span>
-        <blockquote class="note-card__quote"><?= nl2br(htmlspecialchars($t['content'])) ?></blockquote>
-        <figcaption class="note-card__author">
-            <img src="<?= htmlspecialchars($pic) ?>" alt="" loading="lazy">
-            <div>
-                <span class="note-card__name"><?= htmlspecialchars($t['firstname'] . ' ' . $t['lastname']) ?></span>
-                <span class="note-card__tag">Verified Student</span>
-            </div>
-        </figcaption>
-    </figure>
-    <?php
-    return ob_get_clean();
-}
-
-function render_announcement_card($a) {
-    $is_urgent = ($a['category'] == 'Urgent');
-    ob_start();
-    ?>
-    <article class="pin-card <?= $is_urgent ? 'pin-card--urgent' : '' ?>">
-        <span class="pin-card__pin" aria-hidden="true"></span>
-        <div class="pin-card__meta">
-            <span class="pin-card__category"><?= htmlspecialchars($a['category']) ?></span>
-            <span class="pin-card__date"><?= date('M d, Y', strtotime($a['created_at'])) ?></span>
-        </div>
-        <h4 class="pin-card__title"><?= htmlspecialchars($a['title']) ?></h4>
-        <p class="pin-card__message"><?= nl2br(htmlspecialchars($a['message'])) ?></p>
-    </article>
-    <?php
-    return ob_get_clean();
-}
-
-function render_post_card($p) {
-    ob_start();
-    ?>
-    <article class="folder-card">
-        <span class="folder-card__tab">Resource</span>
-        <h4 class="folder-card__title"><?= htmlspecialchars($p['title']) ?></h4>
-        <p class="folder-card__excerpt"><?= htmlspecialchars($p['content']) ?></p>
-        <?php if ($p['file_path']): ?>
-        <a href="uploads/resources/<?= htmlspecialchars($p['file_path']) ?>" class="folder-card__link">
-            Download file <span aria-hidden="true">&rarr;</span>
-        </a>
-        <?php endif; ?>
-    </article>
-    <?php
-    return ob_get_clean();
-}
+// Dynamic display rate logic
+$display_rate = ($total_passers > 0) ? "95%" : "0%"; 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
-<title>C-Familia Tutorial Services</title>
-<style>
-  :root{
-    --ink: #12213A;
-    --ink-2: #1B2C4A;
-    --parchment: #F7F3EA;
-    --parchment-2: #EFE7D8;
-    --brass: #C79A46;
-    --brass-2: #E0B563;
-    --clay: #A24936;
-    --slate: #4B5468;
-  }
-  *{ scroll-behavior: smooth; }
-  body{
-    font-family:'Inter', sans-serif;
-    background:var(--parchment);
-    color:var(--ink);
-    -webkit-font-smoothing:antialiased;
-  }
-  .font-display{ font-family:'Fraunces', serif; }
-  .font-mono{ font-family:'IBM Plex Mono', monospace; }
-
-  ::selection{ background: var(--brass); color:var(--ink); }
-
-  /* texture */
-  .grain{
-    background-image: radial-gradient(rgba(247,243,234,.08) 1px, transparent 1px);
-    background-size: 18px 18px;
-  }
-
-  /* eyebrow / folder-tab label */
-  .tab-label{
-    display:inline-flex; align-items:center; gap:.6rem;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:.68rem; font-weight:600; letter-spacing:.28em; text-transform:uppercase;
-  }
-  .tab-label::before{
-    content:''; width:1.6rem; height:2px; background:currentColor; opacity:.5;
-  }
-
-  /* seal / stamp */
-  .seal{
-    width:76px; height:76px; border-radius:9999px; flex-shrink:0;
-    background: radial-gradient(circle at 32% 30%, var(--brass-2), var(--brass) 60%, #9c7530 100%);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 8px 20px rgba(199,154,70,.35), inset 0 0 0 3px rgba(255,255,255,.28);
-    position:relative;
-  }
-  .seal::before{
-    content:''; position:absolute; inset:6px; border-radius:9999px;
-    border:1.5px dashed rgba(18,33,58,.4);
-  }
-  .seal__text{
-    font-family:'IBM Plex Mono', monospace; font-weight:700; color:var(--ink);
-    font-size:.92rem; line-height:1; position:relative; z-index:1;
-  }
-  .seal--sm{ width:58px; height:58px; }
-  .seal--sm .seal__text{ font-size:.72rem; }
-  .seal--lg{ width:120px; height:120px; }
-  .seal--lg .seal__text{ font-size:1.35rem; }
-  .seal--lg::before{ inset:10px; }
-
-  /* passer card */
-  .passer-card{
-    background:#fff; border:1px solid rgba(18,33,58,.08);
-    border-radius:1.75rem; padding:1.75rem;
-    display:flex; align-items:center; gap:1.1rem;
-    transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
-  }
-  .passer-card:hover{
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -20px rgba(18,33,58,.25);
-    border-color: rgba(199,154,70,.4);
-  }
-  .passer-card__photo{
-    width:56px; height:56px; border-radius:9999px; overflow:hidden; flex-shrink:0;
-    border:3px solid var(--parchment-2);
-  }
-  .passer-card__photo img{ width:100%; height:100%; object-fit:cover; }
-  .passer-card__name{ font-weight:700; font-size:.95rem; line-height:1.25; }
-  .passer-card__program{
-    font-family:'IBM Plex Mono', monospace; font-size:.63rem; font-weight:600;
-    letter-spacing:.08em; text-transform:uppercase; color:var(--clay); margin-top:.2rem;
-  }
-  .passer-card__body{ flex:1; min-width:0; }
-
-  /* testimonial note card */
-  .note-card{
-    background: var(--ink-2); border-radius:1.75rem; padding:2.25rem;
-    border:1px solid rgba(255,255,255,.08); position:relative; height:100%;
-    display:flex; flex-direction:column;
-    transition: transform .35s ease, border-color .35s ease;
-  }
-  .note-card:hover{ transform: translateY(-4px); border-color: rgba(199,154,70,.4); }
-  .note-card__mark{
-    font-family:'Fraunces', serif; font-size:3.5rem; color:var(--brass);
-    opacity:.55; line-height:1; display:block; margin-bottom:.25rem;
-  }
-  .note-card__quote{
-    color:#D8DEEA; font-style:italic; line-height:1.7; font-size:.95rem; flex:1;
-  }
-  .note-card__author{ display:flex; align-items:center; gap:.85rem; margin-top:1.75rem; }
-  .note-card__author img{
-    width:42px; height:42px; border-radius:.9rem; object-fit:cover;
-  }
-  .note-card__name{ display:block; font-weight:700; color:#fff; font-size:.85rem; }
-  .note-card__tag{
-    display:block; font-family:'IBM Plex Mono', monospace; font-size:.6rem;
-    letter-spacing:.15em; text-transform:uppercase; color:var(--brass-2); margin-top:.15rem;
-  }
-
-  /* announcement pin card */
-  .pin-card{
-    background:#fff; border:1px solid rgba(18,33,58,.08); border-radius:1.5rem;
-    padding:2rem; position:relative; overflow:hidden;
-    transition: transform .3s ease, box-shadow .3s ease;
-  }
-  .pin-card:hover{ transform: translateY(-3px); box-shadow: 0 18px 36px -22px rgba(18,33,58,.3); }
-  .pin-card__pin{
-    position:absolute; top:1.25rem; right:1.5rem; width:10px; height:10px; border-radius:9999px;
-    background: var(--brass); box-shadow: 0 0 0 4px rgba(199,154,70,.18);
-  }
-  .pin-card--urgent .pin-card__pin{ background: var(--clay); box-shadow: 0 0 0 4px rgba(162,73,54,.18); }
-  .pin-card__meta{ display:flex; align-items:center; gap:.6rem; margin-bottom:.9rem; }
-  .pin-card__category{
-    font-family:'IBM Plex Mono', monospace; font-size:.62rem; font-weight:700;
-    letter-spacing:.14em; text-transform:uppercase; color:var(--clay);
-  }
-  .pin-card--urgent .pin-card__category{ color:var(--clay); }
-  .pin-card__date{ font-size:.7rem; color:var(--slate); }
-  .pin-card__title{ font-family:'Fraunces', serif; font-weight:700; font-size:1.2rem; margin-bottom:.6rem; }
-  .pin-card__message{ color:var(--slate); font-size:.88rem; line-height:1.65; }
-
-  /* learning material folder card */
-  .folder-card{
-    background:#fff; border:1px solid rgba(18,33,58,.08); border-radius:1.5rem;
-    padding:2rem; position:relative;
-    transition: transform .3s ease, box-shadow .3s ease;
-  }
-  .folder-card:hover{ transform: translateY(-3px); box-shadow: 0 18px 36px -22px rgba(18,33,58,.3); }
-  .folder-card__tab{
-    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:.62rem; font-weight:700;
-    letter-spacing:.14em; text-transform:uppercase; color:var(--ink);
-    background: var(--parchment-2); padding:.35rem .75rem; border-radius:.6rem; margin-bottom:1rem;
-  }
-  .folder-card__title{ font-family:'Fraunces', serif; font-weight:700; font-size:1.15rem; margin-bottom:.65rem; }
-  .folder-card__excerpt{
-    color:var(--slate); font-size:.88rem; line-height:1.6; margin-bottom:1.25rem;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
-  }
-  .folder-card__link{
-    display:inline-flex; align-items:center; gap:.5rem; font-family:'IBM Plex Mono', monospace;
-    font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--clay);
-    transition: gap .25s ease;
-  }
-  .folder-card__link:hover{ gap:.85rem; }
-
-  /* modal */
-  .modal{ display:none; }
-  .modal.is-open{ display:flex; }
-  .modal-panel{
-    opacity:0; transform: translateY(24px) scale(.98);
-    transition: opacity .3s ease, transform .3s ease;
-  }
-  .modal.is-open .modal-panel{ opacity:1; transform: translateY(0) scale(1); }
-  .modal-backdrop{ opacity:0; transition: opacity .3s ease; }
-  .modal.is-open .modal-backdrop{ opacity:1; }
-
-  /* reveal on scroll */
-  .reveal{ opacity:0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
-  .reveal.is-in{ opacity:1; transform: translateY(0); }
-
-  @media (prefers-reduced-motion: reduce){
-    .reveal{ opacity:1; transform:none; transition:none; }
-    .modal-panel, .modal-backdrop{ transition:none; }
-  }
-
-  /* mobile nav drawer */
-  .drawer{ transition: transform .35s ease; transform: translateX(100%); }
-  .drawer.is-open{ transform: translateX(0); }
-
-  ::-webkit-scrollbar{ width:10px; }
-  ::-webkit-scrollbar-track{ background: var(--parchment-2); }
-  ::-webkit-scrollbar-thumb{ background: var(--brass); border-radius:9999px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <title>C-Familia Tutorial Services</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+        .glass-dark { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
+        .modal-active { overflow: hidden; }
+    </style>
 </head>
-<body class="antialiased">
 
-<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:bg-white focus:text-[--ink] focus:px-4 focus:py-2 focus:rounded-xl">Skip to content</a>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
 
-<nav class="sticky top-0 z-50 bg-[--parchment]/90 backdrop-blur-md border-b border-[--ink]/10 px-6 py-4">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <a href="index.php" class="flex items-center gap-3 group">
-            <span class="w-11 h-11 rounded-full overflow-hidden ring-2 ring-[--brass] ring-offset-2 ring-offset-[--parchment] block transition-transform group-hover:scale-105">
-                <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-full h-full object-cover">
-            </span>
-            <span class="font-display text-2xl font-bold tracking-tight text-[--ink]">
-                C-Familia<span class="text-[--brass]">.</span>
-            </span>
-        </a>
+    <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 px-4 py-3.5 sm:px-6 transition-all">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.php" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1">
+                <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-10 h-10 object-contain rounded-xl transition-transform duration-300 group-hover:scale-105 shadow-sm">
+                <h1 class="text-2xl font-extrabold tracking-tight text-blue-700">
+                    C-Familia<span class="text-blue-400">.</span>
+                </h1>
+            </a>
 
-        <div class="hidden md:flex items-center gap-9 font-mono text-[.72rem] font-semibold uppercase tracking-[.15em] text-[--slate]">
-            <a href="#top" class="hover:text-[--clay] transition-colors">Top Performance</a>
-            <a href="#voices" class="hover:text-[--clay] transition-colors">Voices</a>
-            <a href="#announcements" class="hover:text-[--clay] transition-colors">Announcements</a>
-            <a href="#posts" class="hover:text-[--clay] transition-colors">Resources</a>
-            <a href="#contact" class="hover:text-[--clay] transition-colors">Contact</a>
+            <div class="hidden md:flex space-x-8 font-semibold text-slate-600">
+                <a href="#announcements" class="hover:text-blue-600 transition-colors py-1 focus:outline-none focus:text-blue-600">Announcements</a>
+                <a href="#posts" class="hover:text-blue-600 transition-colors py-1 focus:outline-none focus:text-blue-600">Resources</a>
+                <a href="#passers" class="hover:text-blue-600 transition-colors py-1 focus:outline-none focus:text-blue-600">Passers</a>
+                <a href="#contact" class="hover:text-blue-600 transition-colors py-1 focus:outline-none focus:text-blue-600">Contact</a>
+            </div>
+
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <a href="login.php" class="text-slate-600 font-bold px-3 sm:px-4 py-2 hover:text-blue-600 transition-colors focus:outline-none focus:text-blue-600">Login</a>
+                <a href="register.php" class="px-4 sm:px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 active:scale-98 transition shadow-md shadow-blue-600/10 hover:shadow-lg hover:shadow-blue-600/20 focus:outline-none focus:ring-2 focus:ring-blue-600/40">
+                    Join Us 
+                </a>
+            </div>
         </div>
+    </nav>
 
-        <div class="hidden md:flex items-center gap-3">
-            <a href="login.php" class="text-[--ink] font-semibold text-sm px-4 py-2 hover:text-[--clay] transition-colors">Login</a>
-            <a href="register.php" class="px-5 py-2.5 bg-[--ink] text-white text-sm font-semibold rounded-xl hover:bg-[--clay] transition-colors shadow-md">Join Us</a>
+    <header class="relative bg-slate-900 py-20 sm:py-24 lg:py-32 overflow-hidden flex-shrink-0">
+        <div class="absolute inset-0 opacity-10 pointer-events-none">
+            <img src="cuevaslogo.jpg" alt="Background Texture" class="w-full h-full object-cover filter grayscale scale-105">
         </div>
-
-        <button id="menuToggle" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl border border-[--ink]/15" aria-label="Open menu" aria-expanded="false">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </button>
-    </div>
-</nav>
-
-<div id="drawer" class="drawer fixed inset-y-0 right-0 z-[60] w-full max-w-xs bg-[--ink] text-white p-8 flex flex-col gap-2 shadow-2xl">
-    <div class="flex justify-between items-center mb-8">
-        <span class="font-display text-xl font-bold">Menu</span>
-        <button id="drawerClose" aria-label="Close menu" class="w-9 h-9 flex items-center justify-center rounded-lg border border-white/15">
-            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </button>
-    </div>
-    <a href="#top" class="drawer-link py-3 border-b border-white/10 font-mono text-xs uppercase tracking-[.15em]">Top Performance</a>
-    <a href="#voices" class="drawer-link py-3 border-b border-white/10 font-mono text-xs uppercase tracking-[.15em]">Voices</a>
-    <a href="#announcements" class="drawer-link py-3 border-b border-white/10 font-mono text-xs uppercase tracking-[.15em]">Announcements</a>
-    <a href="#posts" class="drawer-link py-3 border-b border-white/10 font-mono text-xs uppercase tracking-[.15em]">Resources</a>
-    <a href="#contact" class="drawer-link py-3 border-b border-white/10 font-mono text-xs uppercase tracking-[.15em]">Contact</a>
-    <div class="mt-8 flex flex-col gap-3">
-        <a href="login.php" class="text-center py-3 rounded-xl border border-white/20 font-semibold">Login</a>
-        <a href="register.php" class="text-center py-3 rounded-xl bg-[--brass] text-[--ink] font-semibold">Join Us</a>
-    </div>
-</div>
-<div id="drawerBackdrop" class="fixed inset-0 z-[55] bg-black/50 hidden"></div>
-
-<main id="main">
-
-    <header class="relative bg-[--ink] grain py-24 lg:py-32 overflow-hidden">
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-[--brass]/10 rounded-full blur-[130px]"></div>
-        <div class="absolute bottom-0 right-0 w-[420px] h-[420px] bg-[--clay]/10 rounded-full blur-[140px]"></div>
-        <div class="relative max-w-7xl mx-auto px-6 grid lg:grid-cols-2 items-center gap-14">
-            <div>
-                <span class="tab-label text-[--brass-2] mb-8">
-                    <img src="cuevaslogo.jpg" class="w-6 h-6 rounded-full object-cover" alt="">
-                    Criminology Review Center
-                </span>
-                <h2 class="font-display text-4xl md:text-6xl font-[800] text-white mb-6 leading-[1.08]">
-                    Your future,<br><span class="italic font-medium text-[--brass-2]">filed and sealed.</span>
+        <div class="absolute top-0 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-blue-600/20 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none"></div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 text-center lg:text-left grid lg:grid-cols-2 items-center gap-12 sm:gap-16">
+            <div class="space-y-6 sm:space-y-8">
+                <div class="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 animate-bounce-slow backdrop-blur-sm">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black text-base shadow-md shadow-blue-600/40 text-white">C</div>
+                    <span class="text-white font-bold tracking-wider uppercase text-[10px]">C-Familia Services</span>
+                </div>
+                <h2 class="text-4xl sm:text-5xl md:text-6xl font-[800] text-white tracking-tight leading-[1.1]">
+                    Your Future Starts <span class="text-blue-400">Right Here.</span>
                 </h2>
-                <p class="text-lg text-slate-300 mb-10 leading-relaxed max-w-md">
+                <p class="text-lg sm:text-xl text-slate-300 max-w-xl mx-auto lg:mx-0 leading-relaxed italic font-medium">
                     "Join our family, and together, we'll pave the way towards your success."
                 </p>
-                <div class="flex flex-wrap gap-4">
-                    <a href="register.php" class="px-8 py-4 bg-[--brass] text-[--ink] rounded-2xl text-base font-bold hover:bg-[--brass-2] transition-all hover:-translate-y-0.5 shadow-xl shadow-[--brass]/20">Enroll Now</a>
-                    <a href="#top" class="px-8 py-4 bg-white/5 text-white border border-white/15 rounded-2xl text-base font-bold hover:bg-white/10 transition-all">View Success Stories</a>
+                <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+                    <a href="register.php" class="px-8 py-4 bg-blue-600 text-white rounded-2xl text-base sm:text-lg font-bold hover:bg-blue-500 active:scale-98 transition-all transform hover:-translate-y-0.5 shadow-xl shadow-blue-600/25 focus:outline-none focus:ring-2 focus:ring-blue-500">Enroll Now</a>
+                    <a href="#passers" class="px-8 py-4 bg-white/5 text-white border border-white/10 hover:border-white/20 rounded-2xl text-base sm:text-lg font-bold hover:bg-white/10 active:scale-98 transition-all focus:outline-none focus:ring-2 focus:ring-white/40">View Success Stories</a>
                 </div>
             </div>
 
-            <div class="hidden lg:flex justify-center">
-                <div class="bg-white/[.04] backdrop-blur-lg p-9 rounded-[2.5rem] border border-white/10 relative w-full max-w-sm">
-                    <div class="flex items-center gap-5 mb-8">
-                        <div class="seal seal--lg">
-                            <span class="seal__text"><?= htmlspecialchars($display_rate) ?></span>
-                        </div>
-                        <div>
-                            <p class="text-white font-display font-bold text-lg leading-tight">Passing Rate</p>
-                            <p class="text-slate-400 text-sm mt-1"><?= (int)$total_passers ?>+ licensed passers on file</p>
-                        </div>
+            <div class="hidden lg:block">
+                <div class="bg-white/5 backdrop-blur-md p-8 sm:p-10 rounded-[2.5rem] border border-white/10 relative overflow-hidden group shadow-2xl">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                    <div class="flex items-center gap-5 mb-6 relative">
+                        <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center font-bold text-lg border border-emerald-500/30 shadow-inner">✓</div>
+                        <p class="text-white text-xl font-extrabold tracking-tight"><?= $display_rate ?> Passing Rate (<?= $total_passers ?>+ Passers)</p>
                     </div>
-                    <div class="h-2.5 bg-white/10 rounded-full overflow-hidden mb-3">
-                        <div class="h-full bg-gradient-to-r from-[--brass] to-[--brass-2] w-[95%] rounded-full"></div>
+                    <div class="space-y-4 relative">
+                        <div class="h-3 bg-white/10 rounded-full overflow-hidden p-0.5 border border-white/5">
+                            <div class="h-full bg-gradient-to-r from-blue-600 to-blue-400 w-[95%] rounded-full shadow-[0_0_15px_rgba(37,99,235,0.6)]"></div>
+                        </div>
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.25em] text-right">Academic Excellence • 2026</p>
                     </div>
-                    <p class="tab-label text-slate-500 justify-end">Academic Excellence &middot; 2026</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- ===================== TOP PERFORMANCE ===================== -->
-    <section id="top" class="py-24 md:py-28 bg-[--parchment] px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="reveal flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+    <section class="py-20 sm:py-24 bg-slate-950 text-white relative overflow-hidden">
+        <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16">
                 <div>
-                    <span class="tab-label text-[--clay] mb-3">Dossier &middot; Elite Achievers</span>
-                    <h3 class="font-display text-4xl md:text-5xl font-[800] tracking-tight text-[--ink]">Top Performance<span class="text-[--brass]">.</span></h3>
+                    <span class="text-blue-500 font-black uppercase text-[11px] tracking-[0.35em] mb-3 block">Elite Achievers</span>
+                    <h3 class="text-3xl sm:text-4xl md:text-5xl font-[800] tracking-tight">Top Performance<span class="text-blue-600">.</span></h3>
                 </div>
-                <p class="text-[--slate] max-w-sm">Honoring reviewees who attained an exceptional board rating of 95% and above.</p>
+                <p class="text-slate-400 max-w-sm font-medium text-sm sm:text-base leading-relaxed">Honoring our reviewees who attained an exceptional board rating of 95% and above.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <?php 
+                $top_query = mysqli_query($conn, "SELECT * FROM passers WHERE rating >= 95 ORDER BY rating DESC");
+                $top_count = mysqli_num_rows($top_query);
+                $displayed_top = 0;
+                
+                if($top_count > 0):
+                    while($top = mysqli_fetch_assoc($top_query)):
+                        $photoPath = file_exists("uploads/profiles/".$top['photo']) ? "uploads/profiles/".$top['photo'] : "uploads/passers/".$top['photo'];
+                        $displayed_top++;
+                        if ($displayed_top <= 6):
+                ?>
+                <div class="bg-white/5 border border-white/10 hover:border-blue-500/40 p-6 sm:p-8 rounded-[2.5rem] group hover:bg-white/[0.08] transition-all duration-300 flex flex-col justify-between shadow-lg hover:-translate-y-1.5 border-b-4 border-b-blue-600">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="relative flex-shrink-0">
+                            <img src="<?= $photoPath ?>" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-[2rem] object-cover ring-4 ring-blue-500/10 shadow-2xl transition-transform duration-300 group-hover:scale-102">
+                            <div class="absolute -top-2.5 -right-2.5 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md shadow-md uppercase tracking-wider">TOP</div>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-lg sm:text-xl font-bold text-white truncate"><?= $top['name'] ?></h4>
+                            <p class="text-blue-400 text-[10px] font-black uppercase tracking-widest mt-1 truncate"><?= $top['program'] ?></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-900/40 rounded-2xl p-4 sm:p-5 border border-white/5">
+                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-wider">Board Rating</span>
+                        <span class="text-2xl sm:text-3xl font-[900] text-blue-400 italic tracking-tight"><?= number_format($top['rating'], 2) ?>%</span>
+                    </div>
+                </div>
+                <?php 
+                        endif;
+                    endwhile; 
+                else: 
+                ?>
+                <div class="col-span-full py-16 text-center bg-white/5 rounded-[2.5rem] border border-dashed border-white/10">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs sm:text-sm">Top results are currently being verified.</p>
+                </div>
+                <?php endif; ?>
             </div>
 
-            <?php if (count($top_featured) > 0): ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <?php foreach ($top_featured as $p): ?>
-                <div class="reveal"><?= render_passer_card($p) ?></div>
-                <?php endforeach; ?>
-            </div>
-            <?php if (count($top_more) > 0): ?>
-            <div class="reveal text-center mt-12">
-                <button type="button" data-modal-open="modal-top" class="inline-flex items-center gap-3 px-7 py-3.5 bg-[--ink] text-white rounded-xl font-semibold text-sm hover:bg-[--clay] transition-colors">
-                    See <?= count($top_more) ?> more achiever<?= count($top_more) === 1 ? '' : 's' ?>
-                    <span aria-hidden="true">&rarr;</span>
+            <?php if($top_count > 6): ?>
+            <div class="mt-12 sm:mt-16 text-center">
+                <button onclick="openModal('topPerformanceModal')" class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 hover:border-white/20 transition-all text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    See More Top Performers
                 </button>
             </div>
             <?php endif; ?>
-            <?php else: ?>
-            <div class="py-14 text-center bg-white rounded-[2rem] border border-dashed border-[--ink]/15">
-                <p class="text-[--slate] font-semibold uppercase tracking-widest text-sm">Top results are currently being verified.</p>
-            </div>
-            <?php endif; ?>
         </div>
     </section>
 
-    <!-- ===================== VOICE OF SUCCESS ===================== -->
-    <section id="voices" class="py-24 md:py-28 bg-[--ink] grain px-6">
+    <section class="py-20 sm:py-24 bg-white px-4 sm:px-6 border-b border-slate-100">
         <div class="max-w-7xl mx-auto">
-            <div class="reveal text-center mb-14">
-                <span class="tab-label text-[--brass-2] justify-center mb-3">Dossier &middot; Student Voice</span>
-                <h3 class="font-display text-4xl md:text-5xl font-[800] text-white tracking-tight">Voice of Success<span class="text-[--brass]">.</span></h3>
+            <div class="text-center mb-12 sm:mb-16">
+                <span class="text-blue-600 font-black uppercase text-[11px] tracking-[0.35em] mb-3 block">Student Voice</span>
+                <h3 class="text-3xl sm:text-4xl font-[800] text-slate-900 tracking-tight">Voice of Success<span class="text-blue-600">.</span></h3>
             </div>
 
-            <?php if (count($test_featured) > 0): ?>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
-                <?php foreach ($test_featured as $t): ?>
-                <div class="reveal"><?= render_testimonial_card($t) ?></div>
-                <?php endforeach; ?>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <?php 
+                $test_query = mysqli_query($conn, "SELECT t.*, u.firstname, u.lastname, u.profile_pic FROM testimonials t JOIN users u ON t.user_id = u.id ORDER BY t.created_at DESC");
+                $test_count = mysqli_num_rows($test_query);
+                $displayed_test = 0;
+                
+                if($test_count > 0):
+                    mysqli_data_seek($test_query, 0);
+                    while($row = mysqli_fetch_assoc($test_query)):
+                        $userPic = !empty($row['profile_pic']) ? "uploads/profiles/".$row['profile_pic'] : "uploads/passers/default_user.jpg";
+                        $displayed_test++;
+                        if ($displayed_test <= 6):
+                ?>
+                <div class="bg-slate-50 p-6 sm:p-8 rounded-[2.5rem] border border-slate-200/60 relative group hover:bg-blue-50/40 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-md">
+                    <div class="text-blue-200/60 absolute top-4 right-6 text-6xl font-serif select-none pointer-events-none group-hover:text-blue-300 transition-colors">“</div>
+                    <div class="relative z-10 flex flex-col h-full justify-between">
+                        <p class="text-slate-600 italic leading-relaxed text-sm sm:text-base mb-6 line-clamp-3">
+                            <?= htmlspecialchars($row['content']) ?>
+                        </p>
+                        <div class="flex items-center gap-4 border-t border-slate-200/60 pt-4">
+                            <img src="<?= $userPic ?>" class="w-11 h-11 rounded-xl object-cover ring-4 ring-white shadow-sm flex-shrink-0">
+                            <div class="min-w-0">
+                                <h5 class="font-bold text-slate-900 text-sm truncate"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
+                                <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest mt-0.5">Verified Student</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php 
+                        endif;
+                    endwhile; 
+                else: 
+                ?>
+                <div class="col-span-full py-16 text-center bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Awaiting student experiences...</p>
+                </div>
+                <?php endif; ?>
             </div>
-            <?php if (count($test_more) > 0): ?>
-            <div class="reveal text-center mt-12">
-                <button type="button" data-modal-open="modal-voices" class="inline-flex items-center gap-3 px-7 py-3.5 bg-[--brass] text-[--ink] rounded-xl font-semibold text-sm hover:bg-[--brass-2] transition-colors">
-                    Read <?= count($test_more) ?> more stor<?= count($test_more) === 1 ? 'y' : 'ies' ?>
-                    <span aria-hidden="true">&rarr;</span>
+
+            <?php if($test_count > 6): ?>
+            <div class="mt-12 text-center">
+                <button onclick="openModal('testimonialsModal')" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-all text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-slate-400">
+                    Read All Testimonials
                 </button>
             </div>
             <?php endif; ?>
-            <?php else: ?>
-            <div class="py-14 text-center bg-white/5 rounded-[2rem] border border-dashed border-white/15">
-                <p class="text-slate-400 font-semibold uppercase tracking-widest text-xs">Awaiting student experiences&hellip;</p>
-            </div>
-            <?php endif; ?>
         </div>
     </section>
 
-    <!-- ===================== ANNOUNCEMENTS ===================== -->
-    <section id="announcements" class="py-24 md:py-28 px-6 max-w-7xl mx-auto">
-        <div class="reveal flex items-end justify-between gap-6 mb-12 flex-wrap">
-            <div>
-                <span class="tab-label text-[--clay] mb-3">Dossier &middot; Bulletin</span>
-                <h3 class="font-display text-4xl font-[800] tracking-tight text-[--ink]">Recent Announcements<span class="text-[--brass]">.</span></h3>
+    <section id="announcements" class="py-20 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 sm:mb-12">
+            <div class="flex items-center gap-3">
+                <span class="w-2.5 h-8 bg-blue-600 rounded-full"></span>
+                <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Recent Announcements</h3>
             </div>
-            <?php if (count($ann_more) > 0): ?>
-            <button type="button" data-modal-open="modal-announcements" class="font-mono text-xs font-bold uppercase tracking-[.15em] text-[--clay] hover:text-[--ink] transition-colors inline-flex items-center gap-2">
-                See all <?= count($ann_all) ?> <span aria-hidden="true">&rarr;</span>
+            <?php 
+            $ann_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM announcements WHERE audience = 'General'");
+            $ann_count = mysqli_fetch_assoc($ann_total_query)['count'];
+            if($ann_count > 3): 
+            ?>
+            <button onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 tracking-wider hover:text-blue-700 transition-colors flex items-center gap-1 group self-start sm:self-auto focus:outline-none focus:underline">
+                See All Announcements <span class="transition-transform group-hover:translate-x-1">→</span>
             </button>
             <?php endif; ?>
         </div>
-
-        <?php if (count($ann_featured) > 0): ?>
-        <div class="grid md:grid-cols-3 gap-7">
-            <?php foreach ($ann_featured as $a): ?>
-            <div class="reveal"><?= render_announcement_card($a) ?></div>
-            <?php endforeach; ?>
-        </div>
-        <?php else: ?>
-        <div class="py-14 text-center bg-white rounded-[2rem] border border-dashed border-[--ink]/15">
-            <p class="text-[--slate] font-semibold uppercase tracking-widest text-sm">No announcements yet.</p>
-        </div>
-        <?php endif; ?>
-    </section>
-
-    <!-- ===================== LEARNING MATERIALS ===================== -->
-    <section id="posts" class="py-24 md:py-28 px-6 max-w-7xl mx-auto border-t border-[--ink]/10">
-        <div class="reveal flex items-end justify-between gap-6 mb-12 flex-wrap">
-            <div>
-                <span class="tab-label text-[--clay] mb-3">Dossier &middot; Library</span>
-                <h3 class="font-display text-4xl font-[800] tracking-tight text-[--ink]">Learning Materials<span class="text-[--brass]">.</span></h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <?php 
+            $ann_query = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'General' ORDER BY created_at DESC LIMIT 3");
+            while($ann = mysqli_fetch_assoc($ann_query)):
+                $is_urgent = ($ann['category'] == 'Urgent');
+            ?>
+            <div class="p-6 sm:p-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all relative overflow-hidden group flex flex-col justify-between">
+                <?php if($is_urgent): ?>
+                <span class="absolute top-0 right-0 bg-rose-600 text-white text-[9px] px-3.5 py-1.5 font-black uppercase tracking-widest rounded-bl-xl shadow-sm">Urgent</span>
+                <?php endif; ?>
+                <div>
+                    <p class="text-blue-600 font-black text-[10px] uppercase tracking-wider mb-3"><?= date('M d, Y', strtotime($ann['created_at'])) ?></p>
+                    <h4 class="text-lg sm:text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors text-slate-900 leading-tight"><?= $ann['title'] ?></h4>
+                    <p class="text-slate-600 leading-relaxed text-sm mb-4 line-clamp-3"><?= $ann['message'] ?></p>
+                </div>
             </div>
-            <?php if (count($posts_more) > 0): ?>
-            <button type="button" data-modal-open="modal-posts" class="font-mono text-xs font-bold uppercase tracking-[.15em] text-[--clay] hover:text-[--ink] transition-colors inline-flex items-center gap-2">
-                Browse full library <span aria-hidden="true">&rarr;</span>
-            </button>
-            <?php endif; ?>
+            <?php endwhile; ?>
         </div>
-
-        <?php if (count($posts_featured) > 0): ?>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
-            <?php foreach ($posts_featured as $p): ?>
-            <div class="reveal"><?= render_post_card($p) ?></div>
-            <?php endforeach; ?>
-        </div>
-        <?php else: ?>
-        <div class="py-14 text-center bg-white rounded-[2rem] border border-dashed border-[--ink]/15">
-            <p class="text-[--slate] font-semibold uppercase tracking-widest text-sm">No resources uploaded yet.</p>
-        </div>
-        <?php endif; ?>
     </section>
 
-    <!-- ===================== HALL OF FAME STRIP ===================== -->
-    <?php if (count($passers_all) > 0): ?>
-    <section id="passers" class="py-24 bg-[--parchment-2] px-6">
+    <section id="posts" class="py-20 sm:py-24 bg-slate-50 border-t border-slate-200/60 px-4 sm:px-6 w-full">
         <div class="max-w-7xl mx-auto">
-            <div class="reveal text-center mb-14">
-                <span class="tab-label text-[--clay] justify-center mb-3">Dossier &middot; Full Roster</span>
-                <h3 class="font-display text-4xl font-[800] tracking-tight text-[--ink]">The Hall of Fame<span class="text-[--brass]">.</span></h3>
-                <p class="text-[--slate] max-w-2xl mx-auto mt-4">Celebrating every C-Familia student who successfully conquered their board exams.</p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
-                <?php foreach ($passers_all as $passer): $pPath = photo_path($passer['photo']); ?>
-                <div class="reveal p-5 bg-white rounded-[1.75rem] border border-[--ink]/8 hover:border-[--brass]/50 transition-colors text-center">
-                    <img src="<?= htmlspecialchars($pPath) ?>" loading="lazy" class="w-16 h-16 rounded-full mx-auto mb-3 object-cover border-4 border-[--parchment]" alt="<?= htmlspecialchars($passer['name']) ?>">
-                    <h5 class="font-bold text-[--ink] text-sm leading-tight mb-1"><?= htmlspecialchars($passer['name']) ?></h5>
-                    <p class="font-mono text-[9px] text-[--clay] font-bold uppercase tracking-wider mb-1.5"><?= htmlspecialchars($passer['program']) ?></p>
-                    <span class="font-mono text-[11px] font-bold text-[--ink]"><?= number_format($passer['rating'], 2) ?>%</span>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 sm:mb-12">
+                <div class="flex items-center gap-3">
+                    <span class="w-2.5 h-8 bg-indigo-600 rounded-full"></span>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Learning Materials</h3>
                 </div>
-                <?php endforeach; ?>
+                <?php 
+                $posts_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM posts");
+                $posts_count = mysqli_fetch_assoc($posts_total_query)['count'];
+                if($posts_count > 6): 
+                ?>
+                <button onclick="openModal('postsModal')" class="text-xs font-black uppercase text-indigo-600 tracking-wider hover:text-indigo-700 transition-colors flex items-center gap-1 group self-start sm:self-auto focus:outline-none focus:underline">
+                    Browse All Materials <span class="transition-transform group-hover:translate-x-1">→</span>
+                </button>
+                <?php endif; ?>
             </div>
-        </div>
-    </section>
-    <?php endif; ?>
-
-    <section id="contact" class="py-24 px-6 bg-[--parchment] border-t border-[--ink]/10">
-        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-            <div class="reveal">
-                <span class="tab-label text-[--clay] mb-3">Visit Us</span>
-                <h3 class="font-display text-4xl font-[800] mb-8 tracking-tight text-[--ink]">Our Branches<span class="text-[--brass]">.</span></h3>
-                <div class="space-y-7">
-                    <div class="flex items-start gap-5">
-                        <div class="w-13 h-13 w-[3.25rem] h-[3.25rem] bg-[--ink] text-[--brass-2] rounded-2xl flex items-center justify-center text-xl flex-shrink-0">📍</div>
-                        <div>
-                            <p class="font-mono font-bold text-[--ink] uppercase text-xs tracking-widest mb-1">Ozamiz Main</p>
-                            <p class="text-[--slate] font-medium">Ozamiz City, Philippines, 7200</p>
-                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-widest mt-2 border border-emerald-100">&#9679; Always Open</span>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <?php 
+                $posts_query = mysqli_query($conn, "SELECT * FROM posts ORDER BY created_at DESC LIMIT 6");
+                while($post = mysqli_fetch_assoc($posts_query)):
+                ?>
+                <article class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200/80 overflow-hidden hover:shadow-md transition-all duration-300 group flex flex-col justify-between p-6 sm:p-8">
+                    <div>
+                        <div class="mb-4">
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 text-[9px] font-black rounded-md uppercase tracking-wider border border-indigo-100">Resource</span>
                         </div>
+                        <h4 class="text-lg sm:text-xl font-bold mb-3 group-hover:text-indigo-600 transition-colors text-slate-900 leading-tight"><?= $post['title'] ?></h4>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6 line-clamp-2"><?= $post['content'] ?></p>
                     </div>
-                    <div class="flex items-start gap-5">
-                        <div class="w-[3.25rem] h-[3.25rem] bg-[--clay] text-white rounded-2xl flex items-center justify-center text-xl flex-shrink-0">📍</div>
-                        <div>
-                            <p class="font-mono font-bold text-[--ink] uppercase text-xs tracking-widest mb-1">Oroquieta Branch</p>
-                            <p class="text-[--slate] font-medium">Oroquieta City, Misamis Occidental</p>
-                        </div>
+                    <?php if($post['file_path']): ?>
+                    <div class="border-t border-slate-100 pt-4">
+                        <a href="uploads/resources/<?= $post['file_path'] ?>" class="inline-flex items-center gap-1.5 text-indigo-600 font-black text-[11px] uppercase tracking-wider hover:gap-3 transition-all focus:outline-none focus:underline">
+                            Download File <span class="text-sm">→</span>
+                        </a>
                     </div>
-                </div>
-            </div>
-            <div class="reveal bg-white p-9 md:p-10 rounded-[2.5rem] border border-[--ink]/8 shadow-sm">
-                <h3 class="font-display text-2xl font-bold mb-8 text-[--ink]">Get in Touch</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-5 p-5 bg-[--parchment] rounded-2xl transition-transform hover:translate-x-1.5">
-                        <span class="text-2xl">📞</span>
-                        <div>
-                            <p class="font-mono text-[10px] font-bold uppercase text-[--slate] tracking-widest">Phone</p>
-                            <p class="font-bold text-[--ink]">0910 167 6805</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-5 p-5 bg-[--parchment] rounded-2xl transition-transform hover:translate-x-1.5">
-                        <span class="text-2xl">✉️</span>
-                        <div>
-                            <p class="font-mono text-[10px] font-bold uppercase text-[--slate] tracking-widest">Email</p>
-                            <p class="font-bold text-[--ink]">shielamariscuevas@gmail.com</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-5 p-5 bg-[--parchment] rounded-2xl transition-transform hover:translate-x-1.5">
-                        <span class="text-2xl">💬</span>
-                        <div>
-                            <p class="font-mono text-[10px] font-bold uppercase text-[--slate] tracking-widest">Messenger</p>
-                            <p class="font-bold text-[--ink]">C-Familia Tutorial Services</p>
-                        </div>
-                    </div>
-                </div>
+                    <?php endif; ?>
+                </article>
+                <?php endwhile; ?>
             </div>
         </div>
     </section>
 
-</main>
-
-<footer class="bg-[--ink] pt-20 pb-10 px-6 text-white overflow-hidden relative">
-    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[--brass] via-[--brass-2] to-[--clay]"></div>
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10 mb-16 relative">
-        <div class="flex items-center gap-4">
-            <span class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-[--brass] block">
-                <img src="cuevaslogo.jpg" alt="" class="w-full h-full object-cover">
-            </span>
-            <span class="font-display text-3xl font-[900] tracking-tighter">C-Familia<span class="text-[--brass]">.</span></span>
+    <section id="passers" class="py-20 sm:py-24 bg-slate-100 px-4 sm:px-6 border-t border-slate-200/40">
+        <div class="max-w-7xl mx-auto text-center mb-12 sm:mb-16">
+            <h3 class="text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
+            <p class="text-slate-500 font-medium text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">Celebrating every C-Familia student who successfully conquered their board exams.</p>
         </div>
-        <div class="font-mono text-slate-500 text-xs font-bold uppercase tracking-[.2em] text-center md:text-left">
-            Empowering the future of Criminologists since 2024
-        </div>
-    </div>
-    <div class="max-w-7xl mx-auto text-center text-slate-600 text-[10px] border-t border-white/10 pt-10 uppercase tracking-[.3em] font-bold">
-        &copy; <?= date("Y") ?> C-Familia Tutorial Services &middot; Registered Educational Provider
-    </div>
-</footer>
-
-<!-- ===================== MODALS ===================== -->
-
-<!-- Top performance modal -->
-<div id="modal-top" class="modal fixed inset-0 z-[100] items-start justify-center overflow-y-auto p-4 md:p-8" data-modal>
-    <div class="modal-backdrop fixed inset-0 bg-[--ink]/85 backdrop-blur-sm" data-modal-close></div>
-    <div class="modal-panel relative w-full max-w-5xl my-8 bg-[--parchment] rounded-[2rem] shadow-2xl">
-        <div class="sticky top-0 flex items-center justify-between px-8 py-6 bg-[--parchment] border-b border-[--ink]/10 rounded-t-[2rem]">
-            <div>
-                <span class="tab-label text-[--clay] mb-1">Full Roster</span>
-                <h3 class="font-display text-2xl font-bold text-[--ink]">All Elite Achievers</h3>
+        <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
+            <?php 
+            $passers_query = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC LIMIT 20");
+            while($passer = mysqli_fetch_assoc($passers_query)): 
+                $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
+            ?>
+            <div class="p-5 sm:p-6 bg-white rounded-3xl shadow-sm border border-slate-200 hover:border-blue-400/60 transition-colors text-center group flex flex-col justify-between">
+                <div>
+                    <img src="<?= $pPath ?>" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 group-hover:scale-105 transition-transform shadow-sm">
+                    <h5 class="font-bold text-slate-900 text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
+                    <p class="text-[9px] text-blue-600 font-black uppercase tracking-wider mb-3 truncate"><?= $passer['program'] ?></p>
+                </div>
+                <div class="flex items-center justify-center gap-1.5 bg-slate-50 rounded-xl py-2 border border-slate-100">
+                    <span class="text-xs sm:text-sm font-[900] text-slate-800 tracking-tight"><?= $passer['rating'] ?>%</span>
+                    <span class="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Rating</span>
+                </div>
             </div>
-            <button type="button" data-modal-close aria-label="Close" class="w-10 h-10 flex items-center justify-center rounded-xl border border-[--ink]/15 hover:bg-[--ink] hover:text-white transition-colors">
-                <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
+            <?php endwhile; ?>
         </div>
-        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <?php foreach ($top_all as $p): ?>
-            <?= render_passer_card($p) ?>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</div>
+    </section>
 
-<!-- Voice of success modal -->
-<div id="modal-voices" class="modal fixed inset-0 z-[100] items-start justify-center overflow-y-auto p-4 md:p-8" data-modal>
-    <div class="modal-backdrop fixed inset-0 bg-[--ink]/85 backdrop-blur-sm" data-modal-close></div>
-    <div class="modal-panel relative w-full max-w-5xl my-8 bg-[--ink] rounded-[2rem] shadow-2xl">
-        <div class="sticky top-0 flex items-center justify-between px-8 py-6 bg-[--ink] border-b border-white/10 rounded-t-[2rem]">
-            <div>
-                <span class="tab-label text-[--brass-2] mb-1">Full Testimony</span>
-                <h3 class="font-display text-2xl font-bold text-white">All Student Voices</h3>
+    <section id="contact" class="py-20 sm:py-24 px-4 sm:px-6 bg-white border-t border-slate-100 w-full">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 sm:gap-16 items-center">
+            <div class="space-y-8">
+                <h3 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Visit our Branches<span class="text-blue-600">.</span></h3>
+                <div class="space-y-6 sm:space-y-8">
+                    <div class="flex items-start gap-5">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl flex items-center justify-center text-xl flex-shrink-0 shadow-sm">📍</div>
+                        <div>
+                            <p class="font-black text-slate-900 uppercase text-xs tracking-wider mb-1">Ozamiz Main</p>
+                            <p class="text-slate-600 font-medium text-sm sm:text-base">Ozamiz City, Philippines, 7200</p>
+                            <span class="inline-flex items-center gap-1.5 text-[9px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider mt-2.5 border border-emerald-100">● Always Open</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-5">
+                        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl flex items-center justify-center text-xl flex-shrink-0 shadow-sm">📍</div>
+                        <div>
+                            <p class="font-black text-slate-900 uppercase text-xs tracking-wider mb-1">Oroquieta Branch</p>
+                            <p class="text-slate-600 font-medium text-sm sm:text-base">Oroquieta City, Misamis Occidental</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button type="button" data-modal-close aria-label="Close" class="w-10 h-10 flex items-center justify-center rounded-xl border border-white/15 text-white hover:bg-[--brass] hover:text-[--ink] transition-colors">
-                <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
-        </div>
-        <div class="p-8 grid md:grid-cols-2 gap-6">
-            <?php foreach ($test_all as $t): ?>
-            <?= render_testimonial_card($t) ?>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</div>
-
-<!-- Announcements modal -->
-<div id="modal-announcements" class="modal fixed inset-0 z-[100] items-start justify-center overflow-y-auto p-4 md:p-8" data-modal>
-    <div class="modal-backdrop fixed inset-0 bg-[--ink]/85 backdrop-blur-sm" data-modal-close></div>
-    <div class="modal-panel relative w-full max-w-4xl my-8 bg-[--parchment] rounded-[2rem] shadow-2xl">
-        <div class="sticky top-0 flex items-center justify-between px-8 py-6 bg-[--parchment] border-b border-[--ink]/10 rounded-t-[2rem]">
-            <div>
-                <span class="tab-label text-[--clay] mb-1">Full Bulletin</span>
-                <h3 class="font-display text-2xl font-bold text-[--ink]">All Announcements</h3>
+            
+            <div class="bg-slate-50 p-6 sm:p-10 rounded-[2.5rem] border border-slate-200/60 shadow-inner">
+                <h3 class="text-xl sm:text-2xl font-bold mb-6 text-slate-900 tracking-tight">Get in Touch</h3>
+                <div class="space-y-3.5">
+                    <div class="flex items-center gap-4 p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-transform hover:translate-x-1">
+                        <span class="text-xl select-none">📞</span>
+                        <div>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">Phone</p>
+                            <p class="font-bold text-slate-900 text-sm sm:text-base">0910 167 6805</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-transform hover:translate-x-1">
+                        <span class="text-xl select-none">✉️</span>
+                        <div>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">Email</p>
+                            <p class="font-bold text-slate-900 text-sm sm:text-base break-all">shielamariscuevas@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-transform hover:translate-x-1">
+                        <span class="text-xl select-none">💬</span>
+                        <div>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-wider">Messenger</p>
+                            <p class="font-bold text-slate-900 text-sm sm:text-base">C-Familia Tutorial Services</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button type="button" data-modal-close aria-label="Close" class="w-10 h-10 flex items-center justify-center rounded-xl border border-[--ink]/15 hover:bg-[--ink] hover:text-white transition-colors">
-                <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
         </div>
-        <div class="p-8 grid md:grid-cols-2 gap-6">
-            <?php foreach ($ann_all as $a): ?>
-            <?= render_announcement_card($a) ?>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</div>
+    </section>
 
-<!-- Learning materials modal -->
-<div id="modal-posts" class="modal fixed inset-0 z-[100] items-start justify-center overflow-y-auto p-4 md:p-8" data-modal>
-    <div class="modal-backdrop fixed inset-0 bg-[--ink]/85 backdrop-blur-sm" data-modal-close></div>
-    <div class="modal-panel relative w-full max-w-5xl my-8 bg-[--parchment] rounded-[2rem] shadow-2xl">
-        <div class="sticky top-0 flex items-center justify-between px-8 py-6 bg-[--parchment] border-b border-[--ink]/10 rounded-t-[2rem]">
-            <div>
-                <span class="tab-label text-[--clay] mb-1">Full Library</span>
-                <h3 class="font-display text-2xl font-bold text-[--ink]">All Learning Materials</h3>
+    <footer class="bg-slate-950 pt-16 pb-8 px-4 sm:px-6 text-white overflow-hidden relative mt-auto">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400"></div>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-12 relative">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-lg shadow-lg shadow-blue-600/20">C</div>
+                <h1 class="text-2xl font-[900] tracking-tight">C-Familia<span class="text-blue-500">.</span></h1>
             </div>
-            <button type="button" data-modal-close aria-label="Close" class="w-10 h-10 flex items-center justify-center rounded-xl border border-[--ink]/15 hover:bg-[--ink] hover:text-white transition-colors">
-                <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
+            <div class="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] text-center md:text-left">
+                Empowering the future of Criminologists since 2024
+            </div>
         </div>
-        <div class="p-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php foreach ($posts_all as $p): ?>
-            <?= render_post_card($p) ?>
-            <?php endforeach; ?>
+        <div class="max-w-7xl mx-auto text-center text-slate-600 text-[9px] border-t border-white/5 pt-8 uppercase tracking-[0.25em] font-black">
+            &copy; <?= date("Y") ?> C-Familia Tutorial Services • Registered Educational Provider
+        </div>
+    </footer>
+
+    <div id="topPerformanceModal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-[2.5rem] border border-white/10 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-6 sm:p-8 border-b border-white/5 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">All Top Performers</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Honored elite reviewees with board ratings of 95% and above.</p>
+                </div>
+                <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center text-lg font-bold focus:outline-none">✕</button>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <?php 
+                    if($top_count > 0):
+                        mysqli_data_seek($top_query, 0);
+                        while($top = mysqli_fetch_assoc($top_query)):
+                            $photoPath = file_exists("uploads/profiles/".$top['photo']) ? "uploads/profiles/".$top['photo'] : "uploads/passers/".$top['photo'];
+                    ?>
+                    <div class="bg-white/5 border border-white/10 p-5 rounded-3xl flex flex-col justify-between">
+                        <div class="flex items-center gap-4 mb-4">
+                            <img src="<?= $photoPath ?>" class="w-14 h-14 rounded-xl object-cover ring-2 ring-blue-500/20">
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-white text-base truncate"><?= $top['name'] ?></h4>
+                                <p class="text-blue-400 text-[10px] font-black uppercase tracking-wider truncate"><?= $top['program'] ?></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-950/40 rounded-xl p-3.5 border border-white/5">
+                            <span class="text-slate-400 text-[9px] font-black uppercase tracking-wider">Board Rating</span>
+                            <span class="text-xl font-[900] text-blue-400 italic"><?= number_format($top['rating'], 2) ?>%</span>
+                        </div>
+                    </div>
+                    <?php 
+                        endwhile;
+                    endif; 
+                    ?>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-(function(){
-    // ---- Mobile drawer ----
-    var menuToggle = document.getElementById('menuToggle');
-    var drawer = document.getElementById('drawer');
-    var drawerBackdrop = document.getElementById('drawerBackdrop');
-    var drawerClose = document.getElementById('drawerClose');
+    <div id="testimonialsModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Student Testimonials</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-1">Real stories from real passers within our learning community.</p>
+                </div>
+                <button onclick="closeModal('testimonialsModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors flex items-center justify-center text-lg font-bold focus:outline-none">✕</button>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <?php 
+                    if($test_count > 0):
+                        mysqli_data_seek($test_query, 0);
+                        while($row = mysqli_fetch_assoc($test_query)):
+                            $userPic = !empty($row['profile_pic']) ? "uploads/profiles/".$row['profile_pic'] : "uploads/passers/default_user.jpg";
+                    ?>
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/60 flex flex-col justify-between relative group">
+                        <p class="text-slate-600 italic text-sm leading-relaxed mb-6">
+                            <?= htmlspecialchars($row['content']) ?>
+                        </p>
+                        <div class="flex items-center gap-3.5 border-t border-slate-200/60 pt-3.5">
+                            <img src="<?= $userPic ?>" class="w-10 h-10 rounded-lg object-cover ring-2 ring-white shadow-sm flex-shrink-0">
+                            <div class="min-w-0">
+                                <h5 class="font-bold text-slate-900 text-xs truncate"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
+                                <p class="text-[8px] font-black text-blue-600 uppercase tracking-widest mt-0.5">Verified Student</p>
+                            </div>
+                        </div>
+                    </div>
+                    <?php 
+                        endwhile;
+                    endif; 
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function openDrawer(){
-        drawer.classList.add('is-open');
-        drawerBackdrop.classList.remove('hidden');
-        menuToggle.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeDrawer(){
-        drawer.classList.remove('is-open');
-        drawerBackdrop.classList.add('hidden');
-        menuToggle.setAttribute('aria-expanded', 'false');
-        if (!document.querySelector('.modal.is-open')) document.body.style.overflow = '';
-    }
-    menuToggle.addEventListener('click', openDrawer);
-    drawerClose.addEventListener('click', closeDrawer);
-    drawerBackdrop.addEventListener('click', closeDrawer);
-    document.querySelectorAll('.drawer-link').forEach(function(a){
-        a.addEventListener('click', closeDrawer);
-    });
+    <div id="announcementsModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">All General Announcements</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-1">Stay up to date with updates from C-Familia Tutorial Services.</p>
+                </div>
+                <button onclick="closeModal('announcementsModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors flex items-center justify-center text-lg font-bold focus:outline-none">✕</button>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto space-y-4">
+                <?php 
+                $ann_all_query = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'General' ORDER BY created_at DESC");
+                while($ann = mysqli_fetch_assoc($ann_all_query)):
+                    $is_urgent = ($ann['category'] == 'Urgent');
+                ?>
+                <div class="p-5 sm:p-6 bg-slate-50 border border-slate-200 rounded-2xl relative overflow-hidden flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                            <p class="text-blue-600 font-black text-[10px] uppercase tracking-wider"><?= date('M d, Y', strtotime($ann['created_at'])) ?></p>
+                            <?php if($is_urgent): ?>
+                            <span class="bg-rose-100 text-rose-700 text-[8px] px-2 py-0.5 font-black uppercase tracking-wider rounded">Urgent</span>
+                            <?php endif; ?>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900"><?= $ann['title'] ?></h4>
+                        <p class="text-slate-600 text-sm leading-relaxed max-w-2xl"><?= $ann['message'] ?></p>
+                    </div>
+                </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+    </div>
 
-    // ---- Modals ----
-    function openModal(id){
-        var modal = document.getElementById(id);
-        if (!modal) return;
-        modal.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
-        var closeBtn = modal.querySelector('[data-modal-close]');
-        if (closeBtn) closeBtn.focus();
-    }
-    function closeModal(modal){
-        modal.classList.remove('is-open');
-        if (!drawer.classList.contains('is-open')) document.body.style.overflow = '';
-    }
-    document.querySelectorAll('[data-modal-open]').forEach(function(btn){
-        btn.addEventListener('click', function(){
-            openModal(btn.getAttribute('data-modal-open'));
-        });
-    });
-    document.querySelectorAll('[data-modal-close]').forEach(function(el){
-        el.addEventListener('click', function(){
-            closeModal(el.closest('[data-modal]'));
-        });
-    });
-    document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape'){
-            document.querySelectorAll('.modal.is-open').forEach(closeModal);
-            if (drawer.classList.contains('is-open')) closeDrawer();
+    <div id="postsModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">All Learning Materials</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-1">Access the collection of high-quality learning assets.</p>
+                </div>
+                <button onclick="closeModal('postsModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors flex items-center justify-center text-lg font-bold focus:outline-none">✕</button>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <?php 
+                    $posts_all_query = mysqli_query($conn, "SELECT * FROM posts ORDER BY created_at DESC");
+                    while($post = mysqli_fetch_assoc($posts_all_query)):
+                    ?>
+                    <article class="bg-slate-50 rounded-3xl border border-slate-200/80 p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="mb-3">
+                                <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[8px] font-black rounded uppercase tracking-wider border border-indigo-100">Resource</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-900 mb-2 leading-tight"><?= $post['title'] ?></h4>
+                            <p class="text-slate-600 text-xs leading-relaxed mb-4"><?= $post['content'] ?></p>
+                        </div>
+                        <?php if($post['file_path']): ?>
+                        <div class="border-t border-slate-200/60 pt-3 mt-2">
+                            <a href="uploads/resources/<?= $post['file_path'] ?>" class="inline-flex items-center gap-1.5 text-indigo-600 font-black text-[10px] uppercase tracking-wider hover:underline">
+                                Download File →
+                            </a>
+                        </div>
+                        <?php endif; ?>
+                    </article>
+                    <?php endwhile; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.classList.add('modal-active');
+            }
         }
-    });
 
-    // ---- Scroll reveal ----
-    if ('IntersectionObserver' in window){
-        var io = new IntersectionObserver(function(entries){
-            entries.forEach(function(entry){
-                if (entry.isIntersecting){
-                    entry.target.classList.add('is-in');
-                    io.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-        document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
-    } else {
-        document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('is-in'); });
-    }
-})();
-</script>
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.classList.remove('modal-active');
+            }
+        }
 
+        // Close on background overlay click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('bg-slate-950/50') || event.target.classList.contains('bg-slate-950/60')) {
+                event.target.classList.add('hidden');
+                document.body.classList.remove('modal-active');
+            }
+        }
+    </script>
 </body>
 </html>
