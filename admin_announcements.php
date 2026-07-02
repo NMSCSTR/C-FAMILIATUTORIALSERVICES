@@ -27,10 +27,15 @@ if (isset($_POST['post_announcement'])) {
 // Logic to Delete
 if (isset($_GET['delete'])) {
     $id = mysqli_real_escape_string($conn, $_GET['delete']);
+    $announcement_result = mysqli_query($conn, "SELECT title FROM announcements WHERE id = '$id' LIMIT 1");
+    $announcement_row = mysqli_fetch_assoc($announcement_result);
+    $announcement_title = $announcement_row['title'] ?? 'Unknown announcement';
+
     mysqli_query($conn, "DELETE FROM announcements WHERE id = '$id'");
-    log_activity($conn, 'announcement.delete', "Deleted announcement #$id", [
+    log_activity($conn, 'announcement.delete', null, [
         'entity_type' => 'announcement',
         'entity_id' => (int) $id,
+        'entity_label' => $announcement_title,
     ]);
     header("Location: admin_announcements.php?deleted=1");
     exit();

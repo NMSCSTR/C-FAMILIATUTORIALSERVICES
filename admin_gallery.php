@@ -71,16 +71,18 @@ if ($gallery_table_exists && isset($_POST['add_gallery'])) {
 // --- Delete single image ---
 if ($gallery_table_exists && isset($_GET['delete'])) {
     $id = mysqli_real_escape_string($conn, $_GET['delete']);
-    $result = mysqli_query($conn, "SELECT image_path FROM gallery_images WHERE id = '$id'");
+    $result = mysqli_query($conn, "SELECT image_path, caption FROM gallery_images WHERE id = '$id'");
     $data = mysqli_fetch_assoc($result);
+    $gallery_label = $data['caption'] ?? ($data['image_path'] ?? 'Unknown image');
 
     if ($data && file_exists($target_dir . $data['image_path'])) {
         @unlink($target_dir . $data['image_path']);
     }
     mysqli_query($conn, "DELETE FROM gallery_images WHERE id = '$id'");
-    log_activity($conn, 'gallery.delete', "Deleted gallery image #$id", [
+    log_activity($conn, 'gallery.delete', null, [
         'entity_type' => 'gallery',
         'entity_id' => (int) $id,
+        'entity_label' => $gallery_label,
     ]);
     header("Location: admin_gallery.php?deleted=1");
     exit();

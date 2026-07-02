@@ -40,16 +40,18 @@ if (isset($_POST['add_passer'])) {
 // --- Logic to Delete Passer ---
 if (isset($_GET['delete'])) {
     $id = mysqli_real_escape_string($conn, $_GET['delete']);
-    $result = mysqli_query($conn, "SELECT photo FROM passers WHERE id = '$id'");
+    $result = mysqli_query($conn, "SELECT photo, name FROM passers WHERE id = '$id'");
     $data = mysqli_fetch_assoc($result);
+    $passer_name = $data['name'] ?? 'Unknown passer';
     
     if ($data && $data['photo'] != 'default_user.jpg' && file_exists("uploads/passers/" . $data['photo'])) {
         @unlink("uploads/passers/" . $data['photo']);
     }
     mysqli_query($conn, "DELETE FROM passers WHERE id = '$id'");
-    log_activity($conn, 'passer.delete', "Deleted passer #$id", [
+    log_activity($conn, 'passer.delete', null, [
         'entity_type' => 'passer',
         'entity_id' => (int) $id,
+        'entity_label' => $passer_name,
     ]);
     header("Location: admin_passers.php?deleted=1");
     exit();

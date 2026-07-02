@@ -209,7 +209,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                                 <?= htmlspecialchars(activity_action_label($row['action'])) ?>
                                             </span>
                                         </td>
-                                        <td class="px-8 py-4 text-xs text-slate-400 max-w-xs truncate" data-label="Details"><?= htmlspecialchars($row['description'] ?? '—') ?></td>
+                                        <td class="px-8 py-4 text-xs text-slate-400 max-w-xs truncate" data-label="Details"><?= htmlspecialchars(activity_log_display_description($conn, $row)) ?></td>
                                         <td class="px-8 py-4 text-[10px] text-slate-500 font-bold text-right" data-label="Date"><?= date('M d, g:i A', strtotime($row['created_at'])) ?></td>
                                     </tr>
                                     <?php endwhile; else: ?>

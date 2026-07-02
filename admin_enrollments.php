@@ -28,7 +28,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_grades') {
     }
     
     if (mysqli_query($conn, $save_sql)) {
-        log_activity($conn, 'enrollment.grades_update', "Updated exam grades for user #$user_id", [
+        log_activity($conn, 'enrollment.grades_update', null, [
             'entity_type' => 'user',
             'entity_id' => $user_id,
         ]);
@@ -46,9 +46,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
     
     $update_sql = "UPDATE enrollments SET insured = $is_insured WHERE id = $enrollment_id";
     if (mysqli_query($conn, $update_sql)) {
-        log_activity($conn, 'enrollment.insurance_update', "Set insurance to $is_insured for enrollment #$enrollment_id", [
+        log_activity($conn, 'enrollment.insurance_update', null, [
             'entity_type' => 'enrollment',
             'entity_id' => $enrollment_id,
+            'insured' => $is_insured,
         ]);
         echo "success";
     } else {
@@ -60,7 +61,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
 if (isset($_GET['approve'])) {
     $id = intval($_GET['approve']);
     mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE id = $id");
-    log_activity($conn, 'enrollment.approve', "Approved enrollment #$id", [
+    log_activity($conn, 'enrollment.approve', null, [
         'entity_type' => 'enrollment',
         'entity_id' => $id,
     ]);

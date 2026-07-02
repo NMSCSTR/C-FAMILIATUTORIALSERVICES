@@ -34,10 +34,15 @@ if (isset($_POST['save_post'])) {
 // Logic to Delete
 if (isset($_GET['delete'])) {
     $id = mysqli_real_escape_string($conn, $_GET['delete']);
+    $post_result = mysqli_query($conn, "SELECT title FROM posts WHERE id = '$id' LIMIT 1");
+    $post_row = mysqli_fetch_assoc($post_result);
+    $post_title = $post_row['title'] ?? 'Unknown resource';
+
     mysqli_query($conn, "DELETE FROM posts WHERE id = '$id'");
-    log_activity($conn, 'post.delete', "Deleted learning resource #$id", [
+    log_activity($conn, 'post.delete', null, [
         'entity_type' => 'post',
         'entity_id' => (int) $id,
+        'entity_label' => $post_title,
     ]);
     header("Location: admin_posts.php?deleted=1");
     exit();

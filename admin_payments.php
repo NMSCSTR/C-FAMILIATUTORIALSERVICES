@@ -17,9 +17,11 @@ if (isset($_POST['log_walkin'])) {
     
     if (mysqli_query($conn, $query)) {
         $payment_id = mysqli_insert_id($conn);
-        log_activity($conn, 'payment.walkin', "Logged walk-in payment of ₱" . number_format((float) $amount, 2) . " for user #$user_id", [
+        log_activity($conn, 'payment.walkin', null, [
             'entity_type' => 'payment',
             'entity_id' => $payment_id,
+            'target_user_id' => (int) $user_id,
+            'amount' => $amount,
         ]);
         mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE user_id = '$user_id' AND status = 'pending'");
         header("Location: admin_payments.php?success=logged");
@@ -37,7 +39,7 @@ if (isset($_GET['verify'])) {
         $u_id = $p_data['user_id'];
         mysqli_query($conn, "UPDATE payments SET status = 'paid' WHERE id = '$p_id'");
         mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE user_id = '$u_id' AND status = 'pending'");
-        log_activity($conn, 'payment.verify', "Verified payment #$p_id for user #$u_id", [
+        log_activity($conn, 'payment.verify', null, [
             'entity_type' => 'payment',
             'entity_id' => (int) $p_id,
         ]);

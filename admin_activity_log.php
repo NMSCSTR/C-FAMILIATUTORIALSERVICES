@@ -196,7 +196,7 @@ function activity_log_query_string($overrides = []) {
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 text-sm text-slate-600 max-w-md" data-label="Details">
-                                                    <?= htmlspecialchars($log['description'] ?? '—') ?>
+                                                    <?= htmlspecialchars(activity_log_display_description($conn, $log)) ?>
                                                 </td>
                                                 <td class="px-6 py-4 text-xs text-slate-400 font-mono" data-label="IP">
                                                     <?= htmlspecialchars($log['ip_address'] ?? '—') ?>
