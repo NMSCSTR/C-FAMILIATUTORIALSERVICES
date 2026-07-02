@@ -101,6 +101,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </svg>
             Activity Log
         </a>
+
+        <a href="admin_backup.php"
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_backup.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Backup
+        </a>
     </nav>
 
     <div class="p-6 border-t border-white/5 mt-auto">
