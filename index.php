@@ -4,7 +4,21 @@ include 'db.php';
 // --- Auto-Calculate Passing Rate ---
 $total_passers_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM passers");
 $total_passers = mysqli_fetch_assoc($total_passers_query)['count'];
-$display_rate = ($total_passers > 0) ? "95%" : "0%"; 
+$display_rate = ($total_passers > 0) ? "95%" : "0%";
+
+// --- Gallery (safe for production if table not migrated yet) ---
+$grouped_gallery = [];
+$gallery_dir = "uploads/gallery/";
+$gallery_table_exists = mysqli_num_rows(mysqli_query($conn, "SHOW TABLES LIKE 'gallery_images'")) > 0;
+if ($gallery_table_exists) {
+    $gallery_query = mysqli_query($conn, "SELECT * FROM gallery_images ORDER BY caption ASC, sort_order ASC, id ASC");
+    if ($gallery_query) {
+        while ($gallery_item = mysqli_fetch_assoc($gallery_query)) {
+            $grouped_gallery[$gallery_item['caption']][] = $gallery_item;
+        }
+    }
+}
+$has_gallery = !empty($grouped_gallery);
 ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -46,6 +60,9 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 <a href="#announcements" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Announcements</a>
                 <a href="#posts" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Learning Materials</a>
                 <a href="#passers" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Passers</a>
+                <?php if ($has_gallery): ?>
+                <a href="#gallery" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Gallery</a>
+                <?php endif; ?>
                 <a href="#contact" class="hover:text-slate-900 hover:bg-white rounded-full px-4 py-1.5 transition-all focus:outline-none">Contact</a>
             </div>
 
@@ -74,6 +91,9 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 <a onclick="toggleMobileNav()" href="#announcements" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Announcements</a>
                 <a onclick="toggleMobileNav()" href="#posts" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Learning Materials</a>
                 <a onclick="toggleMobileNav()" href="#passers" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Passers</a>
+                <?php if ($has_gallery): ?>
+                <a onclick="toggleMobileNav()" href="#gallery" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Gallery</a>
+                <?php endif; ?>
                 <a onclick="toggleMobileNav()" href="#contact" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Contact</a>
             </div>
             
@@ -385,6 +405,42 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         <?php endif; ?>
     </section>
 
+    <!-- Image Gallery Section -->
+    <?php if ($has_gallery): ?>
+    <section id="gallery" class="py-24 sm:py-32 px-4 sm:px-6 max-w-7xl mx-auto w-full border-t border-slate-100">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
+            <div class="flex items-center gap-3">
+                <span class="w-3 h-8 bg-emerald-500 rounded-full"></span>
+                <h3 class="text-3xl font-[900] tracking-tight text-slate-900">Photo Gallery</h3>
+            </div>
+            <p class="text-slate-500 text-sm font-medium max-w-md">Moments from our review center, events, and student milestones.</p>
+        </div>
+
+        <div class="space-y-16">
+            <?php foreach ($grouped_gallery as $caption => $images): ?>
+            <div>
+                <h4 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                    <?= htmlspecialchars($caption) ?>
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <?php foreach ($images as $img):
+                        $img_path = $gallery_dir . $img['image_path'];
+                    ?>
+                    <button type="button" onclick="openGalleryLightbox(<?= json_encode($img_path) ?>, <?= json_encode($caption) ?>)" class="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
+                            <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-800 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg">View</span>
+                        </div>
+                    </button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- Contact & Location Section -->
     <section id="contact" class="py-24 sm:py-32 px-4 sm:px-6 bg-white border-t border-slate-100 w-full">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
@@ -553,6 +609,15 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
         </div>
     </div>
 
+    <!-- Gallery Lightbox -->
+    <div id="galleryLightbox" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeGalleryLightbox()">
+        <div class="relative max-w-5xl w-full" onclick="event.stopPropagation()">
+            <button type="button" onclick="closeGalleryLightbox()" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+            <img id="galleryLightboxImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
+            <p id="galleryLightboxCaption" class="text-center text-white/80 text-sm font-semibold mt-4"></p>
+        </div>
+    </div>
+
     <!-- Interface Animation Script -->
     <script>
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -593,6 +658,24 @@ $display_rate = ($total_passers > 0) ? "95%" : "0%";
                 document.body.classList.remove('modal-active');
             }
         }
+
+        function openGalleryLightbox(src, caption) {
+            document.getElementById('galleryLightboxImage').src = src;
+            document.getElementById('galleryLightboxImage').alt = caption;
+            document.getElementById('galleryLightboxCaption').textContent = caption;
+            document.getElementById('galleryLightbox').classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeGalleryLightbox() {
+            document.getElementById('galleryLightbox').classList.add('hidden');
+            document.getElementById('galleryLightboxImage').src = '';
+            document.body.classList.remove('modal-active');
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeGalleryLightbox();
+        });
     </script>
 </body>
 </html>

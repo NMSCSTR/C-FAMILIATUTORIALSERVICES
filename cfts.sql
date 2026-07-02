@@ -111,6 +111,20 @@ INSERT INTO `passers` (`id`, `name`, `program`, `batch`, `rating`, `photo`, `cre
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `gallery_images`
+--
+
+CREATE TABLE `gallery_images` (
+  `id` int(11) NOT NULL,
+  `caption` varchar(255) NOT NULL,
+  `image_path` varchar(255) NOT NULL,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `payments`
 --
 
@@ -238,6 +252,13 @@ ALTER TABLE `passers`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `gallery_images`
+--
+ALTER TABLE `gallery_images`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `caption` (`caption`);
+
+--
 -- Indexes for table `payments`
 --
 ALTER TABLE `payments`
@@ -291,6 +312,12 @@ ALTER TABLE `exam_result`
 --
 ALTER TABLE `passers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `gallery_images`
+--
+ALTER TABLE `gallery_images`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `payments`
