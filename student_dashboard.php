@@ -34,7 +34,12 @@ if ($is_enrolled) {
 if(isset($_POST['submit_testimonial'])) {
     $user_id = $_SESSION['user_id'];
     $content = mysqli_real_escape_string($conn, $_POST['testimonial_content']);
-    mysqli_query($conn, "INSERT INTO testimonials (user_id, content) VALUES ('$user_id', '$content')");
+    if (mysqli_query($conn, "INSERT INTO testimonials (user_id, content) VALUES ('$user_id', '$content')")) {
+        log_activity($conn, 'testimonial.submit', 'Submitted a testimonial', [
+            'entity_type' => 'testimonial',
+            'entity_id' => mysqli_insert_id($conn),
+        ]);
+    }
     $msg = "Thank you for your testimonial!";
 }
 

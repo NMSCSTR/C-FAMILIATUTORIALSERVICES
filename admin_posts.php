@@ -21,6 +21,11 @@ if (isset($_POST['save_post'])) {
 
     $sql = "INSERT INTO posts (title, content, file_path) VALUES ('$title', '$content', '$file_name')";
     if (mysqli_query($conn, $sql)) {
+        $post_id = mysqli_insert_id($conn);
+        log_activity($conn, 'post.create', "Created learning resource: $title", [
+            'entity_type' => 'post',
+            'entity_id' => $post_id,
+        ]);
         header("Location: admin_posts.php?success=1");
         exit();
     }
@@ -30,6 +35,10 @@ if (isset($_POST['save_post'])) {
 if (isset($_GET['delete'])) {
     $id = mysqli_real_escape_string($conn, $_GET['delete']);
     mysqli_query($conn, "DELETE FROM posts WHERE id = '$id'");
+    log_activity($conn, 'post.delete', "Deleted learning resource #$id", [
+        'entity_type' => 'post',
+        'entity_id' => (int) $id,
+    ]);
     header("Location: admin_posts.php?deleted=1");
     exit();
 }

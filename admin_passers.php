@@ -27,6 +27,11 @@ if (isset($_POST['add_passer'])) {
 
     $sql = "INSERT INTO passers (name, program, batch, rating, exam_date, photo) VALUES ('$name', '$program', '$batch', '$rating', '$exam_date', '$photo_name')";
     if (mysqli_query($conn, $sql)) {
+        $passer_id = mysqli_insert_id($conn);
+        log_activity($conn, 'passer.create', "Added passer: $name ($program)", [
+            'entity_type' => 'passer',
+            'entity_id' => $passer_id,
+        ]);
         header("Location: admin_passers.php?posted=1");
         exit();
     }
@@ -42,6 +47,10 @@ if (isset($_GET['delete'])) {
         @unlink("uploads/passers/" . $data['photo']);
     }
     mysqli_query($conn, "DELETE FROM passers WHERE id = '$id'");
+    log_activity($conn, 'passer.delete', "Deleted passer #$id", [
+        'entity_type' => 'passer',
+        'entity_id' => (int) $id,
+    ]);
     header("Location: admin_passers.php?deleted=1");
     exit();
 }

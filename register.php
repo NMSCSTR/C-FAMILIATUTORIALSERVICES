@@ -35,6 +35,13 @@ if (isset($_POST['register'])) {
                     VALUES ('$firstname', '$middlename', '$lastname', '$email', '$hashed_password', '$role', '$birthday', '$cellphone_no', '$address', '$parents_name_guardian', '$parents_phone_no', '$fb_messenger_account')";
             
             if (mysqli_query($conn, $sql)) {
+                $new_user_id = mysqli_insert_id($conn);
+                log_activity($conn, 'register', "New student account: $firstname $lastname ($email)", [
+                    'user_id' => $new_user_id,
+                    'user_role' => 'student',
+                    'entity_type' => 'user',
+                    'entity_id' => $new_user_id,
+                ]);
                 $message = "Registration successful! You can now <a href='login.php' class='underline font-bold'>Login</a>.";
             } else {
                 $error = "Registration failed: " . mysqli_error($conn);

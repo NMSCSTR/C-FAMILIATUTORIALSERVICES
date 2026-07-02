@@ -45,6 +45,10 @@ if (isset($_POST['update_profile'])) {
                     WHERE id = '$user_id'";
     
     if(mysqli_query($conn, $update_query)) {
+        log_activity($conn, 'profile.update', 'Updated profile information', [
+            'entity_type' => 'user',
+            'entity_id' => (int) $user_id,
+        ]);
         // Update session name for immediate UI feedback
         $_SESSION['username'] = $first . ' ' . $last;
         $success_msg = "Profile updated successfully!";

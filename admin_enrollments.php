@@ -28,6 +28,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_grades') {
     }
     
     if (mysqli_query($conn, $save_sql)) {
+        log_activity($conn, 'enrollment.grades_update', "Updated exam grades for user #$user_id", [
+            'entity_type' => 'user',
+            'entity_id' => $user_id,
+        ]);
         echo "success";
     } else {
         echo "error";
@@ -42,6 +46,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
     
     $update_sql = "UPDATE enrollments SET insured = $is_insured WHERE id = $enrollment_id";
     if (mysqli_query($conn, $update_sql)) {
+        log_activity($conn, 'enrollment.insurance_update', "Set insurance to $is_insured for enrollment #$enrollment_id", [
+            'entity_type' => 'enrollment',
+            'entity_id' => $enrollment_id,
+        ]);
         echo "success";
     } else {
         echo "error";
@@ -52,6 +60,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
 if (isset($_GET['approve'])) {
     $id = intval($_GET['approve']);
     mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE id = $id");
+    log_activity($conn, 'enrollment.approve', "Approved enrollment #$id", [
+        'entity_type' => 'enrollment',
+        'entity_id' => $id,
+    ]);
     header("Location: admin_enrollments.php");
     exit();
 }

@@ -58,6 +58,9 @@ if ($gallery_table_exists && isset($_POST['add_gallery'])) {
     }
 
     if ($uploaded > 0) {
+        log_activity($conn, 'gallery.create', "Added $uploaded image(s) under caption: $caption", [
+            'entity_type' => 'gallery',
+        ]);
         header("Location: admin_gallery.php?posted=1&count=$uploaded");
     } else {
         header("Location: admin_gallery.php?error=no_images");
@@ -75,6 +78,10 @@ if ($gallery_table_exists && isset($_GET['delete'])) {
         @unlink($target_dir . $data['image_path']);
     }
     mysqli_query($conn, "DELETE FROM gallery_images WHERE id = '$id'");
+    log_activity($conn, 'gallery.delete', "Deleted gallery image #$id", [
+        'entity_type' => 'gallery',
+        'entity_id' => (int) $id,
+    ]);
     header("Location: admin_gallery.php?deleted=1");
     exit();
 }
@@ -89,6 +96,9 @@ if ($gallery_table_exists && isset($_GET['delete_caption'])) {
         }
     }
     mysqli_query($conn, "DELETE FROM gallery_images WHERE caption = '$caption'");
+    log_activity($conn, 'gallery.delete_caption', "Deleted all gallery images for caption: $caption", [
+        'entity_type' => 'gallery',
+    ]);
     header("Location: admin_gallery.php?deleted=1");
     exit();
 }

@@ -159,43 +159,64 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="p-6 md:p-8 border-b border-cf-border flex flex-col md:flex-row justify-between md:items-center gap-4">
                             <div>
                                 <h4 class="font-bold text-lg text-white">Recent Activity</h4>
-                                <p class="text-slate-500 text-xs mt-1">Latest enrollment applications.</p>
+                                <p class="text-slate-500 text-xs mt-1">Latest user actions across the system.</p>
                             </div>
-                            <a href="admin_enrollments.php" class="text-center md:text-left text-cf-accent text-[10px] font-black uppercase tracking-widest bg-cf-accent/10 px-4 py-2.5 rounded-xl">Manage All</a>
+                            <a href="admin_activity_log.php" class="text-center md:text-left text-cf-accent text-[10px] font-black uppercase tracking-widest bg-cf-accent/10 px-4 py-2.5 rounded-xl">View All</a>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left mobile-table-card">
                                 <thead class="bg-cf-dark/30 border-b border-cf-border">
                                     <tr class="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                        <th class="px-8 py-4">Student</th>
-                                        <th class="px-8 py-4">Batch</th>
-                                        <th class="px-8 py-4">Status</th>
+                                        <th class="px-8 py-4">User</th>
+                                        <th class="px-8 py-4">Action</th>
+                                        <th class="px-8 py-4">Details</th>
                                         <th class="px-8 py-4 text-right">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-cf-border">
                                     <?php
-                                    $recent_enroll = mysqli_query($conn, "SELECT e.*, u.firstname, u.lastname, u.profile_pic FROM enrollments e JOIN users u ON e.user_id = u.id ORDER BY e.created_at DESC LIMIT 5");
-                                    while($row = mysqli_fetch_assoc($recent_enroll)):
+                                    $activity_table_exists = mysqli_num_rows(mysqli_query($conn, "SHOW TABLES LIKE 'activity_logs'")) > 0;
+                                    if ($activity_table_exists):
+                                        $recent_activity = mysqli_query($conn, "SELECT al.*, u.firstname, u.lastname, u.email
+                                                                                FROM activity_logs al
+                                                                                LEFT JOIN users u ON al.user_id = u.id
+                                                                                ORDER BY al.created_at DESC
+                                                                                LIMIT 5");
+                                        while($row = mysqli_fetch_assoc($recent_activity)):
+                                            $activity_name = trim(($row['firstname'] ?? '') . ' ' . ($row['lastname'] ?? ''));
+                                            if ($activity_name === '' && !empty($row['email'])) {
+                                                $activity_name = $row['email'];
+                                            } elseif ($activity_name === '') {
+                                                $activity_name = 'Guest';
+                                            }
                                     ?>
                                     <tr class="hover:bg-cf-dark/40 transition">
-                                        <td class="px-8 py-4" data-label="Student">
+                                        <td class="px-8 py-4" data-label="User">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-lg bg-cf-border flex items-center justify-center font-bold text-xs text-slate-400">
-                                                    <?= substr($row['firstname'], 0, 1) ?>
+                                                    <?= strtoupper(substr($activity_name, 0, 1)) ?>
                                                 </div>
-                                                <p class="font-bold text-white text-xs"><?= $row['firstname'] ?> <?= $row['lastname'] ?></p>
+                                                <div>
+                                                    <p class="font-bold text-white text-xs"><?= htmlspecialchars($activity_name) ?></p>
+                                                    <?php if (!empty($row['user_role'])): ?>
+                                                        <p class="text-[9px] uppercase tracking-widest text-slate-500"><?= htmlspecialchars($row['user_role']) ?></p>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td class="px-8 py-4 text-xs text-slate-400" data-label="Batch"><?= $row['batch'] ?></td>
-                                        <td class="px-8 py-4" data-label="Status">
-                                            <span class="px-2.5 py-1 rounded-md text-[9px] font-black uppercase <?= $row['status'] == 'pending' ? 'bg-amber-900/40 text-amber-500' : 'bg-green-900/40 text-green-500' ?>">
-                                                <?= $row['status'] ?>
+                                        <td class="px-8 py-4" data-label="Action">
+                                            <span class="px-2.5 py-1 rounded-md text-[9px] font-black uppercase bg-blue-900/40 text-blue-400">
+                                                <?= htmlspecialchars(activity_action_label($row['action'])) ?>
                                             </span>
                                         </td>
-                                        <td class="px-8 py-4 text-[10px] text-slate-500 font-bold text-right" data-label="Applied"><?= date('M d', strtotime($row['created_at'])) ?></td>
+                                        <td class="px-8 py-4 text-xs text-slate-400 max-w-xs truncate" data-label="Details"><?= htmlspecialchars($row['description'] ?? '—') ?></td>
+                                        <td class="px-8 py-4 text-[10px] text-slate-500 font-bold text-right" data-label="Date"><?= date('M d, g:i A', strtotime($row['created_at'])) ?></td>
                                     </tr>
-                                    <?php endwhile; ?>
+                                    <?php endwhile; else: ?>
+                                    <tr>
+                                        <td colspan="4" class="px-8 py-8 text-center text-slate-500 text-sm">Run the activity log migration to start tracking user actions.</td>
+                                    </tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>

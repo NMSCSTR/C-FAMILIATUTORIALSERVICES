@@ -46,6 +46,11 @@ if (isset($_POST['submit_enrollment'])) {
                 VALUES ('$user_id', '$program', '$batch', '$fee', 'pending', CURDATE(), '$location')";
 
         if (mysqli_query($conn, $sql)) {
+            $enrollment_id = mysqli_insert_id($conn);
+            log_activity($conn, 'enrollment.submit', "Applied for $program (Batch $batch, $location)", [
+                'entity_type' => 'enrollment',
+                'entity_id' => $enrollment_id,
+            ]);
             $message = "Your application for <b>$program</b> has been submitted successfully.";
         } else {
             $error = "System Error: " . mysqli_error($conn);

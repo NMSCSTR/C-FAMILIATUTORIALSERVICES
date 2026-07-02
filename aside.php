@@ -91,6 +91,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </svg>
             Gallery
         </a>
+
+        <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-8 mb-4 px-4">System</p>
+
+        <a href="admin_activity_log.php"
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_activity_log.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Activity Log
+        </a>
     </nav>
 
     <div class="p-6 border-t border-white/5 mt-auto">

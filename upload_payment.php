@@ -32,6 +32,11 @@ if (isset($_POST['submit_payment'])) {
         $stmt->bind_param("idssss", $user_id, $amount, $ref_no, $p_type, $p_method, $file_name);
         
         if ($stmt->execute()) {
+            $payment_id = $stmt->insert_id;
+            log_activity($conn, 'payment.submit', "Submitted ₱" . number_format((float) $amount, 2) . " via $p_method ($p_type)", [
+                'entity_type' => 'payment',
+                'entity_id' => $payment_id,
+            ]);
             header("Location: student_dashboard.php?success=1");
             exit();
         } else {

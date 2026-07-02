@@ -14,6 +14,11 @@ if (isset($_POST['post_announcement'])) {
     
     $sql = "INSERT INTO announcements (title, message, category, audience, created_at) VALUES ('$title', '$message', '$category', '$audience', NOW())";
     if (mysqli_query($conn, $sql)) {
+        $announcement_id = mysqli_insert_id($conn);
+        log_activity($conn, 'announcement.create', "Posted announcement: $title", [
+            'entity_type' => 'announcement',
+            'entity_id' => $announcement_id,
+        ]);
         header("Location: admin_announcements.php?posted=1");
         exit();
     }
@@ -23,6 +28,10 @@ if (isset($_POST['post_announcement'])) {
 if (isset($_GET['delete'])) {
     $id = mysqli_real_escape_string($conn, $_GET['delete']);
     mysqli_query($conn, "DELETE FROM announcements WHERE id = '$id'");
+    log_activity($conn, 'announcement.delete', "Deleted announcement #$id", [
+        'entity_type' => 'announcement',
+        'entity_id' => (int) $id,
+    ]);
     header("Location: admin_announcements.php?deleted=1");
     exit();
 }

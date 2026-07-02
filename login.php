@@ -16,6 +16,11 @@ if (isset($_POST['login'])) {
             $_SESSION['username'] = $user['name'];
             $_SESSION['role'] = $user['role'];
 
+            log_activity($conn, 'login.success', 'Successful login', [
+                'user_id' => (int) $user['id'],
+                'user_role' => $user['role'],
+            ]);
+
             if ($user['role'] === 'admin') {
                 header("Location: admin_dashboard.php");
             } else {
@@ -23,9 +28,11 @@ if (isset($_POST['login'])) {
             }
             exit();
         } else {
+            log_activity($conn, 'login.failed', "Invalid password for $email");
             $error = "Invalid password.";
         }
     } else {
+        log_activity($conn, 'login.failed', "No account found for $email");
         $error = "No account found with that email.";
     }
 }
