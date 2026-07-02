@@ -417,22 +417,33 @@ $has_gallery = !empty($grouped_gallery);
         </div>
 
         <div class="space-y-16">
-            <?php foreach ($grouped_gallery as $caption => $images): ?>
-            <div>
+            <?php foreach ($grouped_gallery as $caption => $images):
+                $image_count = count($images);
+            ?>
+            <div data-gallery-group="<?= md5($caption) ?>">
                 <h4 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                     <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
                     <?= htmlspecialchars($caption) ?>
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    <?php foreach ($images as $img):
+                    <?php foreach ($images as $index => $img):
                         $img_path = $gallery_dir . $img['image_path'];
                     ?>
-                    <button type="button" class="gallery-lightbox-trigger group relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-emerald-500/40" data-gallery-src="<?= htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8') ?>" data-gallery-caption="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
-                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
-                            <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-800 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg">View</span>
+                    <div class="gallery-item relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 <?= $index > 0 ? 'gallery-extra hidden sm:block' : '' ?>">
+                        <button type="button" class="gallery-lightbox-trigger group absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-inset" data-gallery-src="<?= htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8') ?>" data-gallery-caption="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
+                                <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-800 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg">View</span>
+                            </div>
+                        </button>
+                        <?php if ($index === 0 && $image_count > 1): ?>
+                        <div class="gallery-see-more-overlay absolute inset-0 z-10 flex items-center justify-center bg-slate-900/35 sm:hidden">
+                            <button type="button" class="gallery-see-more-btn px-5 py-2.5 bg-white text-slate-900 text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg hover:bg-emerald-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                                See more images
+                            </button>
                         </div>
-                    </button>
+                        <?php endif; ?>
+                    </div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -680,6 +691,18 @@ $has_gallery = !empty($grouped_gallery);
         document.querySelectorAll('.gallery-lightbox-trigger').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 openGalleryLightbox(this.getAttribute('data-gallery-src'), this.getAttribute('data-gallery-caption'));
+            });
+        });
+
+        document.querySelectorAll('.gallery-see-more-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const group = this.closest('[data-gallery-group]');
+                group?.querySelectorAll('.gallery-extra').forEach(function(item) {
+                    item.classList.remove('hidden');
+                });
+                group?.querySelector('.gallery-see-more-overlay')?.remove();
             });
         });
 
