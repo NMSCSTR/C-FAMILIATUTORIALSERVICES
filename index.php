@@ -427,7 +427,7 @@ $has_gallery = !empty($grouped_gallery);
                     <?php foreach ($images as $img):
                         $img_path = $gallery_dir . $img['image_path'];
                     ?>
-                    <button type="button" onclick="openGalleryLightbox(<?= json_encode($img_path) ?>, <?= json_encode($caption) ?>)" class="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                    <button type="button" class="gallery-lightbox-trigger group relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-emerald-500/40" data-gallery-src="<?= htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8') ?>" data-gallery-caption="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
                         <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
                             <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-800 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg">View</span>
@@ -610,9 +610,9 @@ $has_gallery = !empty($grouped_gallery);
     </div>
 
     <!-- Gallery Lightbox -->
-    <div id="galleryLightbox" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeGalleryLightbox()">
-        <div class="relative max-w-5xl w-full" onclick="event.stopPropagation()">
-            <button type="button" onclick="closeGalleryLightbox()" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+    <div id="galleryLightbox" class="fixed inset-0 z-[60] hidden bg-slate-950/90 backdrop-blur-md items-center justify-center p-4">
+        <div class="relative max-w-5xl w-full">
+            <button type="button" id="galleryLightboxClose" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             <img id="galleryLightboxImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
             <p id="galleryLightboxCaption" class="text-center text-white/80 text-sm font-semibold mt-4"></p>
         </div>
@@ -660,21 +660,39 @@ $has_gallery = !empty($grouped_gallery);
         }
 
         function openGalleryLightbox(src, caption) {
+            const lightbox = document.getElementById('galleryLightbox');
             document.getElementById('galleryLightboxImage').src = src;
             document.getElementById('galleryLightboxImage').alt = caption;
             document.getElementById('galleryLightboxCaption').textContent = caption;
-            document.getElementById('galleryLightbox').classList.remove('hidden');
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
             document.body.classList.add('modal-active');
         }
 
         function closeGalleryLightbox() {
-            document.getElementById('galleryLightbox').classList.add('hidden');
+            const lightbox = document.getElementById('galleryLightbox');
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
             document.getElementById('galleryLightboxImage').src = '';
             document.body.classList.remove('modal-active');
         }
 
+        document.querySelectorAll('.gallery-lightbox-trigger').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                openGalleryLightbox(this.getAttribute('data-gallery-src'), this.getAttribute('data-gallery-caption'));
+            });
+        });
+
+        document.getElementById('galleryLightbox')?.addEventListener('click', function(e) {
+            if (e.target === this) closeGalleryLightbox();
+        });
+
+        document.getElementById('galleryLightboxClose')?.addEventListener('click', closeGalleryLightbox);
+
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeGalleryLightbox();
+            if (e.key === 'Escape' && !document.getElementById('galleryLightbox').classList.contains('hidden')) {
+                closeGalleryLightbox();
+            }
         });
     </script>
 </body>
