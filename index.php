@@ -19,6 +19,17 @@ if ($gallery_table_exists) {
     }
 }
 $has_gallery = !empty($grouped_gallery);
+
+// --- Announcements (landing page) ---
+$announcements = [];
+$ann_query_all = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'General' ORDER BY created_at DESC");
+if ($ann_query_all) {
+    while ($ann_row = mysqli_fetch_assoc($ann_query_all)) {
+        $announcements[] = $ann_row;
+    }
+}
+$ann_count = count($announcements);
+$recent_announcements = array_slice($announcements, 0, 3);
 ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -281,34 +292,39 @@ $has_gallery = !empty($grouped_gallery);
                 <span class="w-3 h-8 bg-blue-600 rounded-full"></span>
                 <h3 class="text-3xl font-[900] tracking-tight text-slate-900">Recent Announcements</h3>
             </div>
-            <?php 
-            $ann_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM announcements WHERE audience = 'General'");
-            $ann_count = mysqli_fetch_assoc($ann_total_query)['count'];
-            if($ann_count > 3): 
-            ?>
-            <button onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 tracking-wider hover:text-blue-700 transition-colors flex items-center gap-1 group focus:outline-none">
+            <?php if ($ann_count > 3): ?>
+            <button type="button" onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 tracking-wider hover:text-blue-700 transition-colors flex items-center gap-1 group focus:outline-none">
                 See All Announcements <span class="transition-transform group-hover:translate-x-1">→</span>
             </button>
             <?php endif; ?>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <?php 
-            $ann_query = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'General' ORDER BY created_at DESC LIMIT 3");
-            while($ann = mysqli_fetch_assoc($ann_query)):
+            <?php foreach ($recent_announcements as $ann):
                 $is_urgent = ($ann['category'] == 'Urgent');
+                $is_long = mb_strlen($ann['message']) > 160;
             ?>
-            <div class="p-8 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all relative overflow-hidden group flex flex-col justify-between hover:-translate-y-1">
-                <?php if($is_urgent): ?>
+            <article class="p-8 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all relative overflow-hidden group flex flex-col hover:-translate-y-1">
+                <?php if ($is_urgent): ?>
                 <span class="absolute top-0 right-0 bg-rose-600 text-white text-[9px] px-4 py-1.5 font-black uppercase tracking-widest rounded-bl-xl shadow-sm">Urgent</span>
                 <?php endif; ?>
-                <div>
-                    <p class="text-blue-600 font-black text-[10px] uppercase tracking-wider mb-4"><?= date('M d, Y', strtotime($ann['created_at'])) ?></p>
-                    <h4 class="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors text-slate-900 leading-snug"><?= $ann['title'] ?></h4>
-                    <p class="text-slate-600 leading-relaxed text-sm mb-4 line-clamp-3 font-medium"><?= $ann['message'] ?></p>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-4 flex-wrap">
+                        <p class="text-blue-600 font-black text-[10px] uppercase tracking-wider"><?= date('M d, Y', strtotime($ann['created_at'])) ?></p>
+                        <?php if (!$is_urgent && !empty($ann['category'])): ?>
+                        <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100"><?= htmlspecialchars($ann['category']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors text-slate-900 leading-snug"><?= htmlspecialchars($ann['title']) ?></h4>
+                    <p class="text-slate-600 leading-relaxed text-sm font-medium line-clamp-3"><?= htmlspecialchars($ann['message']) ?></p>
                 </div>
-            </div>
-            <?php endwhile; ?>
+                <?php if ($is_long): ?>
+                <button type="button" class="announcement-read-more mt-5 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-blue-600 hover:text-blue-700 transition-colors focus:outline-none" data-ann-id="<?= (int) $ann['id'] ?>">
+                    Read full announcement <span class="transition-transform group-hover:translate-x-0.5">→</span>
+                </button>
+                <?php endif; ?>
+            </article>
+            <?php endforeach; ?>
         </div>
     </section>
 
@@ -542,6 +558,62 @@ $has_gallery = !empty($grouped_gallery);
 
     <!-- MODAL INTEGRATIONS -->
 
+    <?php foreach ($announcements as $ann): ?>
+    <div id="ann-detail-source-<?= (int) $ann['id'] ?>" class="hidden">
+        <div class="flex items-center gap-2 mb-4 flex-wrap">
+            <p class="text-blue-600 font-black text-[10px] uppercase tracking-wider"><?= date('M d, Y', strtotime($ann['created_at'])) ?></p>
+            <?php if (!empty($ann['category'])): ?>
+            <span class="text-[9px] font-black uppercase tracking-wider <?= $ann['category'] === 'Urgent' ? 'text-rose-600 bg-rose-50 border-rose-100' : 'text-slate-400 bg-slate-50 border-slate-100' ?> px-2 py-0.5 rounded-md border"><?= htmlspecialchars($ann['category']) ?></span>
+            <?php endif; ?>
+        </div>
+        <h4 class="text-2xl font-bold text-slate-900 leading-snug mb-4"><?= htmlspecialchars($ann['title']) ?></h4>
+        <div class="text-slate-600 leading-relaxed text-sm font-medium whitespace-pre-line"><?= htmlspecialchars($ann['message']) ?></div>
+    </div>
+    <?php endforeach; ?>
+
+    <!-- Announcement Detail Modal -->
+    <div id="announcementDetailModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl border border-slate-100 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
+                <h3 class="text-lg font-[900] text-slate-900 tracking-tight">Announcement</h3>
+                <button type="button" onclick="closeModal('announcementDetailModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+            </div>
+            <div id="announcementDetailBody" class="p-6 sm:p-8 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- All Announcements Modal -->
+    <div id="announcementsModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl border border-slate-100 w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h3 class="text-2xl font-[900] text-slate-900 tracking-tight">All Announcements</h3>
+                    <p class="text-slate-500 text-sm mt-1">Complete list of public announcements from C-Familia.</p>
+                </div>
+                <button type="button" onclick="closeModal('announcementsModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto space-y-6 bg-slate-50">
+                <?php foreach ($announcements as $ann):
+                    $is_urgent = ($ann['category'] == 'Urgent');
+                ?>
+                <article class="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm relative overflow-hidden">
+                    <?php if ($is_urgent): ?>
+                    <span class="absolute top-0 right-0 bg-rose-600 text-white text-[9px] px-3 py-1 font-black uppercase tracking-widest rounded-bl-xl">Urgent</span>
+                    <?php endif; ?>
+                    <div class="flex items-center gap-2 mb-3 flex-wrap">
+                        <p class="text-blue-600 font-black text-[10px] uppercase tracking-wider"><?= date('M d, Y', strtotime($ann['created_at'])) ?></p>
+                        <?php if (!$is_urgent && !empty($ann['category'])): ?>
+                        <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100"><?= htmlspecialchars($ann['category']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-900 leading-snug mb-3"><?= htmlspecialchars($ann['title']) ?></h4>
+                    <div class="text-slate-600 leading-relaxed text-sm font-medium whitespace-pre-line"><?= htmlspecialchars($ann['message']) ?></div>
+                </article>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
     <!-- Top Performers See More Modal -->
     <div id="topPerformanceModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 rounded-3xl border border-slate-800 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
@@ -669,6 +741,20 @@ $has_gallery = !empty($grouped_gallery);
                 document.body.classList.remove('modal-active');
             }
         }
+
+        function openAnnouncementDetail(id) {
+            const source = document.getElementById('ann-detail-source-' + id);
+            const body = document.getElementById('announcementDetailBody');
+            if (!source || !body) return;
+            body.innerHTML = source.innerHTML;
+            openModal('announcementDetailModal');
+        }
+
+        document.querySelectorAll('.announcement-read-more').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                openAnnouncementDetail(this.getAttribute('data-ann-id'));
+            });
+        });
 
         function openGalleryLightbox(src, caption) {
             const lightbox = document.getElementById('galleryLightbox');
