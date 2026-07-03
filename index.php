@@ -46,12 +46,40 @@ $recent_announcements = array_slice($announcements, 0, 3);
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         @keyframes pulse-slow { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
+        @keyframes float-slow { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-18px) rotate(3deg); } }
+        @keyframes float-medium { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-12px) rotate(-2deg); } }
+        @keyframes drift { 0% { transform: translate(0, 0) rotate(0deg); } 33% { transform: translate(10px, -15px) rotate(2deg); } 66% { transform: translate(-8px, -8px) rotate(-1deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
         .animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
+        .animate-float-slow { animation: float-slow 12s ease-in-out infinite; }
+        .animate-float-medium { animation: float-medium 9s ease-in-out infinite; }
+        .animate-drift { animation: drift 18s ease-in-out infinite; }
         .modal-active { overflow: hidden; }
+        /* Dot grid pattern for white sections */
+        .bg-dot-pattern {
+            background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+        /* Diagonal line pattern */
+        .bg-line-pattern {
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 18px,
+                rgba(148,163,184,0.08) 18px,
+                rgba(148,163,184,0.08) 19px
+            );
+        }
+        /* Subtle cross/grid pattern */
+        .bg-cross-pattern {
+            background-image:
+                linear-gradient(rgba(203,213,225,0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(203,213,225,0.25) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
     </style>
 </head>
 
-<body class="bg-[#f8fafc] text-slate-900 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+<body class="bg-white text-slate-900 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
 
     <!-- Sticky Navigation Bar -->
     <nav class="sticky top-0 z-40 bg-white/75 backdrop-blur-md border-b border-slate-100 px-4 py-4 sm:px-6 transition-all">
@@ -125,7 +153,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
             <div class="space-y-8 lg:col-span-7">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm">
                     <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
-                    <span class="text-blue-400 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Center Platform</span>
+                    <span class="text-blue-400 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Tutorila Services</span>
                 </div>
                 <h2 class="text-4xl sm:text-6xl font-[900] text-white tracking-tight leading-[1.05]">
                     Your Future Starts <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 bg-clip-text text-transparent">Right Here.</span>
@@ -229,7 +257,12 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </section>
 
     <!-- Voice of Success Section -->
-    <section class="py-24 sm:py-32 bg-white px-4 sm:px-6 relative border-b border-slate-100">
+    <section class="py-24 sm:py-32 bg-white px-4 sm:px-6 relative border-b border-slate-100 overflow-hidden">
+        <!-- Decorative background: dot grid + blobs -->
+        <div class="absolute inset-0 bg-dot-pattern opacity-30 pointer-events-none"></div>
+        <div class="absolute -top-32 -left-32 w-80 h-80 bg-blue-100/60 rounded-full blur-[100px] pointer-events-none animate-float-slow"></div>
+        <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-indigo-100/50 rounded-full blur-[90px] pointer-events-none animate-float-medium"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-50/40 to-indigo-50/30 rounded-full blur-[120px] pointer-events-none"></div>
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 sm:mb-24">
                 <span class="text-blue-600 font-black uppercase text-[11px] tracking-[0.35em] mb-3 block">Student Feedback</span>
@@ -286,7 +319,15 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </section>
 
     <!-- Recent Announcements Section -->
-    <section id="announcements" class="py-24 sm:py-32 px-4 sm:px-6 max-w-7xl mx-auto w-full">
+    <section id="announcements" class="py-24 sm:py-32 px-4 sm:px-6 w-full relative overflow-hidden bg-white">
+        <!-- Decorative: cross grid + ambient blobs -->
+        <div class="absolute inset-0 bg-cross-pattern opacity-60 pointer-events-none"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-50/80 rounded-full blur-[120px] pointer-events-none animate-pulse-slow"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 bg-slate-100/60 rounded-full blur-[100px] pointer-events-none"></div>
+        <!-- Decorative accent corner shapes -->
+        <svg class="absolute top-0 right-0 w-64 h-64 text-blue-50 opacity-60 pointer-events-none" viewBox="0 0 256 256" fill="currentColor"><circle cx="256" cy="0" r="180"/></svg>
+        <svg class="absolute bottom-0 left-0 w-48 h-48 text-slate-100 opacity-50 pointer-events-none" viewBox="0 0 192 192" fill="currentColor"><circle cx="0" cy="192" r="140"/></svg>
+        <div class="max-w-7xl mx-auto relative">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
             <div class="flex items-center gap-3">
                 <span class="w-3 h-8 bg-blue-600 rounded-full"></span>
@@ -326,6 +367,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
             </article>
             <?php endforeach; ?>
         </div>
+        </div><!-- close .max-w-7xl -->
     </section>
 
     <!-- Learning Materials Section -->
@@ -375,7 +417,15 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </section>
 
     <!-- The Hall of Fame Section -->
-    <section id="passers" class="py-24 sm:py-32 bg-slate-50 px-4 sm:px-6 border-t border-slate-100">
+    <section id="passers" class="py-24 sm:py-32 bg-white px-4 sm:px-6 border-t border-slate-100 relative overflow-hidden">
+        <!-- Decorative: diagonal lines + blobs -->
+        <div class="absolute inset-0 bg-line-pattern pointer-events-none"></div>
+        <div class="absolute top-1/4 right-0 w-96 h-96 bg-blue-50/70 rounded-full blur-[130px] pointer-events-none animate-float-slow"></div>
+        <div class="absolute bottom-0 left-1/4 w-80 h-80 bg-indigo-50/60 rounded-full blur-[100px] pointer-events-none animate-float-medium"></div>
+        <!-- Floating decorative circles -->
+        <div class="absolute top-16 left-8 w-10 h-10 rounded-full border-2 border-blue-100 opacity-60 pointer-events-none animate-drift"></div>
+        <div class="absolute top-32 right-16 w-6 h-6 rounded-full bg-blue-100/50 opacity-70 pointer-events-none animate-float-slow"></div>
+        <div class="absolute bottom-24 left-1/3 w-8 h-8 rounded-full border border-indigo-100 opacity-50 pointer-events-none animate-float-medium"></div>
         <div class="max-w-7xl mx-auto text-center mb-16 sm:mb-24">
             <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
             <p class="text-slate-500 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">Celebrating the hard work of every C-Familia student who passed their board exams.</p>
@@ -423,7 +473,12 @@ $recent_announcements = array_slice($announcements, 0, 3);
 
     <!-- Image Gallery Section -->
     <?php if ($has_gallery): ?>
-    <section id="gallery" class="py-24 sm:py-32 px-4 sm:px-6 max-w-7xl mx-auto w-full border-t border-slate-100">
+    <section id="gallery" class="py-24 sm:py-32 px-4 sm:px-6 w-full border-t border-slate-100 bg-white relative overflow-hidden">
+        <!-- Decorative: dot pattern + soft blobs -->
+        <div class="absolute inset-0 bg-dot-pattern opacity-25 pointer-events-none"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-64 bg-gradient-to-b from-emerald-50/40 to-transparent pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 w-80 h-80 bg-emerald-50/50 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto relative">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
             <div class="flex items-center gap-3">
                 <span class="w-3 h-8 bg-emerald-500 rounded-full"></span>
@@ -465,11 +520,22 @@ $recent_announcements = array_slice($announcements, 0, 3);
             </div>
             <?php endforeach; ?>
         </div>
+        </div><!-- close .max-w-7xl -->
     </section>
     <?php endif; ?>
 
     <!-- Contact & Location Section -->
-    <section id="contact" class="py-24 sm:py-32 px-4 sm:px-6 bg-white border-t border-slate-100 w-full">
+    <section id="contact" class="py-24 sm:py-32 px-4 sm:px-6 bg-white border-t border-slate-100 w-full relative overflow-hidden">
+        <!-- Decorative: cross grid + ambient blobs + accent arc -->
+        <div class="absolute inset-0 bg-cross-pattern opacity-50 pointer-events-none"></div>
+        <div class="absolute -top-20 -right-20 w-72 h-72 bg-blue-50/70 rounded-full blur-[100px] pointer-events-none animate-float-slow"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-indigo-50/50 rounded-full blur-[80px] pointer-events-none animate-float-medium"></div>
+        <!-- Decorative floating dots -->
+        <div class="absolute top-20 left-12 w-4 h-4 rounded-full bg-blue-200/60 pointer-events-none animate-drift"></div>
+        <div class="absolute top-40 right-24 w-3 h-3 rounded-full bg-indigo-200/50 pointer-events-none animate-float-slow"></div>
+        <div class="absolute bottom-20 left-1/2 w-5 h-5 rounded-full border border-blue-200/40 pointer-events-none animate-float-medium"></div>
+        <!-- Large decorative arc SVG top-right -->
+        <svg class="absolute -top-24 -right-24 w-80 h-80 text-blue-50 opacity-70 pointer-events-none" viewBox="0 0 320 320" fill="none" stroke="currentColor" stroke-width="1"><circle cx="320" cy="0" r="200"/><circle cx="320" cy="0" r="240"/><circle cx="320" cy="0" r="280"/></svg>
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <div class="space-y-10">
                 <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight">Visit our Branches<span class="text-blue-600">.</span></h3>
