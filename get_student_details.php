@@ -168,7 +168,17 @@ $comp = $grades['compre_exam'] ?? '';
                             <p class="text-[10px] text-slate-400 font-bold"><?= htmlspecialchars($p['payment_method']) ?> • <?= htmlspecialchars($p['reference_number']) ?></p>
                         </div>
                         <div class="text-right">
-                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded <?= $p['status'] == 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700' ?>"><?= htmlspecialchars($p['status']) ?></span>
+                            <?php
+                                $statusClass = match ($p['status']) {
+                                    'paid' => 'bg-emerald-100 text-emerald-700',
+                                    'pending' => 'bg-orange-100 text-orange-700',
+                                    'refund_requested' => 'bg-rose-100 text-rose-700',
+                                    'refunded', 'cancelled' => 'bg-slate-100 text-slate-500',
+                                    default => 'bg-orange-100 text-orange-700',
+                                };
+                                $statusLabel = str_replace('_', ' ', $p['status']);
+                            ?>
+                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded <?= $statusClass ?>"><?= htmlspecialchars($statusLabel) ?></span>
                             <p class="text-[9px] text-slate-300 mt-1"><?= date('M d, Y', strtotime($p['created_at'])) ?></p>
                         </div>
                     </div>

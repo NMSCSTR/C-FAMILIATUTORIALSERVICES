@@ -43,6 +43,35 @@ if(isset($_POST['submit_testimonial'])) {
     $msg = "Thank you for your testimonial!";
 }
 
+if (isset($_POST['request_refund'])) {
+    $payment_id = (int) $_POST['payment_id'];
+    $check = mysqli_query($conn, "SELECT id, amount FROM payments WHERE id = '$payment_id' AND user_id = '$user_id' AND status = 'paid' LIMIT 1");
+    if ($row = mysqli_fetch_assoc($check)) {
+        mysqli_query($conn, "UPDATE payments SET status = 'refund_requested' WHERE id = '$payment_id'");
+        log_activity($conn, 'payment.refund_request', null, [
+            'entity_type' => 'payment',
+            'entity_id' => $payment_id,
+            'amount' => $row['amount'],
+        ]);
+        header("Location: student_dashboard.php?success=refund_requested");
+        exit();
+    }
+}
+
+if (isset($_POST['cancel_payment'])) {
+    $payment_id = (int) $_POST['payment_id'];
+    $check = mysqli_query($conn, "SELECT id FROM payments WHERE id = '$payment_id' AND user_id = '$user_id' AND status = 'pending' LIMIT 1");
+    if (mysqli_fetch_assoc($check)) {
+        mysqli_query($conn, "UPDATE payments SET status = 'cancelled' WHERE id = '$payment_id'");
+        log_activity($conn, 'payment.cancel', null, [
+            'entity_type' => 'payment',
+            'entity_id' => $payment_id,
+        ]);
+        header("Location: student_dashboard.php?success=payment_cancelled");
+        exit();
+    }
+}
+
 // 5. Fetch Data for UI
 $payments_query = mysqli_query($conn, "SELECT * FROM payments WHERE user_id = '$user_id' ORDER BY created_at DESC");
 $ann_query = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'Students' ORDER BY created_at DESC LIMIT 3");
@@ -311,6 +340,7 @@ $grades = mysqli_fetch_assoc($grades_query);
                                             <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Date / Ref</th>
                                             <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Amount</th>
                                             <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Status</th>
+                                            <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
@@ -325,15 +355,37 @@ $grades = mysqli_fetch_assoc($grades_query);
                                             <td class="px-6 sm:px-10 py-6 text-right">
                                                 <?php 
                                                     $st = $pay['status'];
-                                                    $cl = ($st == 'paid') ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : (($st == 'pending') ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-rose-50 text-rose-700 border-rose-100');
+                                                    $cl = match ($st) {
+                                                        'paid' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                                                        'pending' => 'bg-amber-50 text-amber-700 border-amber-100',
+                                                        'refund_requested' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                                        'refunded' => 'bg-slate-100 text-slate-500 border-slate-200',
+                                                        'cancelled' => 'bg-slate-50 text-slate-400 border-slate-200',
+                                                        default => 'bg-rose-50 text-rose-700 border-rose-100',
+                                                    };
                                                 ?>
-                                                <span class="inline-block px-3 py-1.5 <?= $cl ?> text-[9px] font-extrabold rounded-lg border uppercase tracking-wider"><?= $st ?></span>
+                                                <span class="inline-block px-3 py-1.5 <?= $cl ?> text-[9px] font-extrabold rounded-lg border uppercase tracking-wider"><?= str_replace('_', ' ', $st) ?></span>
+                                            </td>
+                                            <td class="px-6 sm:px-10 py-6 text-right">
+                                                <?php if ($st === 'paid'): ?>
+                                                <form method="POST" class="inline" onsubmit="return confirmRefundRequest(this);">
+                                                    <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
+                                                    <button type="submit" name="request_refund" class="text-[10px] font-bold uppercase tracking-wider text-rose-600 hover:text-rose-800">Request Refund</button>
+                                                </form>
+                                                <?php elseif ($st === 'pending'): ?>
+                                                <form method="POST" class="inline" onsubmit="return confirmCancelPayment(this);">
+                                                    <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
+                                                    <button type="submit" name="cancel_payment" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800">Cancel</button>
+                                                </form>
+                                                <?php else: ?>
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-300">—</span>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                         <?php endwhile; ?>
                                         <?php else: ?>
                                         <tr>
-                                            <td colspan="3" class="p-20 text-center text-xs text-slate-300 font-extrabold italic">No payment history.</td>
+                                            <td colspan="4" class="p-20 text-center text-xs text-slate-300 font-extrabold italic">No payment history.</td>
                                         </tr>
                                         <?php endif; ?>
                                     </tbody>
@@ -377,11 +429,61 @@ $grades = mysqli_fetch_assoc($grades_query);
                 cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
             }
         }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = 'logout.php';
-            }
-        })
+            if (result.isConfirmed) window.location.href = 'logout.php';
+        });
     }
+
+    function confirmRefundRequest(form) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Request Refund?',
+            text: 'An admin will review your refund request.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48',
+            confirmButtonText: 'Submit Request',
+            cancelButtonText: 'Keep Payment',
+            customClass: {
+                confirmButton: 'rounded-xl font-bold px-6 py-3',
+                cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) form.submit();
+        });
+        return false;
+    }
+
+    function confirmCancelPayment(form) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Cancel Payment?',
+            text: 'This pending payment submission will be cancelled.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#64748b',
+            confirmButtonText: 'Yes, Cancel',
+            cancelButtonText: 'Keep',
+            customClass: {
+                confirmButton: 'rounded-xl font-bold px-6 py-3',
+                cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) form.submit();
+        });
+        return false;
+    }
+
+    <?php if (isset($_GET['success'])): ?>
+    Swal.fire({
+        icon: 'success',
+        title: <?= json_encode(
+            $_GET['success'] === 'refund_requested' ? 'Refund Request Submitted' :
+            ($_GET['success'] === 'payment_cancelled' ? 'Payment Cancelled' : 'Success')
+        ) ?>,
+        timer: 2000,
+        showConfirmButton: false
+    });
+    <?php endif; ?>
     </script>
 </body>
 </html>

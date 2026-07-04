@@ -158,6 +158,19 @@ function activity_log_build_description($conn, $action, $options = []) {
             $label = $entity_label ?: activity_log_entity_label($conn, 'payment', $entity_id);
             return $label ? "Verified payment for $label" : 'Verified payment';
 
+        case 'payment.refund_request':
+            $label = $entity_label ?: activity_log_entity_label($conn, 'payment', $entity_id);
+            return $label ? "Requested refund for $label" : 'Requested payment refund';
+
+        case 'payment.refund':
+            $label = $entity_label ?: activity_log_entity_label($conn, 'payment', $entity_id);
+            $amount = isset($options['amount']) ? '₱' . number_format((float) $options['amount'], 2) : '';
+            return $label ? "Processed refund of $amount for $label" : "Processed refund of $amount";
+
+        case 'payment.cancel':
+            $label = $entity_label ?: activity_log_entity_label($conn, 'payment', $entity_id);
+            return $label ? "Cancelled pending payment for $label" : 'Cancelled pending payment';
+
         case 'post.delete':
             return $entity_label ? "Deleted learning resource: $entity_label" : 'Deleted learning resource';
 
@@ -202,6 +215,9 @@ function activity_action_label($action) {
         'payment.submit' => 'Submitted payment',
         'payment.walkin' => 'Logged walk-in payment',
         'payment.verify' => 'Verified payment',
+        'payment.refund_request' => 'Requested refund',
+        'payment.refund' => 'Processed refund',
+        'payment.cancel' => 'Cancelled payment',
         'profile.update' => 'Updated profile',
         'announcement.create' => 'Posted announcement',
         'announcement.delete' => 'Deleted announcement',

@@ -133,7 +133,7 @@ CREATE TABLE `payments` (
   `user_id` int(11) NOT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
   `payment_method` varchar(50) DEFAULT NULL,
-  `status` enum('paid','pending','failed') DEFAULT 'pending',
+  `status` enum('paid','pending','failed','refunded','refund_requested','cancelled') DEFAULT 'pending',
   `reference_number` varchar(100) DEFAULT NULL,
   `receipt` varchar(255) DEFAULT NULL,
   `payment_date` date DEFAULT NULL,

@@ -7,8 +7,14 @@ $res = mysqli_query($conn, $query);
 
 if(mysqli_num_rows($res) > 0) {
     while($p = mysqli_fetch_assoc($res)) {
-        $isPaid = ($p['status'] == 'paid');
-        $color = $isPaid ? 'emerald' : 'amber';
+        $color = match ($p['status']) {
+            'paid' => 'emerald',
+            'pending' => 'amber',
+            'refund_requested' => 'rose',
+            'refunded', 'cancelled' => 'slate',
+            default => 'rose',
+        };
+        $statusLabel = str_replace('_', ' ', $p['status']);
         echo '
         <div class="mb-10 relative pl-8 border-l-2 border-slate-100 last:border-0 pb-2">
             <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-4 border-white bg-'.$color.'-500 shadow-sm shadow-'.$color.'-200"></div>
@@ -18,7 +24,7 @@ if(mysqli_num_rows($res) > 0) {
                     <h4 class="text-lg font-bold text-slate-900 mt-1">₱'.number_format($p['amount'], 2).'</h4>
                 </div>
                 <span class="text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-widest bg-'.$color.'-50 text-'.$color.'-600 border border-'.$color.'-100">
-                    '.$p['status'].'
+                    '.$statusLabel.'
                 </span>
             </div>
             <div class="mt-4 bg-slate-50 rounded-2xl p-4 border border-slate-100">

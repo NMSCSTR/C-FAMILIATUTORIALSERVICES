@@ -48,10 +48,40 @@ if (isset($_GET['verify'])) {
     }
 }
 
+// --- Action: Process Refund ---
+if (isset($_GET['refund'])) {
+    $p_id = mysqli_real_escape_string($conn, $_GET['refund']);
+    $find_p = mysqli_query($conn, "SELECT user_id, amount, status FROM payments WHERE id = '$p_id'");
+    $p_data = mysqli_fetch_assoc($find_p);
+
+    if ($p_data && in_array($p_data['status'], ['paid', 'refund_requested'], true)) {
+        $u_id = $p_data['user_id'];
+        mysqli_query($conn, "UPDATE payments SET status = 'refunded' WHERE id = '$p_id'");
+
+        $remaining_paid = mysqli_fetch_assoc(mysqli_query(
+            $conn,
+            "SELECT COUNT(*) as count FROM payments WHERE user_id = '$u_id' AND status = 'paid'"
+        ))['count'] ?? 0;
+        if ((int) $remaining_paid === 0) {
+            mysqli_query($conn, "UPDATE enrollments SET status = 'pending' WHERE user_id = '$u_id' AND status = 'enrolled'");
+        }
+
+        log_activity($conn, 'payment.refund', null, [
+            'entity_type' => 'payment',
+            'entity_id' => (int) $p_id,
+            'target_user_id' => (int) $u_id,
+            'amount' => $p_data['amount'],
+        ]);
+        header("Location: admin_payments.php?success=refunded");
+        exit();
+    }
+}
+
 // Analytics
 $total_collected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(amount) as total FROM payments WHERE status = 'paid'"))['total'] ?? 0;
 $pending_verification = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as count FROM payments WHERE status = 'pending'"))['count'] ?? 0;
-$walkin_revenue = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(amount) as total FROM payments WHERE payment_method = 'Walk-in Cash'"))['total'] ?? 0;
+$walkin_revenue = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(amount) as total FROM payments WHERE payment_method = 'Walk-in Cash' AND status = 'paid'"))['total'] ?? 0;
+$refund_requests = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as count FROM payments WHERE status = 'refund_requested'"))['count'] ?? 0;
 
 $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users WHERE role = 'student' ORDER BY lastname ASC");
 ?>
@@ -106,7 +136,7 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
                     </button>
                 </header>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <div class="bg-blue-600 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                         <p class="text-blue-100 text-[10px] font-black uppercase tracking-widest mb-2">Total Collections</p>
                         <h3 class="text-3xl md:text-4xl font-bold">₱<?= number_format($total_collected, 2) ?></h3>
@@ -116,9 +146,13 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
                         <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Walk-in Revenue</p>
                         <h3 class="text-3xl md:text-4xl font-bold text-emerald-600">₱<?= number_format($walkin_revenue, 2) ?></h3>
                     </div>
-                    <div class="bento-card p-8 shadow-sm border-l-4 border-orange-500 sm:col-span-2 lg:col-span-1">
+                    <div class="bento-card p-8 shadow-sm border-l-4 border-orange-500">
                         <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Verification Needed</p>
                         <h3 class="text-3xl md:text-4xl font-bold text-orange-500"><?= $pending_verification ?></h3>
+                    </div>
+                    <div class="bento-card p-8 shadow-sm border-l-4 border-rose-500 sm:col-span-2 lg:col-span-1">
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Refund Requests</p>
+                        <h3 class="text-3xl md:text-4xl font-bold text-rose-500"><?= $refund_requests ?></h3>
                     </div>
                 </div>
 
@@ -173,11 +207,29 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
 
                                             <?php if($row['status'] == 'pending'): ?>
                                                 <button onclick="confirmVerify(<?= $row['id'] ?>)" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">Verify</button>
-                                            <?php else: ?>
+                                            <?php elseif($row['status'] == 'paid'): ?>
                                                 <div class="flex items-center gap-1.5 text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-xl">
                                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
                                                     <span class="text-[9px] font-black uppercase">Paid</span>
                                                 </div>
+                                                <button onclick="confirmRefund(<?= $row['id'] ?>, '<?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname'], ENT_QUOTES) ?>', <?= (float) $row['amount'] ?>)" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-100 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Refund</button>
+                                            <?php elseif($row['status'] == 'refund_requested'): ?>
+                                                <div class="flex items-center gap-1.5 text-rose-500 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-100">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                                    <span class="text-[9px] font-black uppercase">Refund Requested</span>
+                                                </div>
+                                                <button onclick="confirmRefund(<?= $row['id'] ?>, '<?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname'], ENT_QUOTES) ?>', <?= (float) $row['amount'] ?>)" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">Process Refund</button>
+                                            <?php elseif($row['status'] == 'refunded'): ?>
+                                                <div class="flex items-center gap-1.5 text-slate-400 bg-slate-100 px-3 py-1.5 rounded-xl">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+                                                    <span class="text-[9px] font-black uppercase">Refunded</span>
+                                                </div>
+                                            <?php elseif($row['status'] == 'cancelled'): ?>
+                                                <div class="flex items-center gap-1.5 text-slate-400 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                                                    <span class="text-[9px] font-black uppercase">Cancelled</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <span class="text-[9px] font-black uppercase text-slate-400 bg-slate-50 px-3 py-1.5 rounded-xl"><?= htmlspecialchars($row['status']) ?></span>
                                             <?php endif; ?>
                                         </div>
                                     </td>
@@ -272,8 +324,28 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
             }).then((result) => { if (result.isConfirmed) { window.location.href = `?verify=${id}`; } });
         }
 
+        function confirmRefund(id, studentName, amount) {
+            Swal.fire({
+                title: 'Process Refund?',
+                html: `Refund <strong>₱${Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> to <strong>${studentName}</strong>?<br><span class="text-sm text-slate-500">Enrollment may revert to pending if no paid payments remain.</span>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                confirmButtonText: 'Yes, Refund',
+                customClass: { confirmButton: 'rounded-xl', cancelButton: 'rounded-xl' }
+            }).then((result) => { if (result.isConfirmed) { window.location.href = `?refund=${id}`; } });
+        }
+
         <?php if(isset($_GET['success'])): ?>
-        Swal.fire({ icon: 'success', title: 'Ledger Updated', timer: 2000, showConfirmButton: false });
+        Swal.fire({
+            icon: 'success',
+            title: <?= json_encode(
+                $_GET['success'] === 'refunded' ? 'Refund Processed' :
+                ($_GET['success'] === 'verified' ? 'Payment Verified' : 'Ledger Updated')
+            ) ?>,
+            timer: 2000,
+            showConfirmButton: false
+        });
         <?php endif; ?>
     </script>
 </body>
