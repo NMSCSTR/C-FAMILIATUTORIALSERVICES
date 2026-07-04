@@ -28,6 +28,8 @@ if ($total_revenue_raw >= 1000) {
 $pending_query = "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'";
 $pending_count = mysqli_fetch_assoc(mysqli_query($conn, $pending_query))['total'] ?? 0;
 
+$refund_request_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM payments WHERE status = 'refund_requested'"))['total'] ?? 0;
+
 $total_posts = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM posts"))['total'] ?? 0;
 
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -110,6 +112,23 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </a>
                 </div>
             </header>
+
+            <?php if ($refund_request_count > 0): ?>
+            <div class="mb-8 bg-rose-500/10 border border-rose-500/30 rounded-3xl p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-start gap-4">
+                    <div class="w-11 h-11 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold"><?= $refund_request_count ?> Refund Request<?= $refund_request_count > 1 ? 's' : '' ?> Pending</p>
+                        <p class="text-rose-200/80 text-sm mt-1">A student has requested a refund on a paid transaction. Review it in the Financial Ledger.</p>
+                    </div>
+                </div>
+                <a href="admin_payments.php" class="inline-flex items-center justify-center bg-rose-500 hover:bg-rose-400 text-white text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-xl transition-colors shrink-0">
+                    Review Refunds
+                </a>
+            </div>
+            <?php endif; ?>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-10">
                 <div class="bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group">

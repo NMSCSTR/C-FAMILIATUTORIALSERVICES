@@ -43,33 +43,39 @@ if(isset($_POST['submit_testimonial'])) {
     $msg = "Thank you for your testimonial!";
 }
 
-if (isset($_POST['request_refund'])) {
+if (isset($_POST['payment_action']) && $_POST['payment_action'] === 'request_refund') {
     $payment_id = (int) $_POST['payment_id'];
     $check = mysqli_query($conn, "SELECT id, amount FROM payments WHERE id = '$payment_id' AND user_id = '$user_id' AND status = 'paid' LIMIT 1");
     if ($row = mysqli_fetch_assoc($check)) {
-        mysqli_query($conn, "UPDATE payments SET status = 'refund_requested' WHERE id = '$payment_id'");
-        log_activity($conn, 'payment.refund_request', null, [
-            'entity_type' => 'payment',
-            'entity_id' => $payment_id,
-            'amount' => $row['amount'],
-        ]);
-        header("Location: student_dashboard.php?success=refund_requested");
-        exit();
+        if (mysqli_query($conn, "UPDATE payments SET status = 'refund_requested' WHERE id = '$payment_id'")) {
+            log_activity($conn, 'payment.refund_request', null, [
+                'entity_type' => 'payment',
+                'entity_id' => $payment_id,
+                'amount' => $row['amount'],
+            ]);
+            header("Location: student_dashboard.php?success=refund_requested");
+            exit();
+        }
     }
+    header("Location: student_dashboard.php?error=refund_failed");
+    exit();
 }
 
-if (isset($_POST['cancel_payment'])) {
+if (isset($_POST['payment_action']) && $_POST['payment_action'] === 'cancel_payment') {
     $payment_id = (int) $_POST['payment_id'];
     $check = mysqli_query($conn, "SELECT id FROM payments WHERE id = '$payment_id' AND user_id = '$user_id' AND status = 'pending' LIMIT 1");
     if (mysqli_fetch_assoc($check)) {
-        mysqli_query($conn, "UPDATE payments SET status = 'cancelled' WHERE id = '$payment_id'");
-        log_activity($conn, 'payment.cancel', null, [
-            'entity_type' => 'payment',
-            'entity_id' => $payment_id,
-        ]);
-        header("Location: student_dashboard.php?success=payment_cancelled");
-        exit();
+        if (mysqli_query($conn, "UPDATE payments SET status = 'cancelled' WHERE id = '$payment_id'")) {
+            log_activity($conn, 'payment.cancel', null, [
+                'entity_type' => 'payment',
+                'entity_id' => $payment_id,
+            ]);
+            header("Location: student_dashboard.php?success=payment_cancelled");
+            exit();
+        }
     }
+    header("Location: student_dashboard.php?error=cancel_failed");
+    exit();
 }
 
 // 5. Fetch Data for UI
@@ -368,14 +374,16 @@ $grades = mysqli_fetch_assoc($grades_query);
                                             </td>
                                             <td class="px-6 sm:px-10 py-6 text-right">
                                                 <?php if ($st === 'paid'): ?>
-                                                <form method="POST" class="inline" onsubmit="return confirmRefundRequest(this);">
+                                                <form method="POST" class="inline" id="refund-form-<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
-                                                    <button type="submit" name="request_refund" class="text-[10px] font-bold uppercase tracking-wider text-rose-600 hover:text-rose-800">Request Refund</button>
+                                                    <input type="hidden" name="payment_action" value="request_refund">
+                                                    <button type="button" onclick="confirmRefundRequest(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-rose-600 hover:text-rose-800">Request Refund</button>
                                                 </form>
                                                 <?php elseif ($st === 'pending'): ?>
-                                                <form method="POST" class="inline" onsubmit="return confirmCancelPayment(this);">
+                                                <form method="POST" class="inline" id="cancel-form-<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
-                                                    <button type="submit" name="cancel_payment" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800">Cancel</button>
+                                                    <input type="hidden" name="payment_action" value="cancel_payment">
+                                                    <button type="button" onclick="confirmCancelPayment(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800">Cancel</button>
                                                 </form>
                                                 <?php else: ?>
                                                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-300">—</span>
@@ -433,8 +441,7 @@ $grades = mysqli_fetch_assoc($grades_query);
         });
     }
 
-    function confirmRefundRequest(form) {
-        event.preventDefault();
+    function confirmRefundRequest(paymentId) {
         Swal.fire({
             title: 'Request Refund?',
             text: 'An admin will review your refund request.',
@@ -448,13 +455,13 @@ $grades = mysqli_fetch_assoc($grades_query);
                 cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
             }
         }).then((result) => {
-            if (result.isConfirmed) form.submit();
+            if (result.isConfirmed) {
+                document.getElementById('refund-form-' + paymentId).submit();
+            }
         });
-        return false;
     }
 
-    function confirmCancelPayment(form) {
-        event.preventDefault();
+    function confirmCancelPayment(paymentId) {
         Swal.fire({
             title: 'Cancel Payment?',
             text: 'This pending payment submission will be cancelled.',
@@ -468,9 +475,10 @@ $grades = mysqli_fetch_assoc($grades_query);
                 cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
             }
         }).then((result) => {
-            if (result.isConfirmed) form.submit();
+            if (result.isConfirmed) {
+                document.getElementById('cancel-form-' + paymentId).submit();
+            }
         });
-        return false;
     }
 
     <?php if (isset($_GET['success'])): ?>
@@ -482,6 +490,18 @@ $grades = mysqli_fetch_assoc($grades_query);
         ) ?>,
         timer: 2000,
         showConfirmButton: false
+    });
+    <?php endif; ?>
+
+    <?php if (isset($_GET['error'])): ?>
+    Swal.fire({
+        icon: 'error',
+        title: <?= json_encode(
+            $_GET['error'] === 'refund_failed' ? 'Refund Request Failed' :
+            ($_GET['error'] === 'cancel_failed' ? 'Cancellation Failed' : 'Something went wrong')
+        ) ?>,
+        text: 'Please try again or contact the admin.',
+        confirmButtonColor: '#4f46e5'
     });
     <?php endif; ?>
     </script>

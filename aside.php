@@ -2,6 +2,7 @@
 // Ensure $conn is included in the parent file before this aside is included
 $total_students = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'student'"))['total'] ?? 0;
 $pending_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM enrollments WHERE status = 'pending'"))['total'] ?? 0;
+$refund_request_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM payments WHERE status = 'refund_requested'"))['total'] ?? 0;
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -53,6 +54,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             Payments
+            <?php if ($refund_request_count > 0): ?>
+                <span class="ml-auto bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-md font-bold ring-4 ring-rose-500/10">
+                    <?= $refund_request_count ?>
+                </span>
+            <?php endif; ?>
         </a>
 
         <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-8 mb-4 px-4">Communication</p>
