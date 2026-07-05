@@ -1,0 +1,8 @@
+uploads/
+.DS_Store
+*.log
+.gemini/
+.agents/
+walkthrough.md
+implementation_plan.md
+task.md
