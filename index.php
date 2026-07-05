@@ -145,14 +145,21 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- Header Section -->
-    <header class="relative bg-white py-24 sm:py-32 overflow-hidden flex-shrink-0 border-b border-slate-100">
-        <div class="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-70 pointer-events-none"></div>
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-100/40 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-100/30 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
+    <header class="relative py-24 sm:py-32 overflow-hidden flex-shrink-0 border-b border-slate-100">
+        <!-- Alternating Background Images Layer -->
+        <div class="absolute inset-0 z-0 pointer-events-none">
+            <img id="headerBg0" src="passers.jpg" alt="Background Passes 1" class="absolute inset-0 w-full h-full object-cover opacity-10 transition-opacity duration-1000">
+            <img id="headerBg1" src="passers1.jpg" alt="Background Passes 2" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+        </div>
         
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 text-center lg:text-left grid lg:grid-cols-12 items-center gap-16">
+        <!-- Ambient Design Graphics Layers -->
+        <div class="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-70 pointer-events-none z-10"></div>
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-100/40 rounded-full blur-[140px] animate-pulse-slow pointer-events-none z-10"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-100/30 rounded-full blur-[140px] animate-pulse-slow pointer-events-none z-10"></div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 text-center lg:text-left grid lg:grid-cols-12 items-center gap-16 z-20">
             <div class="space-y-8 lg:col-span-7">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 backdrop-blur-sm">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50/80 border border-blue-100 backdrop-blur-sm">
                     <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
                     <span class="text-blue-600 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Tutorial Services</span>
                 </div>
@@ -169,7 +176,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
             </div>
 
             <div class="hidden lg:block lg:col-span-5">
-                <div class="bg-slate-50 p-10 rounded-3xl border border-slate-200 relative overflow-hidden shadow-xl">
+                <div class="bg-white/80 backdrop-blur-sm p-10 rounded-3xl border border-slate-200 relative overflow-hidden shadow-xl">
                     <div class="absolute -right-16 -top-16 w-40 h-40 bg-blue-100/40 rounded-full blur-3xl"></div>
                     <div class="flex items-center gap-5 mb-8">
                         <div class="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-blue-600/20">✓</div>
@@ -673,7 +680,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100"><?= htmlspecialchars($ann['category']) ?></span>
                         <?php endif; ?>
                     </div>
-                    <h4 class="text-lg font-bold text-slate-900 leading-snug mb-3"><?= htmlspecialchars($ann['title']) ?></h4>
+                    h4 class="text-lg font-bold text-slate-900 leading-snug mb-3"><?= htmlspecialchars($ann['title']) ?></h4>
                     <div class="text-slate-600 leading-relaxed text-sm font-medium whitespace-pre-line"><?= htmlspecialchars($ann['message']) ?></div>
                 </article>
                 <?php endforeach; ?>
@@ -870,6 +877,21 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 closeGalleryLightbox();
             }
         });
+
+        // Background Image Switcher (Every 5 seconds)
+        let activeBgIndex = 0;
+        setInterval(() => {
+            const currentBg = document.getElementById('headerBg' + activeBgIndex);
+            activeBgIndex = activeBgIndex === 0 ? 1 : 0;
+            const nextBg = document.getElementById('headerBg' + activeBgIndex);
+
+            if (currentBg && nextBg) {
+                currentBg.classList.remove('opacity-10');
+                currentBg.classList.add('opacity-0');
+                nextBg.classList.remove('opacity-0');
+                nextBg.classList.add('opacity-10');
+            }
+        }, 5000);
     </script>
 </body>
 </html>
