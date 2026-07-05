@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_start();
 include 'db.php';
 
@@ -13,7 +10,7 @@ if (isset($_POST['login'])) {
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) === 1) {
-        $user = mysqli_fetch_afssoc($result);
+        $user = mysqli_fetch_assoc($result);
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['name'];
