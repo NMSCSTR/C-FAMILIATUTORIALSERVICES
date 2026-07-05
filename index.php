@@ -536,76 +536,112 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </section>
 
 
+<!-- Contact & Location Section -->
+<section id="contact" class="py-24 sm:py-32 px-4 sm:px-6 bg-slate-50 border-t border-slate-200/60 w-full relative overflow-hidden">
+    <!-- Ambient Background Decorations -->
+    <div class="absolute inset-0 bg-cross-pattern opacity-30 pointer-events-none"></div>
+    <div class="absolute -top-20 -right-20 w-80 h-80 bg-blue-100/50 rounded-full blur-[120px] pointer-events-none animate-float-slow"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-indigo-100/40 rounded-full blur-[100px] pointer-events-none animate-float-medium"></div>
+    
+    <!-- Floating Minimalist Dots -->
+    <div class="absolute top-20 left-12 w-3 h-3 rounded-full bg-blue-300/50 pointer-events-none animate-drift"></div>
+    <div class="absolute bottom-20 left-1/2 w-4 h-4 rounded-full border-2 border-indigo-200/40 pointer-events-none animate-float-medium"></div>
 
-    <!-- Contact & Location Section -->
-    <section id="contact" class="py-24 sm:py-32 px-4 sm:px-6 bg-white border-t border-slate-100 w-full relative overflow-hidden">
-        <!-- Decorative: cross grid + ambient blobs + accent arc -->
-        <div class="absolute inset-0 bg-cross-pattern opacity-50 pointer-events-none"></div>
-        <div class="absolute -top-20 -right-20 w-72 h-72 bg-blue-50/70 rounded-full blur-[100px] pointer-events-none animate-float-slow"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-indigo-50/50 rounded-full blur-[80px] pointer-events-none animate-float-medium"></div>
-        <!-- Decorative floating dots -->
-        <div class="absolute top-20 left-12 w-4 h-4 rounded-full bg-blue-200/60 pointer-events-none animate-drift"></div>
-        <div class="absolute top-40 right-24 w-3 h-3 rounded-full bg-indigo-200/50 pointer-events-none animate-float-slow"></div>
-        <div class="absolute bottom-20 left-1/2 w-5 h-5 rounded-full border border-blue-200/40 pointer-events-none animate-float-medium"></div>
-        <!-- Large decorative arc SVG top-right -->
-        <svg class="absolute -top-24 -right-24 w-80 h-80 text-blue-50 opacity-70 pointer-events-none" viewBox="0 0 320 320" fill="none" stroke="currentColor" stroke-width="1"><circle cx="320" cy="0" r="200"/><circle cx="320" cy="0" r="240"/><circle cx="320" cy="0" r="280"/></svg>
-        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-            <div class="space-y-10">
-                <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight">Visit our Branches<span class="text-blue-600">.</span></h3>
-                <div class="space-y-8">
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 bg-slate-100 text-slate-900 border border-slate-200 rounded-xl flex items-center justify-center text-lg flex-shrink-0 shadow-sm">📍</div>
-                        <div>
-                            <p class="font-extrabold text-slate-900 uppercase text-xs tracking-wider mb-1">Ozamiz Main Branch</p>
-                            <p class="text-slate-600 font-medium text-sm sm:text-base">Ozamiz City, Philippines, 7200</p>
-                            <span class="inline-flex items-center gap-1.5 text-[9px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider mt-3 border border-emerald-100">● Main Office</span>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 bg-slate-100 text-slate-900 border border-slate-200 rounded-xl flex items-center justify-center text-lg flex-shrink-0 shadow-sm">📍</div>
-                        <div>
-                            <p class="font-extrabold text-slate-900 uppercase text-xs tracking-wider mb-1">Oroquieta Campus</p>
-                            <p class="text-slate-600 font-medium text-sm sm:text-base">Oroquieta City, Misamis Occidental</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 bg-slate-100 text-slate-900 border border-slate-200 rounded-xl flex items-center justify-center text-lg flex-shrink-0 shadow-sm">📍</div>
-                        <div>
-                            <p class="font-extrabold text-slate-900 uppercase text-xs tracking-wider mb-1">Tubod Campus</p>
-                            <p class="text-slate-600 font-medium text-sm sm:text-base">Tubod, Lanao Del Norte</p>
-                        </div>
-                    </div>
-                </div>
+    <!-- Decorative Top-Right Arc Geometric Lines -->
+    <svg class="absolute -top-24 -right-24 w-96 h-96 text-blue-100/60 opacity-80 pointer-events-none" viewBox="0 0 320 320" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="320" cy="0" r="180" />
+        <circle cx="320" cy="0" r="230" />
+        <circle cx="320" cy="0" r="280" />
+    </svg>
+
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-start relative z-10">
+        <!-- Left Column: Branches -->
+        <div class="space-y-10">
+            <div class="space-y-3">
+                <span class="text-xs font-bold uppercase tracking-widest text-blue-600">Our Network</span>
+                <h3 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">Visit our Branches<span class="text-blue-600">.</span></h3>
+                <p class="text-slate-500 max-w-md text-sm sm:text-base">Drop by any of our learning centers to learn more about our tailored academic programs.</p>
             </div>
             
-            <div class="bg-slate-50 p-8 sm:p-10 rounded-3xl border border-slate-100 shadow-inner">
-                <h3 class="text-2xl font-extrabold mb-6 text-slate-900 tracking-tight">Contact Us Directly</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm transition-transform hover:translate-x-1">
-                        <span class="text-xl select-none">📞</span>
-                        <div>
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Phone</p>
-                            <p class="font-bold text-slate-900 text-sm sm:text-base">0910 167 6805</p>
-                        </div>
+            <div class="space-y-4">
+                <!-- Ozamiz Main Branch -->
+                <div class="group flex items-start gap-5 p-6 bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-blue-200">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
-                    <div class="flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm transition-transform hover:translate-x-1">
-                        <span class="text-xl select-none">✉️</span>
-                        <div class="min-w-0">
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Email</p>
-                            <p class="font-bold text-slate-900 text-sm sm:text-base truncate">shielamariscuevas@gmail.com</p>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <p class="font-bold text-slate-900 text-sm tracking-wide uppercase">Ozamiz Main Branch</p>
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider">● Main Office</span>
                         </div>
+                        <p class="text-slate-600 font-medium text-sm sm:text-base">Ozamiz City, Philippines, 7200</p>
                     </div>
-                    <div class="flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm transition-transform hover:translate-x-1">
-                        <span class="text-xl select-none">💬</span>
-                        <div>
-                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Facebook Page</p>
-                            <p class="font-bold text-slate-900 text-sm sm:text-base">C-Familia Tutorial Services</p>
-                        </div>
+                </div>
+
+                <!-- Oroquieta Campus -->
+                <div class="group flex items-start gap-5 p-6 bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-blue-200">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="font-bold text-slate-900 text-sm tracking-wide uppercase">Oroquieta Campus</p>
+                        <p class="text-slate-600 font-medium text-sm sm:text-base">Oroquieta City, Misamis Occidental</p>
+                    </div>
+                </div>
+
+                <!-- Tubod Campus -->
+                <div class="group flex items-start gap-5 p-6 bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-blue-200">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="font-bold text-slate-900 text-sm tracking-wide uppercase">Tubod Campus</p>
+                        <p class="text-slate-600 font-medium text-sm sm:text-base">Tubod, Lanao Del Norte</p>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+        
+        <!-- Right Column: Contact Cards Container -->
+        <div class="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/40 relative">
+            <h3 class="text-2xl font-black mb-6 text-slate-900 tracking-tight">Contact Us Directly</h3>
+            <div class="space-y-4">
+                <!-- Phone Card -->
+                <a href="tel:09101676805" class="group flex items-center gap-5 p-5 bg-slate-50 rounded-2xl border border-slate-100 transition-all duration-300 hover:bg-blue-50/50 hover:border-blue-100 hover:-translate-y-0.5 block">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-600 shadow-sm border border-slate-200 group-hover:text-blue-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-0.5">Phone</p>
+                        <p class="font-extrabold text-slate-900 text-sm sm:text-base group-hover:text-blue-600 transition-colors">0910 167 6805</p>
+                    </div>
+                </a>
+
+                <!-- Email Card -->
+                <a href="mailto:shielamariscuevas@gmail.com" class="group flex items-center gap-5 p-5 bg-slate-50 rounded-2xl border border-slate-100 transition-all duration-300 hover:bg-blue-50/50 hover:border-blue-100 hover:-translate-y-0.5 block">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-600 shadow-sm border border-slate-200 group-hover:text-blue-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-0.5">Email</p>
+                        <p class="font-extrabold text-slate-900 text-sm sm:text-base truncate group-hover:text-blue-600 transition-colors">shielamariscuevas@gmail.com</p>
+                    </div>
+                </a>
+
+                <!-- Facebook Card -->
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-5 p-5 bg-slate-50 rounded-2xl border border-slate-100 transition-all duration-300 hover:bg-blue-50/50 hover:border-blue-100 hover:-translate-y-0.5 block">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-600 shadow-sm border border-slate-200 group-hover:text-blue-600 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-0.5">Facebook Page</p>
+                        <p class="font-extrabold text-slate-900 text-sm sm:text-base group-hover:text-blue-600 transition-colors">C-Familia Tutorial Services</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
 
     <!-- Footer -->
     <footer class="bg-white pt-20 pb-10 px-4 sm:px-6 text-slate-900 overflow-hidden relative mt-auto border-t border-slate-200">
