@@ -125,7 +125,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <!-- Mobile Screen Overlay Navigation Menu -->
     <div id="mobileNavigationOverlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xl z-30 opacity-0 pointer-events-none transition-all duration-300 md:hidden flex flex-col justify-center px-6">
         <div class="space-y-6 text-center max-w-xs mx-auto w-full">
-            <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">Menu Options</p>
+            <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] mb-2">Menu Options</p>
             <div class="flex flex-col space-y-2">
                 <a onclick="toggleMobileNav()" href="#announcements" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Announcements</a>
                 <a onclick="toggleMobileNav()" href="#posts" class="block py-4 text-xl font-black text-slate-900 bg-white/90 rounded-2xl shadow-sm border border-slate-200/40 hover:bg-blue-600 hover:text-white transition-all">Learning Materials</a>
@@ -137,51 +137,51 @@ $recent_announcements = array_slice($announcements, 0, 3);
             </div>
             
             <div class="grid grid-cols-2 gap-3 pt-6 border-t border-slate-200/20 sm:hidden">
-                <a onclick="toggleMobileNav()" href="login.php" class="py-3 bg-white/10 text-white font-extrabold text-sm rounded-xl border border-white/10 hover:bg-white/20 transition-all">Login</a>
+                <a onclick="toggleMobileNav()" href="login.php" class="py-3 bg-slate-100 text-slate-900 font-extrabold text-sm rounded-xl border border-slate-200 hover:bg-slate-200 transition-all">Login</a>
                 <a onclick="toggleMobileNav()" href="register.php" class="py-3 bg-blue-600 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition-all">Join Us</a>
             </div>
         </div>
     </div>
 
     <!-- Header Section -->
-    <header class="relative bg-slate-950 py-24 sm:py-32 overflow-hidden flex-shrink-0 border-b border-slate-900">
-        <div class="absolute inset-0 bg-[radial-gradient(#1e3a8a_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none"></div>
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/30 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
+    <header class="relative bg-white py-24 sm:py-32 overflow-hidden flex-shrink-0 border-b border-slate-100">
+        <div class="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-70 pointer-events-none"></div>
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-100/40 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-100/30 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
         
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 text-center lg:text-left grid lg:grid-cols-12 items-center gap-16">
             <div class="space-y-8 lg:col-span-7">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm">
-                    <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
-                    <span class="text-blue-400 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Tutorila Services</span>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 backdrop-blur-sm">
+                    <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-blue-600 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Tutorial Services</span>
                 </div>
-                <h2 class="text-4xl sm:text-6xl font-[900] text-white tracking-tight leading-[1.05]">
-                    Your Future Starts <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 bg-clip-text text-transparent">Right Here.</span>
+                <h2 class="text-4xl sm:text-6xl font-[900] text-slate-900 tracking-tight leading-[1.05]">
+                    Your Future Starts <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">Right Here.</span>
                 </h2>
-                <p class="text-lg sm:text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
+                <p class="text-lg sm:text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
                     "Join our family, and together, we will help you pass your professional board exams."
                 </p>
                 <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
                     <a href="register.php" class="px-8 py-4 bg-blue-600 text-white rounded-xl text-base font-bold hover:bg-blue-500 active:scale-98 transition-all shadow-lg shadow-blue-600/20 focus:outline-none">Enroll Now</a>
-                    <a href="#passers" class="px-8 py-4 bg-slate-900 text-slate-300 border border-slate-800 rounded-xl text-base font-bold hover:bg-slate-800 active:scale-98 transition-all focus:outline-none">View Success Stories</a>
+                    <a href="#passers" class="px-8 py-4 bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-base font-bold hover:bg-slate-200 active:scale-98 transition-all focus:outline-none">View Success Stories</a>
                 </div>
             </div>
 
             <div class="hidden lg:block lg:col-span-5">
-                <div class="bg-slate-900/60 backdrop-blur-md p-10 rounded-3xl border border-slate-800/80 relative overflow-hidden shadow-2xl">
-                    <div class="absolute -right-16 -top-16 w-40 h-40 bg-blue-600/20 rounded-full blur-3xl"></div>
+                <div class="bg-slate-50 p-10 rounded-3xl border border-slate-200 relative overflow-hidden shadow-xl">
+                    <div class="absolute -right-16 -top-16 w-40 h-40 bg-blue-100/40 rounded-full blur-3xl"></div>
                     <div class="flex items-center gap-5 mb-8">
                         <div class="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-blue-600/20">✓</div>
                         <div>
-                            <p class="text-white text-2xl font-[900] tracking-tight"><?= $display_rate ?> Passing Rate</p>
-                            <p class="text-slate-400 text-sm font-semibold"><?= $total_passers ?>+ Certified Passers</p>
+                            <p class="text-slate-900 text-2xl font-[900] tracking-tight"><?= $display_rate ?> Passing Rate</p>
+                            <p class="text-slate-500 text-sm font-semibold"><?= $total_passers ?>+ Certified Passers</p>
                         </div>
                     </div>
                     <div class="space-y-4">
-                        <div class="h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                            <div class="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 w-[95%] rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)]"></div>
+                        <div class="h-3 bg-slate-200 rounded-full overflow-hidden p-0.5 border border-slate-300">
+                            <div class="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 w-[95%] rounded-full shadow-[0_0_10px_rgba(37,99,235,0.2)]"></div>
                         </div>
-                        <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                             <span>Excellent Results</span>
                             <span>Batch 2026</span>
                         </div>
@@ -192,18 +192,18 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </header>
 
     <!-- Top Performance Section -->
-    <section class="py-24 sm:py-32 bg-slate-950 text-white relative overflow-hidden border-b border-slate-900">
-        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[140px] pointer-events-none"></div>
+    <section class="py-24 sm:py-32 bg-white text-slate-900 relative overflow-hidden border-b border-slate-100">
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-50/40 rounded-full blur-[140px] pointer-events-none"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 relative">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 sm:mb-24">
                 <div>
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                        <span class="text-blue-400 font-black uppercase text-[11px] tracking-[0.3em]">Top Achievers</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        <span class="text-blue-600 font-black uppercase text-[11px] tracking-[0.3em]">Top Achievers</span>
                     </div>
-                    <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight">Top Performance<span class="text-blue-500">.</span></h3>
+                    <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight text-slate-900">Top Performance<span class="text-blue-600">.</span></h3>
                 </div>
-                <p class="text-slate-400 max-w-sm font-medium text-sm sm:text-base leading-relaxed border-l-2 border-slate-800 pl-4">Celebrating our students who got excellent board exam ratings of 95% and higher.</p>
+                <p class="text-slate-500 max-w-sm font-medium text-sm sm:text-base leading-relaxed border-l-2 border-slate-200 pl-4">Celebrating our students who got excellent board exam ratings of 95% and higher.</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -218,21 +218,21 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         $displayed_top++;
                         if ($displayed_top <= 6):
                 ?>
-                <div class="bg-slate-900/40 border border-slate-800 hover:border-slate-700/80 p-8 rounded-3xl group hover:bg-slate-900 transition-all duration-300 flex flex-col justify-between shadow-lg hover:-translate-y-2 relative overflow-hidden">
+                <div class="bg-slate-50/50 border border-slate-100 hover:border-slate-200 p-8 rounded-3xl group hover:bg-white transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-2 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="flex items-center gap-5 mb-8">
                         <div class="relative flex-shrink-0">
-                            <img src="<?= $photoPath ?>" class="w-20 h-20 rounded-2xl object-cover ring-4 ring-slate-800/50 shadow-2xl transition-transform duration-500 group-hover:scale-105">
+                            <img src="<?= $photoPath ?>" class="w-20 h-20 rounded-2xl object-cover ring-4 ring-slate-100 shadow-md transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute -top-2 -right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-md uppercase tracking-widest">TOP</div>
                         </div>
                         <div class="min-w-0">
-                            <h4 class="text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors"><?= $top['name'] ?></h4>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-1 truncate"><?= $top['program'] ?></p>
+                            <h4 class="text-xl font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors"><?= $top['name'] ?></h4>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mt-1 truncate"><?= $top['program'] ?></p>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between bg-slate-950 p-4 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Board Rating</span>
-                        <span class="text-3xl font-[900] bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent italic tracking-tight"><?= number_format($top['rating'], 2) ?>%</span>
+                    <div class="flex items-center justify-between bg-slate-100 p-4 rounded-xl border border-slate-200">
+                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Board Rating</span>
+                        <span class="text-3xl font-[900] bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent italic tracking-tight"><?= number_format($top['rating'], 2) ?>%</span>
                     </div>
                 </div>
                 <?php 
@@ -240,15 +240,15 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     endwhile; 
                 else: 
                 ?>
-                <div class="col-span-full py-20 text-center bg-slate-900/20 rounded-3xl border border-dashed border-slate-800">
-                    <p class="text-slate-500 font-bold uppercase tracking-widest text-xs sm:text-sm">Top results are being checked right now.</p>
+                <div class="col-span-full py-20 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs sm:text-sm">Top results are being checked right now.</p>
                 </div>
                 <?php endif; ?>
             </div>
 
             <?php if($top_count > 6): ?>
             <div class="mt-16 text-center">
-                <button onclick="openModal('topPerformanceModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-900 border border-slate-800 rounded-xl font-bold hover:bg-slate-800 hover:border-slate-700 transition-all text-xs uppercase tracking-widest text-slate-300 focus:outline-none">
+                <button onclick="openModal('topPerformanceModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-100 border border-slate-200 rounded-xl font-bold hover:bg-slate-200 hover:border-slate-300 transition-all text-xs uppercase tracking-widest text-slate-700 focus:outline-none">
                     See More Top Performers
                 </button>
             </div>
@@ -319,11 +319,11 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </section>
 
     <!-- Recent Announcements Section -->
-    <section id="announcements" class="py-24 sm:py-32 px-4 sm:px-6 w-full relative overflow-hidden bg-white">
+    <section id="announcements" class="py-24 sm:py-32 px-4 sm:px-6 w-full relative overflow-hidden bg-white border-b border-slate-100">
         <!-- Decorative: cross grid + ambient blobs -->
         <div class="absolute inset-0 bg-cross-pattern opacity-60 pointer-events-none"></div>
         <div class="absolute top-0 right-0 w-96 h-96 bg-blue-50/80 rounded-full blur-[120px] pointer-events-none animate-pulse-slow"></div>
-        <div class="absolute bottom-0 left-0 w-80 h-80 bg-slate-100/60 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 bg-slate-50/60 rounded-full blur-[100px] pointer-events-none"></div>
         <!-- Decorative accent corner shapes -->
         <svg class="absolute top-0 right-0 w-64 h-64 text-blue-50 opacity-60 pointer-events-none" viewBox="0 0 256 256" fill="currentColor"><circle cx="256" cy="0" r="180"/></svg>
         <svg class="absolute bottom-0 left-0 w-48 h-48 text-slate-100 opacity-50 pointer-events-none" viewBox="0 0 192 192" fill="currentColor"><circle cx="0" cy="192" r="140"/></svg>
@@ -371,20 +371,20 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </section>
 
     <!-- Learning Materials Section -->
-    <section id="posts" class="py-24 sm:py-32 bg-slate-900 text-white border-t border-slate-950 px-4 sm:px-6 w-full relative overflow-hidden">
-        <div class="absolute top-0 left-1/2 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <section id="posts" class="py-24 sm:py-32 bg-white text-slate-900 border-b border-slate-100 px-4 sm:px-6 w-full relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 w-96 h-96 bg-indigo-50/50 rounded-full blur-[120px] pointer-events-none"></div>
         <div class="max-w-7xl mx-auto relative">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
                 <div class="flex items-center gap-3">
-                    <span class="w-3 h-8 bg-indigo-500 rounded-full"></span>
-                    <h3 class="text-3xl font-[900] tracking-tight text-white">Learning Materials</h3>
+                    <span class="w-3 h-8 bg-indigo-600 rounded-full"></span>
+                    <h3 class="text-3xl font-[900] tracking-tight text-slate-900">Learning Materials</h3>
                 </div>
                 <?php 
                 $posts_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM posts");
                 $posts_count = mysqli_fetch_assoc($posts_total_query)['count'];
                 if($posts_count > 6): 
                 ?>
-                <button onclick="openModal('postsModal')" class="text-xs font-black uppercase text-indigo-400 tracking-wider hover:text-indigo-300 transition-colors flex items-center gap-1 group focus:outline-none">
+                <button onclick="openModal('postsModal')" class="text-xs font-black uppercase text-indigo-600 tracking-wider hover:text-indigo-700 transition-colors flex items-center gap-1 group focus:outline-none">
                     Browse All Materials <span class="transition-transform group-hover:translate-x-1">→</span>
                 </button>
                 <?php endif; ?>
@@ -395,17 +395,17 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 $posts_query = mysqli_query($conn, "SELECT * FROM posts ORDER BY created_at DESC LIMIT 6");
                 while($post = mysqli_fetch_assoc($posts_query)):
                 ?>
-                <article class="bg-slate-950 rounded-3xl shadow-sm border border-slate-800 overflow-hidden hover:border-slate-700 transition-all duration-300 group flex flex-col justify-between p-8 hover:-translate-y-1">
+                <article class="bg-slate-50 rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:border-slate-200 hover:bg-white transition-all duration-300 group flex flex-col justify-between p-8 hover:-translate-y-1">
                     <div>
                         <div class="mb-4">
-                            <span class="px-2.5 py-1 bg-indigo-500/10 text-indigo-400 text-[9px] font-black rounded uppercase tracking-wider border border-indigo-500/20">Study File</span>
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 text-[9px] font-black rounded uppercase tracking-wider border border-indigo-100">Study File</span>
                         </div>
-                        <h4 class="text-xl font-bold mb-3 group-hover:text-indigo-400 transition-colors text-white leading-snug"><?= $post['title'] ?></h4>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 font-medium"><?= $post['content'] ?></p>
+                        <h4 class="text-xl font-bold mb-3 group-hover:text-indigo-600 transition-colors text-slate-900 leading-snug"><?= $post['title'] ?></h4>
+                        <p class="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2 font-medium"><?= $post['content'] ?></p>
                     </div>
                     <?php if($post['file_path']): ?>
-                    <div class="border-t border-slate-800/80 pt-5 mt-2">
-                        <a href="uploads/resources/<?= $post['file_path'] ?>" class="inline-flex items-center gap-2 text-indigo-400 font-black text-[11px] uppercase tracking-wider hover:text-indigo-300 transition-all focus:outline-none">
+                    <div class="border-t border-slate-200/80 pt-5 mt-2">
+                        <a href="uploads/resources/<?= $post['file_path'] ?>" class="inline-flex items-center gap-2 text-indigo-600 font-black text-[11px] uppercase tracking-wider hover:text-indigo-700 transition-all focus:outline-none">
                             Download File <span class="text-sm transition-transform group-hover:translate-x-1">→</span>
                         </a>
                     </div>
@@ -417,7 +417,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </section>
 
     <!-- The Hall of Fame Section -->
-    <section id="passers" class="py-24 sm:py-32 bg-white px-4 sm:px-6 border-t border-slate-100 relative overflow-hidden">
+    <section id="passers" class="py-24 sm:py-32 bg-white px-4 sm:px-6 border-b border-slate-100 relative overflow-hidden">
         <!-- Decorative: diagonal lines + blobs -->
         <div class="absolute inset-0 bg-line-pattern pointer-events-none"></div>
         <div class="absolute top-1/4 right-0 w-96 h-96 bg-blue-50/70 rounded-full blur-[130px] pointer-events-none animate-float-slow"></div>
@@ -594,30 +594,30 @@ $recent_announcements = array_slice($announcements, 0, 3);
         </div>
     </section>
 
-<!-- Footer -->
-    <footer class="bg-slate-950 pt-20 pb-10 px-4 sm:px-6 text-white overflow-hidden relative mt-auto border-t border-slate-900">
+    <!-- Footer -->
+    <footer class="bg-white pt-20 pb-10 px-4 sm:px-6 text-slate-900 overflow-hidden relative mt-auto border-t border-slate-200">
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400"></div>
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-12 relative">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-lg">C</div>
-                <h1 class="text-2xl font-[900] tracking-tighter">C-Familia<span class="text-blue-500">.</span></h1>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-lg text-white">C</div>
+                <h1 class="text-2xl font-[900] tracking-tighter">C-Familia<span class="text-blue-600">.</span></h1>
             </div>
-            <div class="text-slate-500 text-xs font-bold uppercase tracking-[0.25em] text-center md:text-left">
+            <div class="text-slate-400 text-xs font-bold uppercase tracking-[0.25em] text-center md:text-left">
                 Helping Students Succeed Since 2024
             </div>
         </div>
         
         <!-- Developer Credit Badge -->
         <div class="max-w-7xl mx-auto text-center mb-6 relative">
-            <p class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-900/60 border border-slate-800/80 px-4 py-2 rounded-xl backdrop-blur-sm shadow-inner">
+            <p class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl backdrop-blur-sm shadow-inner">
                 Developed by 
-                <span class="font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 bg-clip-text text-transparent">
+                <span class="font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">
                     Rhondel M. Pagobo
                 </span>
             </p>
         </div>
 
-        <div class="max-w-7xl mx-auto text-center text-slate-700 text-[10px] border-t border-slate-900 pt-8 uppercase tracking-[0.3em] font-black">
+        <div class="max-w-7xl mx-auto text-center text-slate-400 text-[10px] border-t border-slate-100 pt-8 uppercase tracking-[0.3em] font-black">
             &copy; <?= date("Y") ?> C-Familia Tutorial Services • Registered School Review Center
         </div>
     </footer>
@@ -638,7 +638,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <?php endforeach; ?>
 
     <!-- Announcement Detail Modal -->
-    <div id="announcementDetailModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="announcementDetailModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl border border-slate-100 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
                 <h3 class="text-lg font-[900] text-slate-900 tracking-tight">Announcement</h3>
@@ -649,7 +649,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- All Announcements Modal -->
-    <div id="announcementsModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="announcementsModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl border border-slate-100 w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
                 <div>
@@ -681,16 +681,16 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- Top Performers See More Modal -->
-    <div id="topPerformanceModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-slate-900 rounded-3xl border border-slate-800 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
-            <div class="p-8 border-b border-slate-800/60 flex justify-between items-center flex-shrink-0">
+    <div id="topPerformanceModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl border border-slate-200 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-8 border-b border-slate-200 flex justify-between items-center flex-shrink-0">
                 <div>
-                    <h3 class="text-2xl font-[900] text-white tracking-tight">All Top Performers</h3>
-                    <p class="text-slate-400 text-sm mt-1">Our top reviewees with high scores of 95% and above.</p>
+                    <h3 class="text-2xl font-[900] text-slate-900 tracking-tight">All Top Performers</h3>
+                    <p class="text-slate-500 text-sm mt-1">Our top reviewees with high scores of 95% and above.</p>
                 </div>
-                <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+                <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             </div>
-            <div class="p-8 overflow-y-auto">
+            <div class="p-8 overflow-y-auto bg-slate-50">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <?php 
                     if($top_count > 0):
@@ -698,17 +698,17 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         while($top = mysqli_fetch_assoc($top_query)):
                             $photoPath = file_exists("uploads/profiles/".$top['photo']) ? "uploads/profiles/".$top['photo'] : "uploads/passers/".$top['photo'];
                     ?>
-                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
+                    <div class="bg-white border border-slate-200 p-6 rounded-2xl flex flex-col justify-between shadow-sm">
                         <div class="flex items-center gap-4 mb-5">
-                            <img src="<?= $photoPath ?>" class="w-14 h-14 rounded-xl object-cover ring-2 ring-slate-800">
+                            <img src="<?= $photoPath ?>" class="w-14 h-14 rounded-xl object-cover ring-2 ring-slate-100">
                             <div class="min-w-0">
-                                <h4 class="font-bold text-white text-base truncate"><?= $top['name'] ?></h4>
+                                <h4 class="font-bold text-slate-900 text-base truncate"><?= $top['name'] ?></h4>
                                 <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider truncate"><?= $top['program'] ?></p>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between bg-slate-900 p-3.5 rounded-xl border border-slate-800/60">
-                            <span class="text-slate-500 text-[9px] font-black uppercase tracking-widest">Board Rating</span>
-                            <span class="text-xl font-[900] text-blue-400 italic"><?= number_format($top['rating'], 2) ?>%</span>
+                        <div class="flex items-center justify-between bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 text-[9px] font-black uppercase tracking-widest">Board Rating</span>
+                            <span class="text-xl font-[900] text-blue-600 italic"><?= number_format($top['rating'], 2) ?>%</span>
                         </div>
                     </div>
                     <?php 
@@ -721,7 +721,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- Hall of Fame Passers Modal -->
-    <div id="passersModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="passersModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl border border-slate-100 w-full max-w-6xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-8 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
                 <div>
@@ -759,7 +759,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- Gallery Lightbox -->
-    <div id="galleryLightbox" class="fixed inset-0 z-[60] hidden bg-slate-950/90 backdrop-blur-md items-center justify-center p-4">
+    <div id="galleryLightbox" class="fixed inset-0 z-[60] hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
         <div class="relative max-w-5xl w-full">
             <button type="button" id="galleryLightboxClose" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             <img id="galleryLightboxImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
