@@ -232,7 +232,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         </div>
                         <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             <span>Excellent Results</span>
-                            <span>Batch 2026</span>
+                            <span>Batch <?= date('Y') ?></span>
                         </div>
                     </div>
                 </div>
