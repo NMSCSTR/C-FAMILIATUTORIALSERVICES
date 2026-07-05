@@ -264,68 +264,115 @@ $recent_announcements = array_slice($announcements, 0, 3);
         </div>
     </section>
 
-    <!-- Voice of Success Section -->
-    <section class="py-24 sm:py-32 bg-white px-4 sm:px-6 relative border-b border-slate-100 overflow-hidden">
-        <!-- Decorative background: dot grid + blobs -->
-        <div class="absolute inset-0 bg-dot-pattern opacity-30 pointer-events-none"></div>
-        <div class="absolute -top-32 -left-32 w-80 h-80 bg-blue-100/60 rounded-full blur-[100px] pointer-events-none animate-float-slow"></div>
-        <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-indigo-100/50 rounded-full blur-[90px] pointer-events-none animate-float-medium"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-50/40 to-indigo-50/30 rounded-full blur-[120px] pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-16 sm:mb-24">
-                <span class="text-blue-600 font-black uppercase text-[11px] tracking-[0.35em] mb-3 block">Student Feedback</span>
-                <h3 class="text-3xl sm:text-5xl font-[900] text-slate-900 tracking-tight">Voice of Success<span class="text-blue-600">.</span></h3>
+    <!-- Image Gallery Section -->
+    <?php if ($has_gallery): ?>
+    <section id="gallery" class="py-24 sm:py-32 px-4 sm:px-6 w-full border-t border-slate-100 bg-white relative overflow-hidden">
+        <!-- Decorative: dot pattern + soft blobs -->
+        <div class="absolute inset-0 bg-dot-pattern opacity-25 pointer-events-none"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-64 bg-gradient-to-b from-emerald-50/40 to-transparent pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 w-80 h-80 bg-emerald-50/50 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto relative">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
+            <div class="flex items-center gap-3">
+                <span class="w-3 h-8 bg-emerald-500 rounded-full"></span>
+                <h3 class="text-3xl font-[900] tracking-tight text-slate-900">Photo Gallery</h3>
             </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <?php 
-                $test_query = mysqli_query($conn, "SELECT t.*, u.firstname, u.lastname, u.profile_pic FROM testimonials t JOIN users u ON t.user_id = u.id ORDER BY t.created_at DESC");
-                $test_count = mysqli_num_rows($test_query);
-                $displayed_test = 0;
-                
-                if($test_count > 0):
-                    mysqli_data_seek($test_query, 0);
-                    while($row = mysqli_fetch_assoc($test_query)):
-                        $userPic = !empty($row['profile_pic']) ? "uploads/profiles/".$row['profile_pic'] : "uploads/passers/default_user.jpg";
-                        $displayed_test++;
-                        if ($displayed_test <= 6):
-                ?>
-                <div class="bg-slate-50/60 p-8 rounded-3xl border border-slate-100 relative group hover:bg-white transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1">
-                    <div class="text-slate-200 absolute top-4 right-8 text-7xl font-serif select-none pointer-events-none group-hover:text-blue-100 transition-colors">“</div>
-                    <div class="relative z-10 flex flex-col h-full justify-between">
-                        <p class="text-slate-600 italic leading-relaxed text-sm sm:text-base mb-8 line-clamp-3 font-medium">
-                            <?= htmlspecialchars($row['content']) ?>
-                        </p>
-                        <div class="flex items-center gap-4 border-t border-slate-100 pt-6">
-                            <img src="<?= $userPic ?>" class="w-12 h-12 rounded-xl object-cover ring-4 ring-white shadow-sm flex-shrink-0">
-                            <div class="min-w-0">
-                                <h5 class="font-extrabold text-slate-900 text-sm truncate"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
-                                <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest mt-0.5">Verified Alumni</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php 
-                        endif;
-                    endwhile; 
-                else: 
-                ?>
-                <div class="col-span-full py-20 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Waiting for student stories...</p>
-                </div>
-                <?php endif; ?>
-            </div>
-
-            <?php if($test_count > 6): ?>
-            <div class="mt-16 text-center">
-                <button onclick="openModal('testimonialsModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-all text-xs uppercase tracking-widest focus:outline-none">
-                    Read All Testimonials
-                </button>
-            </div>
-            <?php endif; ?>
+            <p class="text-slate-500 text-sm font-medium max-w-md">Moments from our review center, events, and student milestones.</p>
         </div>
+
+        <div class="space-y-16">
+            <?php foreach ($grouped_gallery as $caption => $images):
+                $image_count = count($images);
+            ?>
+            <div data-gallery-group="<?= md5($caption) ?>">
+                <h4 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                    <?= htmlspecialchars($caption) ?>
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <?php foreach ($images as $index => $img):
+                        $img_path = $gallery_dir . $img['image_path'];
+                    ?>
+                    <div class="gallery-item relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 <?= $index > 0 ? 'gallery-extra hidden sm:block' : '' ?>">
+                        <button type="button" class="gallery-lightbox-trigger group absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-inset" data-gallery-src="<?= htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8') ?>" data-gallery-caption="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
+                                <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-800 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg">View</span>
+                            </div>
+                        </button>
+                        <?php if ($index === 0 && $image_count > 1): ?>
+                        <div class="gallery-see-more-overlay absolute inset-0 z-10 flex items-center justify-center bg-slate-900/35 sm:hidden">
+                            <button type="button" class="gallery-see-more-btn px-5 py-2.5 bg-white text-slate-900 text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg hover:bg-emerald-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                                See more images
+                            </button>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        </div><!-- close .max-w-7xl -->
+    </section>
+    <?php endif; ?>
+
+        <!-- The Hall of Fame Section -->
+    <section id="passers" class="py-24 sm:py-32 bg-white px-4 sm:px-6 border-b border-slate-100 relative overflow-hidden">
+        <!-- Decorative: diagonal lines + blobs -->
+        <div class="absolute inset-0 bg-line-pattern pointer-events-none"></div>
+        <div class="absolute top-1/4 right-0 w-96 h-96 bg-blue-50/70 rounded-full blur-[130px] pointer-events-none animate-float-slow"></div>
+        <div class="absolute bottom-0 left-1/4 w-80 h-80 bg-indigo-50/60 rounded-full blur-[100px] pointer-events-none animate-float-medium"></div>
+        <!-- Floating decorative circles -->
+        <div class="absolute top-16 left-8 w-10 h-10 rounded-full border-2 border-blue-100 opacity-60 pointer-events-none animate-drift"></div>
+        <div class="absolute top-32 right-16 w-6 h-6 rounded-full bg-blue-100/50 opacity-70 pointer-events-none animate-float-slow"></div>
+        <div class="absolute bottom-24 left-1/3 w-8 h-8 rounded-full border border-indigo-100 opacity-50 pointer-events-none animate-float-medium"></div>
+        <div class="max-w-7xl mx-auto text-center mb-16 sm:mb-24">
+            <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
+            <p class="text-slate-500 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">Celebrating the hard work of every C-Familia student who passed their board exams.</p>
+        </div>
+        
+        <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <?php 
+            $passers_query = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC");
+            $total_passers_count = mysqli_num_rows($passers_query);
+            $displayed_passers = 0;
+            
+            if($total_passers_count > 0):
+                mysqli_data_seek($passers_query, 0);
+                while($passer = mysqli_fetch_assoc($passers_query)): 
+                    $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
+                    $displayed_passers++;
+                    if($displayed_passers <= 10):
+            ?>
+            <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-slate-200 transition-all duration-300 hover:-translate-y-1.5 text-center group flex flex-col justify-between">
+                <div>
+                    <img src="<?= $pPath ?>" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 group-hover:scale-105 transition-transform shadow-inner">
+                    <h5 class="font-bold text-slate-900 text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-4 truncate"><?= $passer['program'] ?></p>
+                </div>
+                <div class="flex items-center justify-center gap-1.5 bg-slate-50 rounded-xl py-2.5 border border-slate-100">
+                    <span class="text-base font-[900] text-blue-600 tracking-tight"><?= $passer['rating'] ?>%</span>
+                    <span class="text-[8px] text-slate-400 font-black uppercase tracking-widest">Score</span>
+                </div>
+            </div>
+            <?php 
+                    endif;
+                endwhile; 
+            endif;
+            ?>
+        </div>
+
+        <?php if($total_passers_count > 10): ?>
+        <div class="mt-16 text-center">
+            <button onclick="openModal('passersModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold rounded-xl shadow-sm transition-all text-xs uppercase tracking-widest focus:outline-none">
+                View All Hall of Fame Passers
+            </button>
+        </div>
+        <?php endif; ?>
     </section>
 
+    
     <!-- Recent Announcements Section -->
     <section id="announcements" class="py-24 sm:py-32 px-4 sm:px-6 w-full relative overflow-hidden bg-white border-b border-slate-100">
         <!-- Decorative: cross grid + ambient blobs -->
@@ -424,113 +471,71 @@ $recent_announcements = array_slice($announcements, 0, 3);
         </div>
     </section>
 
-    <!-- The Hall of Fame Section -->
-    <section id="passers" class="py-24 sm:py-32 bg-white px-4 sm:px-6 border-b border-slate-100 relative overflow-hidden">
-        <!-- Decorative: diagonal lines + blobs -->
-        <div class="absolute inset-0 bg-line-pattern pointer-events-none"></div>
-        <div class="absolute top-1/4 right-0 w-96 h-96 bg-blue-50/70 rounded-full blur-[130px] pointer-events-none animate-float-slow"></div>
-        <div class="absolute bottom-0 left-1/4 w-80 h-80 bg-indigo-50/60 rounded-full blur-[100px] pointer-events-none animate-float-medium"></div>
-        <!-- Floating decorative circles -->
-        <div class="absolute top-16 left-8 w-10 h-10 rounded-full border-2 border-blue-100 opacity-60 pointer-events-none animate-drift"></div>
-        <div class="absolute top-32 right-16 w-6 h-6 rounded-full bg-blue-100/50 opacity-70 pointer-events-none animate-float-slow"></div>
-        <div class="absolute bottom-24 left-1/3 w-8 h-8 rounded-full border border-indigo-100 opacity-50 pointer-events-none animate-float-medium"></div>
-        <div class="max-w-7xl mx-auto text-center mb-16 sm:mb-24">
-            <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900">The Hall of Fame</h3>
-            <p class="text-slate-500 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">Celebrating the hard work of every C-Familia student who passed their board exams.</p>
-        </div>
-        
-        <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            <?php 
-            $passers_query = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC");
-            $total_passers_count = mysqli_num_rows($passers_query);
-            $displayed_passers = 0;
-            
-            if($total_passers_count > 0):
-                mysqli_data_seek($passers_query, 0);
-                while($passer = mysqli_fetch_assoc($passers_query)): 
-                    $pPath = file_exists("uploads/profiles/".$passer['photo']) ? "uploads/profiles/".$passer['photo'] : "uploads/passers/".$passer['photo'];
-                    $displayed_passers++;
-                    if($displayed_passers <= 10):
-            ?>
-            <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-slate-200 transition-all duration-300 hover:-translate-y-1.5 text-center group flex flex-col justify-between">
-                <div>
-                    <img src="<?= $pPath ?>" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 group-hover:scale-105 transition-transform shadow-inner">
-                    <h5 class="font-bold text-slate-900 text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
-                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-4 truncate"><?= $passer['program'] ?></p>
-                </div>
-                <div class="flex items-center justify-center gap-1.5 bg-slate-50 rounded-xl py-2.5 border border-slate-100">
-                    <span class="text-base font-[900] text-blue-600 tracking-tight"><?= $passer['rating'] ?>%</span>
-                    <span class="text-[8px] text-slate-400 font-black uppercase tracking-widest">Score</span>
-                </div>
+
+
+    <!-- Voice of Success Section -->
+    <section class="py-24 sm:py-32 bg-white px-4 sm:px-6 relative border-b border-slate-100 overflow-hidden">
+        <!-- Decorative background: dot grid + blobs -->
+        <div class="absolute inset-0 bg-dot-pattern opacity-30 pointer-events-none"></div>
+        <div class="absolute -top-32 -left-32 w-80 h-80 bg-blue-100/60 rounded-full blur-[100px] pointer-events-none animate-float-slow"></div>
+        <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-indigo-100/50 rounded-full blur-[90px] pointer-events-none animate-float-medium"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-50/40 to-indigo-50/30 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 sm:mb-24">
+                <span class="text-blue-600 font-black uppercase text-[11px] tracking-[0.35em] mb-3 block">Student Feedback</span>
+                <h3 class="text-3xl sm:text-5xl font-[900] text-slate-900 tracking-tight">Voice of Success<span class="text-blue-600">.</span></h3>
             </div>
-            <?php 
-                    endif;
-                endwhile; 
-            endif;
-            ?>
-        </div>
 
-        <?php if($total_passers_count > 10): ?>
-        <div class="mt-16 text-center">
-            <button onclick="openModal('passersModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold rounded-xl shadow-sm transition-all text-xs uppercase tracking-widest focus:outline-none">
-                View All Hall of Fame Passers
-            </button>
-        </div>
-        <?php endif; ?>
-    </section>
-
-    <!-- Image Gallery Section -->
-    <?php if ($has_gallery): ?>
-    <section id="gallery" class="py-24 sm:py-32 px-4 sm:px-6 w-full border-t border-slate-100 bg-white relative overflow-hidden">
-        <!-- Decorative: dot pattern + soft blobs -->
-        <div class="absolute inset-0 bg-dot-pattern opacity-25 pointer-events-none"></div>
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-64 bg-gradient-to-b from-emerald-50/40 to-transparent pointer-events-none"></div>
-        <div class="absolute bottom-0 right-0 w-80 h-80 bg-emerald-50/50 rounded-full blur-[120px] pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto relative">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
-            <div class="flex items-center gap-3">
-                <span class="w-3 h-8 bg-emerald-500 rounded-full"></span>
-                <h3 class="text-3xl font-[900] tracking-tight text-slate-900">Photo Gallery</h3>
-            </div>
-            <p class="text-slate-500 text-sm font-medium max-w-md">Moments from our review center, events, and student milestones.</p>
-        </div>
-
-        <div class="space-y-16">
-            <?php foreach ($grouped_gallery as $caption => $images):
-                $image_count = count($images);
-            ?>
-            <div data-gallery-group="<?= md5($caption) ?>">
-                <h4 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
-                    <?= htmlspecialchars($caption) ?>
-                </h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    <?php foreach ($images as $index => $img):
-                        $img_path = $gallery_dir . $img['image_path'];
-                    ?>
-                    <div class="gallery-item relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 <?= $index > 0 ? 'gallery-extra hidden sm:block' : '' ?>">
-                        <button type="button" class="gallery-lightbox-trigger group absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-inset" data-gallery-src="<?= htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8') ?>" data-gallery-caption="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
-                                <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-800 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg">View</span>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <?php 
+                $test_query = mysqli_query($conn, "SELECT t.*, u.firstname, u.lastname, u.profile_pic FROM testimonials t JOIN users u ON t.user_id = u.id ORDER BY t.created_at DESC");
+                $test_count = mysqli_num_rows($test_query);
+                $displayed_test = 0;
+                
+                if($test_count > 0):
+                    mysqli_data_seek($test_query, 0);
+                    while($row = mysqli_fetch_assoc($test_query)):
+                        $userPic = !empty($row['profile_pic']) ? "uploads/profiles/".$row['profile_pic'] : "uploads/passers/default_user.jpg";
+                        $displayed_test++;
+                        if ($displayed_test <= 6):
+                ?>
+                <div class="bg-slate-50/60 p-8 rounded-3xl border border-slate-100 relative group hover:bg-white transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1">
+                    <div class="text-slate-200 absolute top-4 right-8 text-7xl font-serif select-none pointer-events-none group-hover:text-blue-100 transition-colors">“</div>
+                    <div class="relative z-10 flex flex-col h-full justify-between">
+                        <p class="text-slate-600 italic leading-relaxed text-sm sm:text-base mb-8 line-clamp-3 font-medium">
+                            <?= htmlspecialchars($row['content']) ?>
+                        </p>
+                        <div class="flex items-center gap-4 border-t border-slate-100 pt-6">
+                            <img src="<?= $userPic ?>" class="w-12 h-12 rounded-xl object-cover ring-4 ring-white shadow-sm flex-shrink-0">
+                            <div class="min-w-0">
+                                <h5 class="font-extrabold text-slate-900 text-sm truncate"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
+                                <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest mt-0.5">Verified Alumni</p>
                             </div>
-                        </button>
-                        <?php if ($index === 0 && $image_count > 1): ?>
-                        <div class="gallery-see-more-overlay absolute inset-0 z-10 flex items-center justify-center bg-slate-900/35 sm:hidden">
-                            <button type="button" class="gallery-see-more-btn px-5 py-2.5 bg-white text-slate-900 text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg hover:bg-emerald-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
-                                See more images
-                            </button>
                         </div>
-                        <?php endif; ?>
                     </div>
-                    <?php endforeach; ?>
                 </div>
+                <?php 
+                        endif;
+                    endwhile; 
+                else: 
+                ?>
+                <div class="col-span-full py-20 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Waiting for student stories...</p>
+                </div>
+                <?php endif; ?>
             </div>
-            <?php endforeach; ?>
+
+            <?php if($test_count > 6): ?>
+            <div class="mt-16 text-center">
+                <button onclick="openModal('testimonialsModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-all text-xs uppercase tracking-widest focus:outline-none">
+                    Read All Testimonials
+                </button>
+            </div>
+            <?php endif; ?>
         </div>
-        </div><!-- close .max-w-7xl -->
     </section>
-    <?php endif; ?>
+
+
 
     <!-- Contact & Location Section -->
     <section id="contact" class="py-24 sm:py-32 px-4 sm:px-6 bg-white border-t border-slate-100 w-full relative overflow-hidden">
