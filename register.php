@@ -216,6 +216,7 @@ if (isset($_POST['register'])) {
 
             <!-- Form -->
             <form action="" method="POST" id="register-form" class="space-y-6">
+                <input type="hidden" name="register" value="1">
                 
                 <!-- Section: Personal Information -->
                 <div>

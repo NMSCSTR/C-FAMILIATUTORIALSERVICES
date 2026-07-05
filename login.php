@@ -10,7 +10,7 @@ if (isset($_POST['login'])) {
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) === 1) {
-        $user = mysqli_fetch_assoc($result);
+        $user = mysqli_fetch_afssoc($result);
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['name'];
@@ -191,6 +191,7 @@ if (isset($_POST['login'])) {
 
             <!-- Form -->
             <form action="" method="POST" id="login-form" class="space-y-6">
+                <input type="hidden" name="login" value="1">
                 <!-- Email Input -->
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Email Address</label>
