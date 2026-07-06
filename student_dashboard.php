@@ -99,47 +99,50 @@ $grades = mysqli_fetch_assoc($grades_query);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Student Portal | C-Familia</title>
     <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
-    .sidebar-link-active { background-color: #f1f5f9; color: #4f46e5; border-left: 4px solid #4f46e5; }
-    .stat-card:hover { transform: translateY(-3px); transition: all 0.3s ease; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; background-color: #020617; }
+    .sidebar-link-active { background: linear-gradient(90deg, #2563eb, #4f46e5); color: #ffffff; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; }
+    .stat-card { transition: transform 0.3s ease, border-color 0.3s ease; }
+    .stat-card:hover { transform: translateY(-3px); border-color: #334155; }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 
-<body class="bg-[#fcfcfd] text-slate-900">
+<body class="bg-slate-950 text-white antialiased">
 
     <div class="flex min-h-screen relative overflow-x-hidden">
         
-        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300 dynamic-overlay"></div>
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/60 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300 dynamic-overlay"></div>
 
-        <aside id="sidebarMenu" class="w-72 bg-white border-r border-slate-100 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out">
-            <div class="p-8 pb-12 border-b border-slate-50 flex justify-between items-center">
+        <aside id="sidebarMenu" class="w-72 bg-slate-900/40 border-r border-slate-800/80 flex flex-col fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static h-screen z-50 transition-transform duration-300 ease-in-out backdrop-blur-2xl">
+            <div class="p-8 pb-12 border-b border-slate-800/60 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100">
-                        <img src="cuevaslogo.jpg" alt="">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
+                        C
                     </div>
-                    <span class="font-extrabold text-slate-950 text-xl tracking-tight">C-Familia</span>
+                    <span class="font-extrabold text-white text-xl tracking-tight">C-Familia</span>
                 </div>
-                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-xl bg-slate-50">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/60 border border-slate-700/40">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
 
-            <nav class="flex-1 pt-8 px-4 space-y-2 overflow-y-auto">
+            <nav class="flex-1 pt-8 px-4 space-y-2 overflow-y-auto custom-scrollbar text-sm">
                 <a href="student_dashboard.php" class="flex items-center gap-3.5 px-6 py-4 rounded-xl font-bold transition-all sidebar-link-active">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
                     <span>Dashboard</span>
                 </a>
-                <a href="student_resources.php" class="flex items-center gap-3.5 px-6 py-4 text-slate-600 hover:bg-slate-50 rounded-xl font-semibold transition-all group">
+                <a href="student_resources.php" class="flex items-center gap-3.5 px-6 py-4 text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent rounded-xl font-semibold transition-all group">
                     <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                     <span>Resources</span>
                 </a>
-                <a href="student_profile.php" class="flex items-center gap-3.5 px-6 py-4 text-slate-600 hover:bg-slate-50 rounded-xl font-semibold transition-all group">
+                <a href="student_profile.php" class="flex items-center gap-3.5 px-6 py-4 text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent rounded-xl font-semibold transition-all group">
                     <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -147,8 +150,8 @@ $grades = mysqli_fetch_assoc($grades_query);
                 </a>
             </nav>
 
-            <div class="p-6 border-t border-slate-100">
-                <button onclick="confirmLogout()" class="w-full flex items-center gap-3 px-6 py-4 text-red-500 hover:bg-red-50 rounded-xl font-bold transition-all">
+            <div class="p-6 border-t border-slate-800/80">
+                <button onclick="confirmLogout()" class="w-full flex items-center gap-3 px-6 py-4 text-red-400 hover:bg-red-500/10 rounded-xl font-bold transition-all border border-transparent hover:border-red-500/10">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
@@ -158,9 +161,9 @@ $grades = mysqli_fetch_assoc($grades_query);
         </aside>
 
         <main class="flex-1 min-w-0 w-full">
-            <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
+            <header class="bg-slate-900/40 backdrop-blur-md border-b border-slate-800/80 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-50 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800/60 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -169,10 +172,10 @@ $grades = mysqli_fetch_assoc($grades_query);
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=4f46e5&color=fff' ?>" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-50">
+                    <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=2563eb&color=fff' ?>" class="w-10 h-10 rounded-full object-cover ring-2 ring-blue-900/40">
                     <div class="hidden sm:block">
-                        <span class="text-xs font-bold text-slate-900 block"><?= $user['firstname'] ?> <?= $user['middlename'] ?> <?= $user['lastname'] ?></span>
-                        <span class="text-[10px] font-semibold text-indigo-600">Active Student</span>
+                        <span class="text-xs font-bold text-white block"><?= $user['firstname'] ?> <?= $user['middlename'] ?> <?= $user['lastname'] ?></span>
+                        <span class="text-[10px] font-semibold text-blue-400">Active Student</span>
                     </div>
                 </div>
             </header>
@@ -180,88 +183,89 @@ $grades = mysqli_fetch_assoc($grades_query);
             <div class="p-4 sm:p-10 max-w-[1500px] mx-auto space-y-10">
 
                 <?php if (!$is_enrolled): ?>
-                <div class="bg-white rounded-3xl p-8 sm:p-16 text-center border border-slate-100 shadow-lg shadow-slate-100/50">
-                    <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-8 font-black">?</div>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-950 mb-4 tracking-tight">Enrollment Required</h2>
-                    <p class="text-slate-500 max-w-lg mx-auto mb-12 text-base sm:text-lg leading-relaxed">You do not have an active enrollment record. To access learning materials and track your batch progress, please complete the enrollment form.</p>
-                    <a href="enroll.php" class="inline-flex items-center gap-3 px-10 py-5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-slate-950 transition-all group">
+                <div class="bg-slate-900/60 rounded-3xl p-8 sm:p-16 text-center border border-slate-800 backdrop-blur-xl">
+                    <div class="w-20 h-20 bg-slate-950 text-blue-400 border border-slate-800 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-8 font-black">?</div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight">Enrollment Required</h2>
+                    <p class="text-slate-400 max-w-lg mx-auto mb-12 text-base sm:text-lg leading-relaxed">You do not have an active enrollment record. To access learning materials and track your batch progress, please complete the enrollment form.</p>
+                    <a href="enroll.php" class="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-950/30 transition-all group">
                         <span>Submit Enrollment</span>
                         <svg class="w-5 h-5 group-hover:translate-x-1.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </a>
                 </div>
+                <?php ?>
                 <?php else: ?>
 
-                <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-100 shadow-lg shadow-slate-100/50 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+                <div class="bg-slate-900/60 rounded-3xl p-6 sm:p-10 border border-slate-800 backdrop-blur-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
                     <div class="space-y-3 w-full lg:w-auto">
                         <div>
-                            <p class="text-[10px] font-black uppercase text-indigo-600 tracking-widest mb-1">C-Familia Portal</p>
-                            <h1 class="text-3xl sm:text-4xl font-extrabold mb-1 tracking-tight text-slate-950">Welcome, <?= explode(' ', $user['firstname'])[0] ?>!</h1>
+                            <p class="text-[10px] font-black uppercase text-blue-400 tracking-widest mb-1">C-Familia Portal</p>
+                            <h1 class="text-3xl sm:text-4xl font-extrabold mb-1 tracking-tight text-white">Welcome, <?= explode(' ', $user['firstname'])[0] ?>!</h1>
                             <div class="flex flex-wrap items-center gap-3 mt-3">
-                                <span class="text-sm font-semibold text-slate-600 flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                                    <span class="text-indigo-500">📚</span> <?= $enroll['program_type'] ?>
+                                <span class="text-sm font-semibold text-slate-300 flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg">
+                                    <span class="text-blue-400">📚</span> <?= $enroll['program_type'] ?>
                                 </span>
-                                <span class="text-sm font-semibold text-slate-600 flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                                    <span class="text-indigo-500">📍</span> <?= $enroll['enrolled_at'] ?: 'Not Specified' ?>
+                                <span class="text-sm font-semibold text-slate-300 flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg">
+                                    <span class="text-blue-400">📍</span> <?= $enroll['enrolled_at'] ?: 'Not Specified' ?>
                                 </span>
                                 <?php if($enroll['insured'] == 1): ?>
-                                <span class="text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg border border-emerald-100 flex items-center gap-1.5">
+                                <span class="text-[10px] font-black uppercase tracking-wider bg-emerald-950/20 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-900/30 flex items-center gap-1.5">
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zM9 10a1 1 0 011-1h3a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
                                     </svg>
                                     Insured
                                 </span>
                                 <?php else: ?>
-                                <span class="text-[10px] font-black uppercase tracking-wider bg-slate-50 text-slate-400 px-3 py-1.5 rounded-lg border border-slate-100">No Insurance</span>
+                                <span class="text-[10px] font-black uppercase tracking-wider bg-slate-950 text-slate-500 px-3 py-1.5 rounded-lg border border-slate-800/80">No Insurance</span>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-4 w-full lg:w-auto">
-                        <div class="px-8 py-4 bg-indigo-50 rounded-2xl border border-indigo-100 text-center w-full lg:min-w-[140px]">
-                            <span class="text-[10px] font-extrabold text-indigo-800 uppercase tracking-widest block mb-1">Status</span>
-                            <span class="text-sm font-black uppercase text-indigo-700 tracking-tighter"><?= $enroll['status'] ?></span>
+                        <div class="px-8 py-4 bg-blue-950/20 rounded-2xl border border-blue-900/30 text-center w-full lg:min-w-[140px]">
+                            <span class="text-[10px] font-extrabold text-blue-400 uppercase tracking-widest block mb-1">Status</span>
+                            <span class="text-sm font-black uppercase text-blue-300 tracking-tighter"><?= $enroll['status'] ?></span>
                         </div>
                     </div>
                 </div>
 
                 <?php if ($grades && (!is_null($grades['diagnostic_exam']) || !is_null($grades['preboard_exam']) || !is_null($grades['compre_exam']))): ?>
                 <div class="space-y-4">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Academic Performance Reports</h4>
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-2">Academic Performance Reports</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         
                         <?php if(!is_null($grades['diagnostic_exam'])): ?>
-                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50 stat-card flex items-center justify-between">
+                        <div class="bg-slate-900/60 p-6 rounded-3xl border border-slate-800 stat-card flex items-center justify-between backdrop-blur-xl">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">📊</div>
+                                <div class="w-12 h-12 rounded-2xl bg-blue-950/30 text-blue-400 flex items-center justify-center font-bold text-lg border border-blue-900/20">📊</div>
                                 <div>
-                                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Diagnostic Exam</p>
-                                    <h3 class="text-2xl font-extrabold text-slate-900 mt-0.5"><?= $grades['diagnostic_exam'] ?>%</h3>
+                                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Diagnostic Exam</p>
+                                    <h3 class="text-2xl font-extrabold text-white mt-0.5"><?= $grades['diagnostic_exam'] ?>%</h3>
                                 </div>
                             </div>
                         </div>
                         <?php endif; ?>
 
                         <?php if(!is_null($grades['preboard_exam'])): ?>
-                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50 stat-card flex items-center justify-between">
+                        <div class="bg-slate-900/60 p-6 rounded-3xl border border-slate-800 stat-card flex items-center justify-between backdrop-blur-xl">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">📝</div>
+                                <div class="w-12 h-12 rounded-2xl bg-amber-950/30 text-amber-400 flex items-center justify-center font-bold text-lg border border-amber-900/20">4️⃣</div>
                                 <div>
-                                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Preboard Exam</p>
-                                    <h3 class="text-2xl font-extrabold text-slate-900 mt-0.5"><?= $grades['preboard_exam'] ?>%</h3>
+                                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Preboard Exam</p>
+                                    <h3 class="text-2xl font-extrabold text-white mt-0.5"><?= $grades['preboard_exam'] ?>%</h3>
                                 </div>
                             </div>
                         </div>
                         <?php endif; ?>
 
                         <?php if(!is_null($grades['compre_exam'])): ?>
-                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50 stat-card flex items-center justify-between">
+                        <div class="bg-slate-900/60 p-6 rounded-3xl border border-slate-800 stat-card flex items-center justify-between backdrop-blur-xl">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg">🎓</div>
+                                <div class="w-12 h-12 rounded-2xl bg-purple-950/30 text-purple-400 flex items-center justify-center font-bold text-lg border border-purple-900/20">🎓</div>
                                 <div>
-                                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Comprehensive Exam</p>
-                                    <h3 class="text-2xl font-extrabold text-slate-900 mt-0.5"><?= $grades['compre_exam'] ?>%</h3>
+                                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Comprehensive Exam</p>
+                                    <h3 class="text-2xl font-extrabold text-white mt-0.5"><?= $grades['compre_exam'] ?>%</h3>
                                 </div>
                             </div>
                         </div>
@@ -272,28 +276,28 @@ $grades = mysqli_fetch_assoc($grades_query);
                 <?php endif; ?>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-white p-7 rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50 stat-card flex items-center gap-5">
-                        <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl font-black">₱</div>
+                    <div class="bg-slate-900/60 p-7 rounded-3xl border border-slate-800 stat-card flex items-center gap-5 backdrop-blur-xl">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-950 text-indigo-400 border border-slate-800 flex items-center justify-center text-2xl font-black">₱</div>
                         <div>
-                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Total Fee</p>
-                            <h3 class="text-2xl font-extrabold text-slate-950"><?= number_format($total_fee, 2) ?></h3>
+                            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Fee</p>
+                            <h3 class="text-2xl font-extrabold text-white"><?= number_format($total_fee, 2) ?></h3>
                         </div>
                     </div>
-                    <div class="bg-white p-7 rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50 stat-card flex items-center gap-5 hover:border-emerald-100">
-                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-black">✓</div>
+                    <div class="bg-slate-900/60 p-7 rounded-3xl border border-slate-800 stat-card flex items-center gap-5 backdrop-blur-xl">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-950 text-emerald-400 border border-slate-800 flex items-center justify-center text-2xl font-black">✓</div>
                         <div>
-                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Paid Amount</p>
-                            <h3 class="text-2xl font-extrabold text-emerald-600"><?= number_format($total_paid, 2) ?></h3>
+                            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Paid Amount</p>
+                            <h3 class="text-2xl font-extrabold text-emerald-400"><?= number_format($total_paid, 2) ?></h3>
                         </div>
                     </div>
-                    <div class="bg-white p-7 rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50 stat-card flex items-center gap-5 hover:border-rose-100">
-                        <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-2xl font-black">!</div>
+                    <div class="bg-slate-900/60 p-7 rounded-3xl border border-slate-800 stat-card flex items-center gap-5 backdrop-blur-xl">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-950 text-rose-400 border border-slate-800 flex items-center justify-center text-2xl font-black">!</div>
                         <div>
-                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Balance Due</p>
-                            <h3 class="text-2xl font-extrabold text-rose-500"><?= number_format($balance, 2) ?></h3>
+                            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Balance Due</p>
+                            <h3 class="text-2xl font-extrabold text-rose-400"><?= number_format($balance, 2) ?></h3>
                         </div>
                     </div>
-                    <div class="bg-indigo-600 p-7 rounded-3xl border border-indigo-600 shadow-lg shadow-indigo-100 stat-card flex items-center gap-5">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-7 rounded-3xl border border-transparent stat-card flex items-center gap-5 shadow-xl shadow-blue-950/20">
                         <div class="w-14 h-14 rounded-2xl bg-white/10 text-indigo-100 flex items-center justify-center text-xl font-black">#</div>
                         <div>
                             <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest">Review Batch</p>
@@ -302,72 +306,72 @@ $grades = mysqli_fetch_assoc($grades_query);
                     </div>
                 </div>
 
-                <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-sm border border-slate-100">
-                    <h3 class="text-xl font-bold mb-4">Share Your Experience</h3>
-                    <p class="text-slate-500 text-sm mb-6">Your testimonial will be featured on our landing page.</p>
+                <div class="bg-slate-900/60 p-6 sm:p-8 rounded-[2rem] border border-slate-800 backdrop-blur-xl">
+                    <h3 class="text-xl font-bold mb-4 text-white">Share Your Experience</h3>
+                    <p class="text-slate-400 text-sm mb-6">Your testimonial will be featured on our landing page.</p>
                     <form action="" method="POST">
-                        <textarea name="testimonial_content" required class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/5 outline-none text-sm min-h-[120px]" placeholder="How was your experience with C-Familia?"></textarea>
-                        <button type="submit" name="submit_testimonial" class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">Submit Review</button>
+                        <textarea name="testimonial_content" required class="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none text-sm min-h-[120px] text-white placeholder:text-slate-600" placeholder="How was your experience with C-Familia?"></textarea>
+                        <button type="submit" name="submit_testimonial" class="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-950/40 transition">Submit Review</button>
                     </form>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-white rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50">
-                            <div class="px-8 py-6 border-b border-slate-100">
-                                <h3 class="font-extrabold text-slate-950 text-sm tracking-tight uppercase">Latest News</h3>
+                        <div class="bg-slate-900/60 rounded-3xl border border-slate-800 backdrop-blur-xl">
+                            <div class="px-8 py-6 border-b border-slate-800/60">
+                                <h3 class="font-extrabold text-white text-sm tracking-tight uppercase">Latest News</h3>
                             </div>
                             <div class="p-8 space-y-6">
                                 <?php if(mysqli_num_rows($ann_query) > 0): ?>
                                 <?php while($ann = mysqli_fetch_assoc($ann_query)): ?>
-                                <div class="space-y-2">
-                                    <span class="text-[10px] font-extrabold text-indigo-600 uppercase"><?= date('F d, Y', strtotime($ann['created_at'])) ?></span>
-                                    <h4 class="font-bold text-slate-900 leading-snug"><?= $ann['title'] ?></h4>
-                                    <p class="text-xs text-slate-500 line-clamp-2"><?= $ann['message'] ?></p>
+                                <div class="space-y-2 border-b border-slate-800/40 pb-4 last:border-0 last:pb-0">
+                                    <span class="text-[10px] font-extrabold text-blue-400 uppercase"><?= date('F d, Y', strtotime($ann['created_at'])) ?></span>
+                                    <h4 class="font-bold text-white leading-snug"><?= $ann['title'] ?></h4>
+                                    <p class="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed"><?= $ann['message'] ?></p>
                                 </div>
                                 <?php endwhile; ?>
                                 <?php else: ?>
-                                <p class="text-center py-4 text-xs font-bold text-slate-400 italic">No announcements.</p>
+                                <p class="text-center py-4 text-xs font-bold text-slate-500 italic">No announcements.</p>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
 
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-3xl border border-slate-100 shadow-lg shadow-slate-100/50">
-                            <div class="px-6 sm:px-10 py-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
-                                <h3 class="font-extrabold text-slate-950 text-sm tracking-tight uppercase">My Payments</h3>
-                                <a href="upload_payment.php" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-lg text-xs transition-colors hover:bg-slate-950">+ Submit Receipt</a>
+                        <div class="bg-slate-900/60 rounded-3xl border border-slate-800 backdrop-blur-xl">
+                            <div class="px-6 sm:px-10 py-6 border-b border-slate-800/60 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
+                                <h3 class="font-extrabold text-white text-sm tracking-tight uppercase">My Payments</h3>
+                                <a href="upload_payment.php" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-lg text-xs hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-lg shadow-blue-950/20">+ Submit Receipt</a>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left min-w-[500px]">
                                     <thead>
-                                        <tr>
-                                            <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Date / Ref</th>
-                                            <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Amount</th>
-                                            <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Status</th>
-                                            <th class="px-6 sm:px-10 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Action</th>
+                                        <tr class="text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800/60 bg-slate-950/20">
+                                            <th class="px-6 sm:px-10 py-5">Date / Ref</th>
+                                            <th class="px-6 sm:px-10 py-5">Amount</th>
+                                            <th class="px-6 sm:px-10 py-5 text-right">Status</th>
+                                            <th class="px-6 sm:px-10 py-5 text-right">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100">
+                                    <tbody class="divide-y divide-slate-800/40">
                                         <?php if(mysqli_num_rows($payments_query) > 0): ?>
                                         <?php while($pay = mysqli_fetch_assoc($payments_query)): ?>
-                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <tr class="hover:bg-slate-900/20 transition-colors">
                                             <td class="px-6 sm:px-10 py-6">
-                                                <p class="text-xs font-bold text-slate-900"><?= date('M d, Y', strtotime($pay['created_at'])) ?></p>
-                                                <p class="text-[10px] text-slate-400 mt-1 uppercase">Ref: <?= $pay['reference_number'] ?: 'N/A' ?></p>
+                                                <p class="text-xs font-bold text-white"><?= date('M d, Y', strtotime($pay['created_at'])) ?></p>
+                                                <p class="text-[10px] text-slate-500 mt-1 uppercase">Ref: <?= $pay['reference_number'] ?: 'N/A' ?></p>
                                             </td>
-                                            <td class="px-6 sm:px-10 py-6 font-extrabold text-slate-950 text-sm">₱<?= number_format($pay['amount'], 2) ?></td>
+                                            <td class="px-6 sm:px-10 py-6 font-extrabold text-white text-sm">₱<?= number_format($pay['amount'], 2) ?></td>
                                             <td class="px-6 sm:px-10 py-6 text-right">
                                                 <?php 
                                                     $st = $pay['status'];
                                                     $cl = match ($st) {
-                                                        'paid' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                                                        'pending' => 'bg-amber-50 text-amber-700 border-amber-100',
-                                                        'refund_requested' => 'bg-rose-50 text-rose-700 border-rose-100',
-                                                        'refunded' => 'bg-slate-100 text-slate-500 border-slate-200',
-                                                        'cancelled' => 'bg-slate-50 text-slate-400 border-slate-200',
-                                                        default => 'bg-rose-50 text-rose-700 border-rose-100',
+                                                        'paid' => 'bg-emerald-950/20 text-emerald-400 border-emerald-900/30',
+                                                        'pending' => 'bg-amber-950/20 text-amber-400 border-amber-900/30',
+                                                        'refund_requested' => 'bg-rose-950/20 text-rose-400 border-rose-900/30',
+                                                        'refunded' => 'bg-slate-950 text-slate-500 border-slate-800',
+                                                        'cancelled' => 'bg-slate-950 text-slate-600 border-slate-800/60',
+                                                        default => 'bg-rose-950/20 text-rose-400 border-rose-900/30',
                                                     };
                                                 ?>
                                                 <span class="inline-block px-3 py-1.5 <?= $cl ?> text-[9px] font-extrabold rounded-lg border uppercase tracking-wider"><?= str_replace('_', ' ', $st) ?></span>
@@ -377,23 +381,23 @@ $grades = mysqli_fetch_assoc($grades_query);
                                                 <form method="POST" class="inline" id="refund-form-<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_action" value="request_refund">
-                                                    <button type="button" onclick="confirmRefundRequest(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-rose-600 hover:text-rose-800">Request Refund</button>
+                                                    <button type="button" onclick="confirmRefundRequest(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-rose-400 hover:text-rose-300">Request Refund</button>
                                                 </form>
                                                 <?php elseif ($st === 'pending'): ?>
                                                 <form method="POST" class="inline" id="cancel-form-<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_action" value="cancel_payment">
-                                                    <button type="button" onclick="confirmCancelPayment(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800">Cancel</button>
+                                                    <button type="button" onclick="confirmCancelPayment(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-400">Cancel</button>
                                                 </form>
                                                 <?php else: ?>
-                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-300">—</span>
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-600">—</span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
                                         <?php endwhile; ?>
                                         <?php else: ?>
                                         <tr>
-                                            <td colspan="4" class="p-20 text-center text-xs text-slate-300 font-extrabold italic">No payment history.</td>
+                                            <td colspan="4" class="p-20 text-center text-xs text-slate-500 font-extrabold italic">No payment history.</td>
                                         </tr>
                                         <?php endif; ?>
                                     </tbody>
@@ -408,6 +412,13 @@ $grades = mysqli_fetch_assoc($grades_query);
     </div>
 
     <script>
+    // Mixin custom configuration for dark theme alert notifications
+    const customSwalMixin = Swal.mixin({
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#2563eb'
+    });
+
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebarMenu');
         const overlay = document.getElementById('sidebarOverlay');
@@ -422,19 +433,19 @@ $grades = mysqli_fetch_assoc($grades_query);
     }
 
     function confirmLogout() {
-        Swal.fire({
+        customSwalMixin.fire({
             title: 'Are you sure?',
             text: "You will be signed out of your account.",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#4f46e5',
-            cancelButtonColor: '#f1f5f9',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#1e293b',
             confirmButtonText: 'Yes, logout',
             cancelButtonText: 'Cancel',
             customClass: {
-                title: 'font-extrabold text-slate-900',
-                confirmButton: 'rounded-xl font-bold px-6 py-3',
-                cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
+                title: 'font-extrabold text-white',
+                confirmButton: 'rounded-xl font-bold px-6 py-3 text-sm',
+                cancelButton: 'rounded-xl font-bold px-6 py-3 text-sm text-slate-400'
             }
         }).then((result) => {
             if (result.isConfirmed) window.location.href = 'logout.php';
@@ -442,17 +453,19 @@ $grades = mysqli_fetch_assoc($grades_query);
     }
 
     function confirmRefundRequest(paymentId) {
-        Swal.fire({
+        customSwalMixin.fire({
             title: 'Request Refund?',
             text: 'An admin will review your refund request.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#e11d48',
+            cancelButtonColor: '#1e293b',
             confirmButtonText: 'Submit Request',
             cancelButtonText: 'Keep Payment',
             customClass: {
-                confirmButton: 'rounded-xl font-bold px-6 py-3',
-                cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
+                title: 'font-extrabold text-white',
+                confirmButton: 'rounded-xl font-bold px-6 py-3 text-sm',
+                cancelButton: 'rounded-xl font-bold px-6 py-3 text-sm text-slate-400'
             }
         }).then((result) => {
             if (result.isConfirmed) {
@@ -462,17 +475,19 @@ $grades = mysqli_fetch_assoc($grades_query);
     }
 
     function confirmCancelPayment(paymentId) {
-        Swal.fire({
+        customSwalMixin.fire({
             title: 'Cancel Payment?',
             text: 'This pending payment submission will be cancelled.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#64748b',
+            confirmButtonColor: '#4b5563',
+            cancelButtonColor: '#1e293b',
             confirmButtonText: 'Yes, Cancel',
             cancelButtonText: 'Keep',
             customClass: {
-                confirmButton: 'rounded-xl font-bold px-6 py-3',
-                cancelButton: 'rounded-xl font-bold px-6 py-3 text-slate-600'
+                title: 'font-extrabold text-white',
+                confirmButton: 'rounded-xl font-bold px-6 py-3 text-sm',
+                cancelButton: 'rounded-xl font-bold px-6 py-3 text-sm text-slate-400'
             }
         }).then((result) => {
             if (result.isConfirmed) {
@@ -482,7 +497,7 @@ $grades = mysqli_fetch_assoc($grades_query);
     }
 
     <?php if (isset($_GET['success'])): ?>
-    Swal.fire({
+    customSwalMixin.fire({
         icon: 'success',
         title: <?= json_encode(
             $_GET['success'] === 'refund_requested' ? 'Refund Request Submitted' :
@@ -494,14 +509,14 @@ $grades = mysqli_fetch_assoc($grades_query);
     <?php endif; ?>
 
     <?php if (isset($_GET['error'])): ?>
-    Swal.fire({
+    customSwalMixin.fire({
         icon: 'error',
         title: <?= json_encode(
             $_GET['error'] === 'refund_failed' ? 'Refund Request Failed' :
             ($_GET['error'] === 'cancel_failed' ? 'Cancellation Failed' : 'Something went wrong')
         ) ?>,
         text: 'Please try again or contact the admin.',
-        confirmButtonColor: '#4f46e5'
+        confirmButtonColor: '#2563eb'
     });
     <?php endif; ?>
     </script>
