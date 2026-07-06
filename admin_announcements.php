@@ -66,7 +66,7 @@ if (isset($_GET['delete'])) {
         <div id="sidebarOverlay" class="fixed inset-0 bg-slate-950/60 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
 
         <main class="flex-1 p-4 md:p-8 lg:p-12">
-            <div class="max-w-4xl mx-auto">
+            <div class="max-w-12xl mx-auto">
                 
                 <header class="mb-8 md:mb-12 flex items-center justify-between">
                     <div class="lg:text-center w-full">
