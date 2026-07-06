@@ -103,7 +103,7 @@ function activity_log_query_string($overrides = []) {
         <div id="sidebarOverlay" class="fixed inset-0 bg-slate-950/60 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
 
         <main class="flex-1 p-4 md:p-10">
-            <div class="max-w-7xl mx-auto">
+            <div class="max-w-12xl mx-auto">
                 <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
                     <div class="flex items-center justify-between w-full lg:w-auto">
                         <div>
