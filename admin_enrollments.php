@@ -114,7 +114,7 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
         <div id="sidebarOverlay" class="fixed inset-0 bg-slate-950/60 z-40 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
 
         <main class="flex-1 p-4 md:p-12 w-full">
-            <div class="max-w-7xl mx-auto">
+            <div class="max-w-12xl mx-auto">
                 
                 <header class="mb-8 md:mb-12">
                     <div class="flex items-center justify-between lg:hidden mb-6">
