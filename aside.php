@@ -7,17 +7,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
 <aside id="mobileSidebar"
-    class="fixed inset-y-0 left-0 w-72 bg-slate-950 text-white z-50 transform -translate-x-full transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0 flex flex-col shadow-2xl lg:shadow-none">
+    class="fixed inset-y-0 left-0 w-72 bg-slate-900/40 text-white z-50 transform -translate-x-full transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0 flex flex-col border-r border-slate-800/80 backdrop-blur-2xl shadow-2xl lg:shadow-none">
     
     <div class="p-8 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-blue-600/20">
+            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-blue-500/20">
                 C
             </div>
             <h1 class="text-xl font-bold tracking-tight">C-Familia</h1>
         </div>
         
-        <button id="closeMenu" class="lg:hidden p-2 text-slate-400 hover:text-white bg-white/5 rounded-xl transition-colors">
+        <button id="closeMenu" class="lg:hidden p-2 text-slate-400 hover:text-white bg-slate-800/60 border border-slate-700/40 rounded-xl transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -25,10 +25,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </div>
 
     <nav class="flex-1 px-6 space-y-1.5 overflow-y-auto text-sm custom-scrollbar">
-        <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 px-4">Main Menu</p>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-4">Main Menu</p>
         
         <a href="admin_dashboard.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_dashboard.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_dashboard.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
@@ -36,35 +36,35 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
 
         <a href="admin_enrollments.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_enrollments.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_enrollments.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
             Enrollments
             <?php if($pending_count > 0): ?>
-                <span class="ml-auto bg-orange-500 text-white text-[10px] px-2 py-0.5 rounded-md font-bold ring-4 ring-orange-500/10">
+                <span class="ml-auto bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] px-2 py-0.5 rounded-md font-bold">
                     <?= $pending_count ?>
                 </span>
             <?php endif; ?>
         </a>
 
         <a href="admin_payments.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_payments.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_payments.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             Payments
             <?php if ($refund_request_count > 0): ?>
-                <span class="ml-auto bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-md font-bold ring-4 ring-rose-500/10">
+                <span class="ml-auto bg-rose-500/20 border border-rose-500/30 text-rose-400 text-[10px] px-2 py-0.5 rounded-md font-bold">
                     <?= $refund_request_count ?>
                 </span>
             <?php endif; ?>
         </a>
 
-        <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-8 mb-4 px-4">Communication</p>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-8 mb-4 px-4">Communication</p>
         
         <a href="admin_announcements.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_announcements.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_announcements.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             </svg>
@@ -72,7 +72,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
 
         <a href="admin_posts.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_posts.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_posts.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 2v4h4" />
@@ -80,10 +80,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
             Posts
         </a>
 
-        <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-8 mb-4 px-4">Landing Page</p>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-8 mb-4 px-4">Landing Page</p>
         
         <a href="admin_passers.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_passers.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_passers.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
@@ -91,17 +91,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
 
         <a href="admin_gallery.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_gallery.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_gallery.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             Gallery
         </a>
 
-        <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-8 mb-4 px-4">System</p>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-8 mb-4 px-4">System</p>
 
         <a href="admin_activity_log.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_activity_log.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_activity_log.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -109,7 +109,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
 
         <a href="admin_backup.php"
-            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_backup.php') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-semibold transition-all <?= ($current_page == 'admin_backup.php') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent' ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
@@ -117,8 +117,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
     </nav>
 
-    <div class="p-6 border-t border-white/5 mt-auto">
-        <a href="logout.php" class="flex items-center gap-3 py-3 px-4 rounded-xl font-semibold text-red-400 hover:bg-red-500/10 transition-all">
+    <div class="p-6 border-t border-slate-800/80 mt-auto">
+        <a href="logout.php" class="flex items-center gap-3 py-3 px-4 rounded-xl font-semibold text-red-400 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/10">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
