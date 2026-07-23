@@ -51,11 +51,11 @@ $recent_announcements = array_slice($announcements, 0, 3);
             document.documentElement.classList.remove('dark');
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Bargain&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Salena&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
     <title>C-Familia Tutorial Services</title>
     <style>
-        body { font-family: 'Bargain', sans-serif; }
+        body { font-family: 'Salena', cursive, sans-serif; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         @keyframes pulse-slow { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
