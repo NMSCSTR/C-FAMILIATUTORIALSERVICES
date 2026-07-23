@@ -39,17 +39,9 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Configure Tailwind to support manual dark mode class toggling and custom font families
+        // Configure Tailwind to support manual dark mode class toggling
         tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        poppins: ['Poppins', 'sans-serif'],
-                        nature: ['Nature Beauty', 'cursive', 'sans-serif']
-                    }
-                }
-            }
+            darkMode: 'class'
         }
         
         // Inline check to prevent flashing during initial load
@@ -59,12 +51,11 @@ $recent_announcements = array_slice($announcements, 0, 3);
             document.documentElement.classList.remove('dark');
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Nature+Beauty&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
     <title>C-Familia Tutorial Services</title>
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        h1, h2, h3, .font-nature { font-family: 'Nature Beauty', 'Poppins', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         @keyframes pulse-slow { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
@@ -118,7 +109,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </style>
 </head>
 
-<body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white transition-colors duration-300 font-poppins">
+<body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white transition-colors duration-300">
 
     <!-- Sticky Navigation Bar -->
     <nav class="sticky top-0 z-40 bg-white/75 dark:bg-slate-950/75 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 px-4 py-4 sm:px-6 transition-all">
@@ -128,7 +119,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 <div class="relative overflow-hidden rounded-xl shadow-md border border-slate-100 dark:border-slate-800">
                     <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110">
                 </div>
-                <h1 class="text-2xl font-[900] tracking-tighter text-slate-900 dark:text-white font-nature">
+                <h1 class="text-2xl font-[900] tracking-tighter text-slate-900 dark:text-white">
                     C-Familia<span class="text-blue-600">.</span>
                 </h1>
             </a>
@@ -213,10 +204,10 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
                     <span class="text-blue-600 dark:text-blue-400 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Tutorial Services</span>
                 </div>
-                <h2 class="text-4xl sm:text-6xl font-[900] text-slate-900 dark:text-white tracking-tight leading-[1.05] font-nature">
+                <h2 class="text-4xl sm:text-6xl font-[900] text-slate-900 dark:text-white tracking-tight leading-[1.05]">
                     Your Future Starts <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">Right Here.</span>
                 </h2>
-                <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed font-poppins">
+                <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
                     "Join our family, and together, we will help you pass your professional board exams."
                 </p>
                 <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
@@ -231,8 +222,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <div class="flex items-center gap-5 mb-8">
                         <div class="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-blue-600/20">✓</div>
                         <div>
-                            <p class="text-slate-900 dark:text-white text-2xl font-[900] tracking-tight font-nature"><?= $display_rate ?> Passing Rate</p>
-                            <p class="text-slate-500 dark:text-slate-400 text-sm font-semibold font-poppins"><?= $total_passers ?>+ Certified Passers</p>
+                            <p class="text-slate-900 dark:text-white text-2xl font-[900] tracking-tight"><?= $display_rate ?> Passing Rate</p>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-semibold"><?= $total_passers ?>+ Certified Passers</p>
                         </div>
                     </div>
                     <div class="space-y-4">
@@ -259,9 +250,9 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
                         <span class="text-blue-600 dark:text-blue-400 font-black uppercase text-[11px] tracking-[0.3em]">Top Achievers</span>
                     </div>
-                    <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight text-slate-900 dark:text-white font-nature">Top Performance<span class="text-blue-600">.</span></h3>
+                    <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight text-slate-900 dark:text-white">Top Performance<span class="text-blue-600">.</span></h3>
                 </div>
-                <p class="text-slate-500 dark:text-slate-400 max-w-sm font-medium text-sm sm:text-base leading-relaxed border-l-2 border-slate-200 dark:border-slate-800 pl-4 font-poppins">Celebrating our students who got excellent board exam ratings of 95% and higher.</p>
+                <p class="text-slate-500 dark:text-slate-400 max-w-sm font-medium text-sm sm:text-base leading-relaxed border-l-2 border-slate-200 dark:border-slate-800 pl-4">Celebrating our students who got excellent board exam ratings of 95% and higher.</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -284,13 +275,13 @@ $recent_announcements = array_slice($announcements, 0, 3);
                             <div class="absolute -top-2 -right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-md uppercase tracking-widest">TOP</div>
                         </div>
                         <div class="min-w-0">
-                            <h4 class="text-xl font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-nature"><?= $top['name'] ?></h4>
-                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mt-1 truncate font-poppins"><?= $top['program'] ?></p>
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"><?= $top['name'] ?></h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mt-1 truncate"><?= $top['program'] ?></p>
                         </div>
                     </div>
                     <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
                         <span class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest">Board Rating</span>
-                        <span class="text-3xl font-[900] bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent italic tracking-tight font-poppins"><?= number_format($top['rating'], 2) ?>%</span>
+                        <span class="text-3xl font-[900] bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent italic tracking-tight"><?= number_format($top['rating'], 2) ?>%</span>
                     </div>
                 </div>
                 <?php 
@@ -325,9 +316,9 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
             <div class="flex items-center gap-3">
                 <span class="w-3 h-8 bg-emerald-500 rounded-full"></span>
-                <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white font-nature">Photo Gallery</h3>
+                <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Photo Gallery</h3>
             </div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium max-w-md font-poppins">Moments from our review center, events, and student milestones.</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium max-w-md">Moments from our review center, events, and student milestones.</p>
         </div>
 
         <div class="space-y-16">
@@ -335,7 +326,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 $image_count = count($images);
             ?>
             <div data-gallery-group="<?= md5($caption) ?>">
-                <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 font-nature">
+                <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
                     <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
                     <?= htmlspecialchars($caption) ?>
                 </h4>
@@ -378,8 +369,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="absolute top-32 right-16 w-6 h-6 rounded-full bg-blue-100/50 dark:bg-blue-900/20 opacity-70 pointer-events-none animate-float-slow"></div>
         <div class="absolute bottom-24 left-1/3 w-8 h-8 rounded-full border border-indigo-100 dark:border-indigo-900 opacity-50 pointer-events-none animate-float-medium"></div>
         <div class="max-w-7xl mx-auto text-center mb-16 sm:mb-24">
-            <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900 dark:text-white font-nature">The Hall of Fame</h3>
-            <p class="text-slate-500 dark:text-slate-400 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-poppins">Celebrating the hard work of every C-Familia student who passed their board exams.</p>
+            <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900 dark:text-white">The Hall of Fame</h3>
+            <p class="text-slate-500 dark:text-slate-400 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">Celebrating the hard work of every C-Familia student who passed their board exams.</p>
         </div>
         
         <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -398,11 +389,11 @@ $recent_announcements = array_slice($announcements, 0, 3);
             <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1.5 text-center group flex flex-col justify-between">
                 <div>
                     <img src="<?= $pPath ?>" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 dark:border-slate-950 group-hover:scale-105 transition-transform shadow-inner">
-                    <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate font-nature"><?= $passer['name'] ?></h5>
-                    <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-4 truncate font-poppins"><?= $passer['program'] ?></p>
+                    <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
+                    <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-4 truncate"><?= $passer['program'] ?></p>
                 </div>
                 <div class="flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-950 rounded-xl py-2.5 border border-slate-100 dark:border-slate-850">
-                    <span class="text-base font-[900] text-blue-600 dark:text-blue-400 tracking-tight font-poppins"><?= $passer['rating'] ?>%</span>
+                    <span class="text-base font-[900] text-blue-600 dark:text-blue-400 tracking-tight"><?= $passer['rating'] ?>%</span>
                     <span class="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">Score</span>
                 </div>
             </div>
@@ -436,7 +427,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
             <div class="flex items-center gap-3">
                 <span class="w-3 h-8 bg-blue-600 rounded-full"></span>
-                <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white font-nature">Recent Announcements</h3>
+                <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Recent Announcements</h3>
             </div>
             <?php if ($ann_count > 3): ?>
             <button type="button" onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1 group focus:outline-none">
@@ -461,8 +452,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-100 dark:border-slate-850"><?= htmlspecialchars($ann['category']) ?></span>
                         <?php endif; ?>
                     </div>
-                    <h4 class="text-xl font-bold mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-slate-900 dark:text-white leading-snug font-nature"><?= htmlspecialchars($ann['title']) ?></h4>
-                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium line-clamp-3 font-poppins"><?= htmlspecialchars($ann['message']) ?></p>
+                    <h4 class="text-xl font-bold mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-slate-900 dark:text-white leading-snug"><?= htmlspecialchars($ann['title']) ?></h4>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium line-clamp-3"><?= htmlspecialchars($ann['message']) ?></p>
                 </div>
                 <?php if ($is_long): ?>
                 <button type="button" class="announcement-read-more mt-5 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors focus:outline-none" data-ann-id="<?= (int) $ann['id'] ?>">
@@ -482,7 +473,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
                 <div class="flex items-center gap-3">
                     <span class="w-3 h-8 bg-indigo-600 rounded-full"></span>
-                    <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white font-nature">Learning Materials</h3>
+                    <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Learning Materials</h3>
                 </div>
                 <?php 
                 $posts_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM posts");
@@ -505,8 +496,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <div class="mb-4">
                             <span class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[9px] font-black rounded uppercase tracking-wider border border-indigo-100 dark:border-indigo-900">Study File</span>
                         </div>
-                        <h4 class="text-xl font-bold mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors text-slate-900 dark:text-white leading-snug font-nature"><?= $post['title'] ?></h4>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 font-medium font-poppins"><?= $post['content'] ?></p>
+                        <h4 class="text-xl font-bold mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors text-slate-900 dark:text-white leading-snug"><?= $post['title'] ?></h4>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 font-medium"><?= $post['content'] ?></p>
                     </div>
                     <?php if($post['file_path']): ?>
                     <div class="border-t border-slate-200/80 dark:border-slate-800 pt-5 mt-2">
@@ -533,7 +524,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 sm:mb-24">
                 <span class="text-blue-600 dark:text-blue-400 font-black uppercase text-[11px] tracking-[0.35em] mb-3 block">Student Feedback</span>
-                <h3 class="text-3xl sm:text-5xl font-[900] text-slate-900 dark:text-white tracking-tight font-nature">Voice of Success<span class="text-blue-600">.</span></h3>
+                <h3 class="text-3xl sm:text-5xl font-[900] text-slate-900 dark:text-white tracking-tight">Voice of Success<span class="text-blue-600">.</span></h3>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -552,13 +543,13 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 <div class="bg-slate-50/60 dark:bg-slate-900/60 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 relative group hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-950/50 hover:-translate-y-1">
                     <div class="text-slate-200 dark:text-slate-800 absolute top-4 right-8 text-7xl font-serif select-none pointer-events-none group-hover:text-blue-100 dark:group-hover:text-blue-950/50 transition-colors">“</div>
                     <div class="relative z-10 flex flex-col h-full justify-between">
-                        <p class="text-slate-600 dark:text-slate-400 italic leading-relaxed text-sm sm:text-base mb-8 line-clamp-3 font-medium font-poppins">
+                        <p class="text-slate-600 dark:text-slate-400 italic leading-relaxed text-sm sm:text-base mb-8 line-clamp-3 font-medium">
                             <?= htmlspecialchars($row['content']) ?>
                         </p>
                         <div class="flex items-center gap-4 border-t border-slate-100 dark:border-slate-800 pt-6">
                             <img src="<?= $userPic ?>" class="w-12 h-12 rounded-xl object-cover ring-4 ring-white dark:ring-slate-950 shadow-sm flex-shrink-0">
                             <div class="min-w-0">
-                                <h5 class="font-extrabold text-slate-900 dark:text-white text-sm truncate font-nature"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
+                                <h5 class="font-extrabold text-slate-900 dark:text-white text-sm truncate"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
                                 <p class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-0.5">Verified Alumni</p>
                             </div>
                         </div>
@@ -609,8 +600,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="space-y-10">
             <div class="space-y-3">
                 <span class="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">Our Network</span>
-                <h3 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight font-nature">Visit our Branches<span class="text-blue-600">.</span></h3>
-                <p class="text-slate-500 dark:text-slate-400 max-w-md text-sm sm:text-base font-poppins">Drop by any of our learning centers to learn more about our tailored academic programs.</p>
+                <h3 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">Visit our Branches<span class="text-blue-600">.</span></h3>
+                <p class="text-slate-500 dark:text-slate-400 max-w-md text-sm sm:text-base">Drop by any of our learning centers to learn more about our tailored academic programs.</p>
             </div>
             
             <div class="space-y-4">
@@ -621,10 +612,10 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     </div>
                     <div class="space-y-1">
                         <div class="flex items-center gap-3 flex-wrap">
-                            <p class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase font-nature">Ozamiz Main Branch</p>
+                            <p class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase">Ozamiz Main Branch</p>
                             <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-900 uppercase tracking-wider">● Main Office</span>
                         </div>
-                        <p class="text-slate-600 dark:text-slate-400 font-medium text-sm sm:text-base font-poppins">Ozamiz City, Philippines, 7200</p>
+                        <p class="text-slate-600 dark:text-slate-400 font-medium text-sm sm:text-base">Ozamiz City, Philippines, 7200</p>
                     </div>
                 </div>
 
@@ -634,8 +625,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     </div>
                     <div class="space-y-1">
-                        <p class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase font-nature">Oroquieta Campus</p>
-                        <p class="text-slate-600 dark:text-slate-400 font-medium text-sm sm:text-base font-poppins">Oroquieta City, Misamis Occidental</p>
+                        <p class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase">Oroquieta Campus</p>
+                        <p class="text-slate-600 dark:text-slate-400 font-medium text-sm sm:text-base">Oroquieta City, Misamis Occidental</p>
                     </div>
                 </div>
 
@@ -645,8 +636,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     </div>
                     <div class="space-y-1">
-                        <p class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase font-nature">Tubod Campus</p>
-                        <p class="text-slate-600 dark:text-slate-400 font-medium text-sm sm:text-base font-poppins">Tubod, Lanao Del Norte</p>
+                        <p class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase">Tubod Campus</p>
+                        <p class="text-slate-600 dark:text-slate-400 font-medium text-sm sm:text-base">Tubod, Lanao Del Norte</p>
                     </div>
                 </div>
             </div>
@@ -654,7 +645,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         
         <!-- Right Column: Contact Cards Container -->
         <div class="bg-white dark:bg-slate-900 p-8 sm:p-10 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/50 relative">
-            <h3 class="text-2xl font-black mb-6 text-slate-900 dark:text-white tracking-tight font-nature">Contact Us Directly</h3>
+            <h3 class="text-2xl font-black mb-6 text-slate-900 dark:text-white tracking-tight">Contact Us Directly</h3>
             <div class="space-y-4">
                 <!-- Phone Card -->
                 <a href="tel:09101676805" class="group flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-100 dark:hover:border-blue-900 hover:-translate-y-0.5 block">
@@ -662,8 +653,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                     </div>
                     <div>
-                        <p class="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-0.5 font-poppins">Phone</p>
-                        <p class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-poppins">0910 167 6805</p>
+                        <p class="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-0.5">Phone</p>
+                        <p class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">0910 167 6805</p>
                     </div>
                 </a>
 
@@ -673,8 +664,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-0.5 font-poppins">Email</p>
-                        <p class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-poppins">shielamariscuevas@gmail.com</p>
+                        <p class="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-0.5">Email</p>
+                        <p class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">shielamariscuevas@gmail.com</p>
                     </div>
                 </a>
 
@@ -684,8 +675,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
                     </div>
                     <div>
-                        <p class="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-0.5 font-poppins">Facebook Page</p>
-                        <p class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-poppins">C-Familia Tutorial Services</p>
+                        <p class="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-0.5">Facebook Page</p>
+                        <p class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">C-Familia Tutorial Services</p>
                     </div>
                 </a>
             </div>
@@ -699,24 +690,24 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-12 relative">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-lg text-white">C</div>
-                <h1 class="text-2xl font-[900] tracking-tighter font-nature">C-Familia<span class="text-blue-600">.</span></h1>
+                <h1 class="text-2xl font-[900] tracking-tighter">C-Familia<span class="text-blue-600">.</span></h1>
             </div>
-            <div class="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-[0.25em] text-center md:text-left font-poppins">
+            <div class="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-[0.25em] text-center md:text-left">
                 Helping Students Succeed Since 2024
             </div>
         </div>
         
         <!-- Developer Credit Badge -->
         <div class="max-w-7xl mx-auto text-center mb-6 relative">
-            <p class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 rounded-xl backdrop-blur-sm shadow-inner font-poppins">
+            <p class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 rounded-xl backdrop-blur-sm shadow-inner">
                 Developed by 
-                <span class="font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent font-nature">
+                <span class="font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">
                     Rhondel M. Pagobo
                 </span>
             </p>
         </div>
 
-        <div class="max-w-7xl mx-auto text-center text-slate-400 dark:text-slate-500 text-[10px] border-t border-slate-100 dark:border-slate-900 pt-8 uppercase tracking-[0.3em] font-black font-poppins">
+        <div class="max-w-7xl mx-auto text-center text-slate-400 dark:text-slate-500 text-[10px] border-t border-slate-100 dark:border-slate-900 pt-8 uppercase tracking-[0.3em] font-black">
             &copy; <?= date("Y") ?> C-Familia Tutorial Services • Registered School Review Center
         </div>
     </footer>
@@ -731,8 +722,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
             <span class="text-[9px] font-black uppercase tracking-wider <?= $ann['category'] === 'Urgent' ? 'text-rose-600 bg-rose-50 border-rose-100 dark:bg-rose-950/40 dark:border-rose-900' : 'text-slate-400 bg-slate-50 border-slate-100 dark:bg-slate-900 dark:border-slate-800' ?> px-2 py-0.5 rounded-md border"><?= htmlspecialchars($ann['category']) ?></span>
             <?php endif; ?>
         </div>
-        <h4 class="text-2xl font-bold text-slate-900 dark:text-white leading-snug mb-4 font-nature"><?= htmlspecialchars($ann['title']) ?></h4>
-        <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium whitespace-pre-line font-poppins"><?= htmlspecialchars($ann['message']) ?></div>
+        <h4 class="text-2xl font-bold text-slate-900 dark:text-white leading-snug mb-4"><?= htmlspecialchars($ann['title']) ?></h4>
+        <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium whitespace-pre-line"><?= htmlspecialchars($ann['message']) ?></div>
     </div>
     <?php endforeach; ?>
 
@@ -740,10 +731,10 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <div id="announcementDetailModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
-                <h3 class="text-lg font-[900] text-slate-900 dark:text-white tracking-tight font-nature">Announcement</h3>
+                <h3 class="text-lg font-[900] text-slate-900 dark:text-white tracking-tight">Announcement</h3>
                 <button type="button" onclick="closeModal('announcementDetailModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-850 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             </div>
-            <div id="announcementDetailBody" class="p-6 sm:p-8 overflow-y-auto font-poppins"></div>
+            <div id="announcementDetailBody" class="p-6 sm:p-8 overflow-y-auto"></div>
         </div>
     </div>
 
@@ -752,8 +743,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
                 <div>
-                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight font-nature">All Announcements</h3>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 font-poppins">Complete list of public announcements from C-Familia.</p>
+                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Announcements</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Complete list of public announcements from C-Familia.</p>
                 </div>
                 <button type="button" onclick="closeModal('announcementsModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-850 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             </div>
@@ -771,8 +762,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-100 dark:border-slate-850"><?= htmlspecialchars($ann['category']) ?></span>
                         <?php endif; ?>
                     </div>
-                    <h4 class="text-lg font-bold text-slate-900 dark:text-white leading-snug mb-3 font-nature"><?= htmlspecialchars($ann['title']) ?></h4>
-                    <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium whitespace-pre-line font-poppins"><?= htmlspecialchars($ann['message']) ?></div>
+                    <h4 class="text-lg font-bold text-slate-900 dark:text-white leading-snug mb-3"><?= htmlspecialchars($ann['title']) ?></h4>
+                    <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium whitespace-pre-line"><?= htmlspecialchars($ann['message']) ?></div>
                 </article>
                 <?php endforeach; ?>
             </div>
@@ -784,8 +775,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-8 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
                 <div>
-                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight font-nature">All Top Performers</h3>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 font-poppins">Our top reviewees with high scores of 95% and above.</p>
+                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Top Performers</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Our top reviewees with high scores of 95% and above.</p>
                 </div>
                 <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             </div>
@@ -801,13 +792,13 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <div class="flex items-center gap-4 mb-5">
                             <img src="<?= $photoPath ?>" class="w-14 h-14 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-slate-850">
                             <div class="min-w-0">
-                                <h4 class="font-bold text-slate-900 dark:text-white text-base truncate font-nature"><?= $top['name'] ?></h4>
-                                <p class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider truncate font-poppins"><?= $top['program'] ?></p>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-base truncate"><?= $top['name'] ?></h4>
+                                <p class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider truncate"><?= $top['program'] ?></p>
                             </div>
                         </div>
                         <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
                             <span class="text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-widest">Board Rating</span>
-                            <span class="text-xl font-[900] text-blue-600 dark:text-blue-400 italic font-poppins"><?= number_format($top['rating'], 2) ?>%</span>
+                            <span class="text-xl font-[900] text-blue-600 dark:text-blue-400 italic"><?= number_format($top['rating'], 2) ?>%</span>
                         </div>
                     </div>
                     <?php 
@@ -824,8 +815,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 w-full max-w-6xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
                 <div>
-                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight font-nature">The Complete Hall of Fame</h3>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 font-poppins">List of all certified C-Familia passers who finished their board exams successfully.</p>
+                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">The Complete Hall of Fame</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">List of all certified C-Familia passers who finished their board exams successfully.</p>
                 </div>
                 <button type="button" onclick="closeModal('passersModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-850 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             </div>
@@ -840,11 +831,11 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-all text-center group flex flex-col justify-between">
                         <div>
                             <img src="<?= $pPath ?>" class="w-16 h-16 rounded-full mx-auto mb-3 object-cover border-4 border-slate-50 dark:border-slate-950 shadow-inner">
-                            <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate font-nature"><?= $passer['name'] ?></h5>
-                            <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-3 truncate font-poppins"><?= $passer['program'] ?></p>
+                            <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
+                            <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-3 truncate"><?= $passer['program'] ?></p>
                         </div>
                         <div class="flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-950 rounded-xl py-2 border border-slate-100 dark:border-slate-850">
-                            <span class="text-sm font-[900] text-blue-600 dark:text-blue-400 font-poppins"><?= $passer['rating'] ?>%</span>
+                            <span class="text-sm font-[900] text-blue-600 dark:text-blue-400"><?= $passer['rating'] ?>%</span>
                             <span class="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">Score</span>
                         </div>
                     </div>
@@ -862,7 +853,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="relative max-w-5xl w-full">
             <button type="button" id="galleryLightboxClose" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
             <img id="galleryLightboxImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
-            <p id="galleryLightboxCaption" class="text-center text-white/80 text-sm font-semibold mt-4 font-poppins"></p>
+            <p id="galleryLightboxCaption" class="text-center text-white/80 text-sm font-semibold mt-4"></p>
         </div>
     </div>
 
