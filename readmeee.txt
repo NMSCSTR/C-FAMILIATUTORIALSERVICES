@@ -1,0 +1,232 @@
+
+👨‍🎓 1. STUDENT WORKFLOW
+📝 Step 1: Registration
+
+Student fills up:
+Name
+
+Email
+
+Password
+
+Data saved in users table
+➡️ Status: Registered (not yet enrolled)
+🔐 Step 2: Login
+
+Student logs in using email & password
+
+System authenticates user
+📋 Step 3: Enrollment
+
+Student clicks “Enroll Now”
+
+System creates record in enrollments table
+Example:
+
+status = pending
+program_type = Criminology Review
+➡️ Status: Pending Enrollment
+💳 Step 4: Payment Submission
+
+Student selects payment method:
+GCash / Manual Upload
+
+Inputs:
+Amount
+
+Reference Number
+
+Upload receipt (optional)
+➡️ Saved in payments table
+
+➡️ status = pending
+📊 Step 5: View Dashboard
+Student can see:
+
+
+Enrollment status
+
+Payment history
+
+Payment status (pending/paid)
+💸 2. PAYMENT WORKFLOW
+🧾 Step 1: Student Submits Payment
+
+Creates a payment record:status = pending
+🔍 Step 2: Admin Reviews Payment
+Admin checks:
+
+
+Reference number
+
+Uploaded receipt
+✅ Step 3: Approval / Rejection
+Admin updates:
+
+status = paid   → if valid
+status = failed → if invalid
+
+🔄 Step 4: System Updates Enrollment
+If payment is paid:
+
+
+Enrollment status becomes:
+enrolled
+
+👨‍💼 3. ADMIN WORKFLOW
+🔐 Step 1: Admin Login
+👥 Step 2: Manage Students
+
+View all registered users
+
+View enrollment status
+📋 Step 3: Manage Enrollments
+
+Approve or monitor pending enrollments
+
+Assign batch (optional)
+💳 Step 4: Verify Payments
+
+View all payments
+
+Approve / Reject payments
+📊 Step 5: Reports & Monitoring
+Admin can see:
+
+
+Total students
+
+Paid vs pending payments
+
+List of enrolled students
+🔁 SYSTEM FLOW SUMMARY (Simple View)
+Register → Login → Enroll → Pay → Admin Verify → Enrolled
+
+🧩 OPTIONAL ADVANCED FLOW (Highly Recommended)
+📌 Installment Payments
+
+Student pays multiple times
+
+System tracks total paid vs balance
+📌 Enrollment Auto-Check
+
+If total payments ≥ required fee:
+
+→ Auto set enrolled
+📌 Notifications
+
+Email or alert:
+“Payment Approved”
+
+“Enrollment Confirmed”
+🖥️ SAMPLE PAGE STRUCTURE
+👨‍🎓 Student Pages
+
+Register
+
+Login
+
+Dashboard
+
+Enrollment Page
+
+Payment Page
+
+Payment History
+👨‍💼 Admin Pages
+
+Dashboard
+
+Students List
+
+Enrollments List
+
+
+
+#ADDITIONAL PASSEERS
+FILTER = ENROLLED BY CITY
+
+INSURANCE IF INCLUDED
+
+#I=Diagnostic exam, pre board exam, compre exam then 
+view all student info
+Branch
+full details -- DONE
+
+
+picture by batch()
+
+Picture for Top Passers
+Testimonials
+
+payment admin side
+
+previous passers and pictures
+Hide Learning Materials
+POST same as fb e.g documentation
+what school, phone number, 
+Announcement for specific
+PASSING RATE BY BATCH & YEAR
+
+
+
+
+
+
+VPS
+user= rhondelp password03
+
+sudo mkdir -p /home/rhondelp/public_html/cfam
+
+sudo chown -R rhondelp:rhondelp /home/rhondelp/public_html
+sudo chmod 755 /home/rhondelp
+sudo chmod 755 /home/rhondelp/public_html
+
+sudo nano /etc/apache2/sites-available/c-familia.online.conf
+
+<VirtualHost *:80>
+    ServerName c-familia.online
+    ServerAlias www.c-familia.online
+    DocumentRoot /home/rhondelp/public_html/cfam
+
+    <Directory /home/rhondelp/public_html/cfam>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/vanilla_error.log
+    CustomLog ${APACHE_LOG_DIR}/vanilla_access.log combined
+</VirtualHost>
+
+CREATE DATABASE cfam;
+CREATE USER 'rhondelp'@'localhost' IDENTIFIED BY 'StrongPass123!';
+GRANT ALL PRIVILEGES ON cfts.* TO 'rhondelp'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+sudo nano /etc/nginx/sites-available/c-familia.online
+
+server {
+    listen 80;
+
+    server_name c-familia.online www.c-familia.online;
+
+    root /var/www/C-FAMILIATUTORIALSERVICES;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
+git remote add production rhondelp@72.61.116.47:/home/rhondelp/cfam.git
