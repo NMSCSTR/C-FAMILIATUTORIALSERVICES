@@ -1,5 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
 
@@ -7,74 +8,144 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 // --- Action: Log Walk-in Payment ---
 if (isset($_POST['log_walkin'])) {
-    $user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
-    $amount = mysqli_real_escape_string($conn, $_POST['amount']);
-    $payment_type = mysqli_real_escape_string($conn, $_POST['payment_type']);
-    $ref = mysqli_real_escape_string($conn, $_POST['receipt_no']);
+    csrf_verify();
 
-    $query = "INSERT INTO payments (user_id, amount, payment_method, status, reference_number, payment_date, payment_type) 
-              VALUES ('$user_id', '$amount', 'Walk-in Cash', 'paid', '$ref', CURDATE(), '$payment_type')";
-    
-    if (mysqli_query($conn, $query)) {
-        $payment_id = mysqli_insert_id($conn);
+    $user_id = intval($_POST['user_id'] ?? 0);
+    $amount  = filter_var($_POST['amount'] ?? '', FILTER_VALIDATE_FLOAT);
+    $payment_type = $_POST['payment_type'] ?? '';
+    $ref     = trim($_POST['receipt_no'] ?? '');
+
+    if ($user_id <= 0 || !in_array($payment_type, ['full', 'installment'], true)) {
+        header("Location: admin_payments.php?error=invalid");
+        exit();
+    }
+
+    if ($amount === false || $amount <= 0 || $amount > 1000000 || $ref === '' || mb_strlen($ref) > 100) {
+        header("Location: admin_payments.php?error=invalid");
+        exit();
+    }
+
+    $conn->begin_transaction();
+
+    try {
+        $stmt = $conn->prepare("INSERT INTO payments (user_id, amount, payment_method, status, reference_number, payment_date, payment_type)
+                  VALUES (?, ?, 'Walk-in Cash', 'paid', ?, CURDATE(), ?)");
+        $stmt->bind_param("idss", $user_id, $amount, $ref, $payment_type);
+        $stmt->execute();
+        $payment_id = $stmt->insert_id;
+
+        $enroll_update = $conn->prepare("UPDATE enrollments SET status = 'enrolled' WHERE user_id = ? AND status = 'pending'");
+        $enroll_update->bind_param("i", $user_id);
+        $enroll_update->execute();
+
         log_activity($conn, 'payment.walkin', null, [
             'entity_type' => 'payment',
             'entity_id' => $payment_id,
-            'target_user_id' => (int) $user_id,
+            'target_user_id' => $user_id,
             'amount' => $amount,
         ]);
-        mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE user_id = '$user_id' AND status = 'pending'");
-        header("Location: admin_payments.php?success=logged");
+
+        $conn->commit();
+    } catch (Throwable $e) {
+        $conn->rollback();
+        error_log('Walk-in payment failed: ' . $e->getMessage());
+        header("Location: admin_payments.php?error=failed");
         exit();
     }
+
+    header("Location: admin_payments.php?success=logged");
+    exit();
 }
 
 // --- Action: Verify Online Payment ---
-if (isset($_GET['verify'])) {
-    $p_id = mysqli_real_escape_string($conn, $_GET['verify']);
-    $find_p = mysqli_query($conn, "SELECT user_id FROM payments WHERE id = '$p_id'");
-    $p_data = mysqli_fetch_assoc($find_p);
-    
-    if ($p_data) {
-        $u_id = $p_data['user_id'];
-        mysqli_query($conn, "UPDATE payments SET status = 'paid' WHERE id = '$p_id'");
-        mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE user_id = '$u_id' AND status = 'pending'");
-        log_activity($conn, 'payment.verify', null, [
-            'entity_type' => 'payment',
-            'entity_id' => (int) $p_id,
-        ]);
-        header("Location: admin_payments.php?success=verified");
-        exit();
+if (isset($_POST['verify_id'])) {
+    csrf_verify();
+
+    $p_id = intval($_POST['verify_id']);
+    $find_stmt = $conn->prepare("SELECT user_id FROM payments WHERE id = ? LIMIT 1");
+    $find_stmt->bind_param("i", $p_id);
+
+    $conn->begin_transaction();
+
+    try {
+        $find_stmt->execute();
+        $p_data = $find_stmt->get_result()->fetch_assoc();
+
+        if ($p_data) {
+            $u_id = (int) $p_data['user_id'];
+
+            $update = $conn->prepare("UPDATE payments SET status = 'paid' WHERE id = ?");
+            $update->bind_param("i", $p_id);
+            $update->execute();
+
+            $enroll_update = $conn->prepare("UPDATE enrollments SET status = 'enrolled' WHERE user_id = ? AND status = 'pending'");
+            $enroll_update->bind_param("i", $u_id);
+            $enroll_update->execute();
+
+            log_activity($conn, 'payment.verify', null, [
+                'entity_type' => 'payment',
+                'entity_id' => $p_id,
+            ]);
+        }
+
+        $conn->commit();
+    } catch (Throwable $e) {
+        $conn->rollback();
+        error_log('Payment verification failed: ' . $e->getMessage());
     }
+
+    header("Location: admin_payments.php?success=verified");
+    exit();
 }
 
 // --- Action: Process Refund ---
-if (isset($_GET['refund'])) {
-    $p_id = mysqli_real_escape_string($conn, $_GET['refund']);
-    $find_p = mysqli_query($conn, "SELECT user_id, amount, status FROM payments WHERE id = '$p_id'");
-    $p_data = mysqli_fetch_assoc($find_p);
+if (isset($_POST['refund_id'])) {
+    csrf_verify();
 
-    if ($p_data && in_array($p_data['status'], ['paid', 'refund_requested'], true)) {
-        $u_id = $p_data['user_id'];
-        mysqli_query($conn, "UPDATE payments SET status = 'refunded' WHERE id = '$p_id'");
+    $p_id = intval($_POST['refund_id']);
 
-        $remaining_paid = mysqli_fetch_assoc(mysqli_query(
-            $conn,
-            "SELECT COUNT(*) as count FROM payments WHERE user_id = '$u_id' AND status = 'paid'"
-        ))['count'] ?? 0;
-        if ((int) $remaining_paid === 0) {
-            mysqli_query($conn, "UPDATE enrollments SET status = 'pending' WHERE user_id = '$u_id' AND status = 'enrolled'");
+    $conn->begin_transaction();
+
+    try {
+        $find_stmt = $conn->prepare("SELECT user_id, amount, status FROM payments WHERE id = ? FOR UPDATE");
+        $find_stmt->bind_param("i", $p_id);
+        $find_stmt->execute();
+        $p_data = $find_stmt->get_result()->fetch_assoc();
+
+        if ($p_data && in_array($p_data['status'], ['paid', 'refund_requested'], true)) {
+            $u_id = (int) $p_data['user_id'];
+
+            $update = $conn->prepare("UPDATE payments SET status = 'refunded' WHERE id = ?");
+            $update->bind_param("i", $p_id);
+            $update->execute();
+
+            $remaining_stmt = $conn->prepare("SELECT COUNT(*) as count FROM payments WHERE user_id = ? AND status = 'paid'");
+            $remaining_stmt->bind_param("i", $u_id);
+            $remaining_stmt->execute();
+            $remaining_paid = (int) ($remaining_stmt->get_result()->fetch_assoc()['count'] ?? 0);
+
+            if ($remaining_paid === 0) {
+                $enroll_update = $conn->prepare("UPDATE enrollments SET status = 'pending' WHERE user_id = ? AND status = 'enrolled'");
+                $enroll_update->bind_param("i", $u_id);
+                $enroll_update->execute();
+            }
+
+            log_activity($conn, 'payment.refund', null, [
+                'entity_type' => 'payment',
+                'entity_id' => $p_id,
+                'target_user_id' => $u_id,
+                'amount' => $p_data['amount'],
+            ]);
         }
 
-        log_activity($conn, 'payment.refund', null, [
-            'entity_type' => 'payment',
-            'entity_id' => (int) $p_id,
-            'target_user_id' => (int) $u_id,
-            'amount' => $p_data['amount'],
-        ]);
-        header("Location: admin_payments.php?success=refunded");
-        exit();
+        $conn->commit();
+    } catch (Throwable $e) {
+        $conn->rollback();
+        error_log('Refund failed: ' . $e->getMessage());
     }
+
+    header("Location: admin_payments.php?success=refunded");
+    exit();
 }
 
 // Analytics
@@ -181,18 +252,18 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
                                 <tr class="hover:bg-slate-900/40 transition-all">
                                     <td class="px-8 py-6" data-label="Student">
                                         <div class="text-left">
-                                            <p class="font-bold text-white"><?= $row['firstname'] ?> <?= $row['lastname'] ?></p>
+                                            <p class="font-bold text-white"><?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname'], ENT_QUOTES, 'UTF-8') ?></p>
                                             <p class="text-[10px] text-slate-500 font-bold"><?= date('M d, Y', strtotime($row['created_at'])) ?></p>
                                         </div>
                                     </td>
                                     <td class="px-8 py-6 text-center" data-label="Method">
                                         <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase <?= $isWalkin ? 'bg-emerald-950/20 text-emerald-400 border border-emerald-900/30' : 'bg-blue-950/20 text-blue-400 border border-blue-900/30' ?>">
-                                            <?= $row['payment_method'] ?>
+                                            <?= htmlspecialchars((string) $row['payment_method'], ENT_QUOTES, 'UTF-8') ?>
                                         </span>
                                     </td>
                                     <td class="px-8 py-6 text-center" data-label="Reference">
                                         <span class="font-mono text-[11px] font-bold text-slate-300 bg-slate-900/60 border border-slate-800 px-3 py-1.5 rounded-xl">
-                                            <?= $row['reference_number'] ?>
+                                            <?= htmlspecialchars((string) $row['reference_number'], ENT_QUOTES, 'UTF-8') ?>
                                         </span>
                                     </td>
                                     <td class="px-8 py-6" data-label="Amount">
@@ -207,19 +278,31 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
                                             <?php endif; ?>
 
                                             <?php if($row['status'] == 'pending'): ?>
-                                                <button onclick="confirmVerify(<?= $row['id'] ?>)" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md">Verify</button>
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Verify this payment?')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="verify_id" value="<?= (int) $row['id'] ?>">
+                                                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md">Verify</button>
+                                                </form>
                                             <?php elseif($row['status'] == 'paid'): ?>
                                                 <div class="flex items-center gap-1.5 text-emerald-400 bg-emerald-950/20 border border-emerald-900/30 px-3 py-1.5 rounded-xl">
                                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                                     <span class="text-[9px] font-black uppercase">Paid</span>
                                                 </div>
-                                                <button onclick="confirmRefund(<?= $row['id'] ?>, '<?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname'], ENT_QUOTES) ?>', <?= (float) $row['amount'] ?>)" class="bg-red-950/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-900/30 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Refund</button>
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Refund this payment?')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="refund_id" value="<?= (int) $row['id'] ?>">
+                                                    <button type="submit" class="bg-red-950/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-900/30 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Refund</button>
+                                                </form>
                                             <?php elseif($row['status'] == 'refund_requested'): ?>
                                                 <div class="flex items-center gap-1.5 text-red-400 bg-red-950/20 px-3 py-1.5 rounded-xl border border-red-900/30">
                                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                     <span class="text-[9px] font-black uppercase">Refund Requested</span>
                                                 </div>
-                                                <button onclick="confirmRefund(<?= $row['id'] ?>, '<?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname'], ENT_QUOTES) ?>', <?= (float) $row['amount'] ?>)" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md">Process Refund</button>
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Process this refund?')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="refund_id" value="<?= (int) $row['id'] ?>">
+                                                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md">Process Refund</button>
+                                                </form>
                                             <?php elseif($row['status'] == 'refunded'): ?>
                                                 <div class="flex items-center gap-1.5 text-slate-400 bg-slate-900/60 border border-slate-800 px-3 py-1.5 rounded-xl">
                                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
@@ -252,6 +335,7 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
             </div>
             
             <form action="" method="POST" class="p-8 space-y-5">
+                <?= csrf_field() ?>
                 <div class="receipt-pill p-5 rounded-2xl border border-dashed border-slate-800">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">OR / Receipt Number</label>
                     <input type="text" name="receipt_no" required placeholder="OR-XXXX" class="w-full bg-transparent text-lg font-black text-white outline-none placeholder:text-slate-600">
@@ -262,7 +346,7 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
                     <select name="user_id" required class="w-full px-5 py-3.5 bg-slate-950 border border-slate-800 text-white rounded-2xl text-sm font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10">
                         <option value="" class="bg-slate-900 text-white">Choose Reviewee...</option>
                         <?php mysqli_data_seek($students_res, 0); while($s = mysqli_fetch_assoc($students_res)): ?>
-                            <option value="<?= $s['id'] ?>" class="bg-slate-900 text-white"><?= $s['lastname'] ?>, <?= $s['firstname'] ?></option>
+                            <option value="<?= (int) $s['id'] ?>" class="bg-slate-900 text-white"><?= htmlspecialchars($s['lastname'], ENT_QUOTES, 'UTF-8') ?>, <?= htmlspecialchars($s['firstname'], ENT_QUOTES, 'UTF-8') ?></option>
                         <?php endwhile; ?>
                     </select>
                 </div>
@@ -320,28 +404,20 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
         function openWalkinModal() { document.getElementById('walkinModal').classList.remove('hidden'); }
         function closeWalkinModal() { document.getElementById('walkinModal').classList.add('hidden'); }
 
-        function confirmVerify(id) {
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const form = event.target;
             customSwalMixin.fire({
-                title: 'Verify Payment?',
-                text: "Finalize this transaction in the ledger?",
+                title: 'Are you sure?',
+                text: message,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#2563eb',
-                confirmButtonText: 'Yes, Verify',
-                customClass: { confirmButton: 'rounded-xl', cancelButton: 'rounded-xl' }
-            }).then((result) => { if (result.isConfirmed) { window.location.href = `?verify=${id}`; } });
-        }
-
-        function confirmRefund(id, studentName, amount) {
-            customSwalMixin.fire({
-                title: 'Process Refund?',
-                html: `Refund <strong>₱${Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> to <strong>${studentName}</strong>?<br><span class="text-sm text-slate-500">Enrollment may revert to pending if no paid payments remain.</span>`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                confirmButtonText: 'Yes, Refund',
-                customClass: { confirmButton: 'rounded-xl', cancelButton: 'rounded-xl' }
-            }).then((result) => { if (result.isConfirmed) { window.location.href = `?refund=${id}`; } });
+                cancelButtonColor: '#1e293b'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+            return false;
         }
 
         <?php if(isset($_GET['success'])): ?>
