@@ -751,25 +751,25 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <?php endforeach; ?>
 
     <!-- Announcement Detail Modal -->
-    <div id="announcementDetailModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="announcementDetailModal" role="dialog" aria-modal="true" aria-labelledby="announcementDetailTitle" class="modal-overlay fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
-                <h3 class="text-lg font-[900] text-slate-900 dark:text-white tracking-tight">Announcement</h3>
-                <button type="button" onclick="closeModal('announcementDetailModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
+                <h3 id="announcementDetailTitle" class="text-lg font-[900] text-slate-900 dark:text-white tracking-tight">Announcement</h3>
+                <button type="button" onclick="closeModal('announcementDetailModal')" data-autofocus class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div id="announcementDetailBody" class="p-6 sm:p-8 overflow-y-auto"></div>
         </div>
     </div>
 
     <!-- All Announcements Modal -->
-    <div id="announcementsModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="announcementsModal" role="dialog" aria-modal="true" aria-labelledby="allAnnouncementsTitle" class="modal-overlay fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
                 <div>
-                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Announcements</h3>
+                    <h3 id="allAnnouncementsTitle" class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Announcements</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Complete list of public announcements from C-Familia.</p>
                 </div>
-                <button type="button" onclick="closeModal('announcementsModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
+                <button type="button" onclick="closeModal('announcementsModal')" data-autofocus class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div class="p-6 sm:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-950">
                 <?php foreach ($announcements as $ann):
@@ -794,14 +794,14 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- Top Performers See More Modal -->
-    <div id="topPerformanceModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="topPerformanceModal" role="dialog" aria-modal="true" aria-labelledby="topPerformersTitle" class="modal-overlay fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-8 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
                 <div>
-                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Top Performers</h3>
+                    <h3 id="topPerformersTitle" class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Top Performers</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Our top reviewees with high scores of 95% and above.</p>
                 </div>
-                <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center text-sm font-bold ">✕</button>
+                <button onclick="closeModal('topPerformanceModal')" data-autofocus class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div class="p-8 overflow-y-auto bg-slate-50 dark:bg-slate-950">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -834,14 +834,14 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- Hall of Fame Passers Modal -->
-    <div id="passersModal" class="fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="passersModal" role="dialog" aria-modal="true" aria-labelledby="hallOfFameTitle" class="modal-overlay fixed inset-0 z-50 hidden bg-slate-950/40 backdrop-blur-md items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 w-full max-w-6xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
                 <div>
-                    <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">The Complete Hall of Fame</h3>
+                    <h3 id="hallOfFameTitle" class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">The Complete Hall of Fame</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">List of all certified C-Familia passers who finished their board exams successfully.</p>
                 </div>
-                <button type="button" onclick="closeModal('passersModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
+                <button type="button" onclick="closeModal('passersModal')" data-autofocus class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div class="p-8 overflow-y-auto bg-slate-50 dark:bg-slate-950">
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -872,9 +872,9 @@ $recent_announcements = array_slice($announcements, 0, 3);
     </div>
 
     <!-- Gallery Lightbox -->
-    <div id="galleryLightbox" class="fixed inset-0 z-[60] hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
+    <div id="galleryLightbox" class="modal-overlay fixed inset-0 z-[60] hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Gallery image preview">
         <div class="relative max-w-5xl w-full">
-            <button type="button" id="galleryLightboxClose" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold ">✕</button>
+            <button type="button" id="galleryLightboxClose" data-autofocus class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold ">✕</button>
             <img id="galleryLightboxImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
             <p id="galleryLightboxCaption" class="text-center text-white/80 text-sm font-semibold mt-4"></p>
         </div>
@@ -918,20 +918,68 @@ $recent_announcements = array_slice($announcements, 0, 3);
 
         mobileMenuBtn.addEventListener('click', toggleMobileNav);
 
+        const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        let lastFocusedElement = null;
+
+        function getOpenOverlay() {
+            return document.querySelector('.modal-overlay:not(.hidden)');
+        }
+
         function openModal(id) {
             const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.remove('hidden');
-                document.body.classList.add('modal-active');
-            }
+            if (!modal || !modal.classList.contains('hidden')) return;
+            if (!getOpenOverlay()) lastFocusedElement = document.activeElement;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('modal-active');
+            const focusTarget = modal.querySelector('[data-autofocus]') || modal.querySelector(FOCUSABLE_SELECTOR);
+            if (focusTarget) focusTarget.focus();
         }
+
         function closeModal(id) {
             const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.add('hidden');
+            if (!modal || modal.classList.contains('hidden')) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            if (!getOpenOverlay()) {
                 document.body.classList.remove('modal-active');
+                if (lastFocusedElement && document.contains(lastFocusedElement)) {
+                    lastFocusedElement.focus();
+                }
+                lastFocusedElement = null;
             }
         }
+
+        document.querySelectorAll('.modal-overlay').forEach(function (overlay) {
+            overlay.addEventListener('mousedown', function (e) {
+                if (e.target === overlay) closeModal(overlay.id);
+            });
+        });
+
+        document.addEventListener('keydown', function (e) {
+            const open = getOpenOverlay();
+            if (!open) return;
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeModal(open.id);
+                return;
+            }
+
+            if (e.key === 'Tab') {
+                const items = open.querySelectorAll(FOCUSABLE_SELECTOR);
+                if (!items.length) return;
+                const first = items[0];
+                const last = items[items.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        });
 
         function openAnnouncementDetail(id) {
             const source = document.getElementById('ann-detail-source-' + id);
@@ -948,22 +996,19 @@ $recent_announcements = array_slice($announcements, 0, 3);
         });
 
         function openGalleryLightbox(src, caption) {
-            const lightbox = document.getElementById('galleryLightbox');
             document.getElementById('galleryLightboxImage').src = src;
             document.getElementById('galleryLightboxImage').alt = caption;
             document.getElementById('galleryLightboxCaption').textContent = caption;
-            lightbox.classList.remove('hidden');
-            lightbox.classList.add('flex');
-            document.body.classList.add('modal-active');
+            openModal('galleryLightbox');
         }
 
         function closeGalleryLightbox() {
-            const lightbox = document.getElementById('galleryLightbox');
-            lightbox.classList.add('hidden');
-            lightbox.classList.remove('flex');
-            document.getElementById('galleryLightboxImage').src = '';
-            document.body.classList.remove('modal-active');
+            closeModal('galleryLightbox');
         }
+
+        document.getElementById('galleryLightboxClose')?.addEventListener('click', function () {
+            closeGalleryLightbox();
+        });
 
         document.querySelectorAll('.gallery-lightbox-trigger').forEach(function(btn) {
             btn.addEventListener('click', function() {
@@ -981,18 +1026,6 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 });
                 group?.querySelector('.gallery-see-more-overlay')?.remove();
             });
-        });
-
-        document.getElementById('galleryLightbox')?.addEventListener('click', function(e) {
-            if (e.target === this) closeGalleryLightbox();
-        });
-
-        document.getElementById('galleryLightboxClose')?.addEventListener('click', closeGalleryLightbox);
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !document.getElementById('galleryLightbox').classList.contains('hidden')) {
-                closeGalleryLightbox();
-            }
         });
 
         // Background Image Switcher (Every 5 seconds)
