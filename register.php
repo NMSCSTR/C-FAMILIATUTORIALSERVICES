@@ -136,6 +136,13 @@ $field = function (string $key) use ($old): string {
 </head>
 <body class="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
 
+    <!-- Theme Toggle -->
+    <button id="themeToggleBtn" type="button" aria-label="Toggle dark mode"
+            class="fixed top-4 right-4 z-50 w-11 h-11 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 shadow-sm backdrop-blur flex items-center justify-center hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+        <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 6.343l-.707-.707m12.728 12.728l-.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+    </button>
+
     <!-- Left Side Panel (Branding & Features, Desktop Only) -->
     <div class="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col justify-between p-12 bg-gradient-to-tr from-slate-950 via-blue-950 to-indigo-950 relative overflow-hidden text-white border-r border-slate-900/40">
         <!-- Floating Animated Glowing Blobs -->
@@ -568,6 +575,15 @@ $field = function (string $key) use ($old): string {
         attachCapsLock(passwordInput, document.getElementById('capslock-note'));
         attachCapsLock(confirmPasswordInput, document.getElementById('capslock-note-confirm'));
 
+
+        // Theme toggle
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', function () {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+        }
         // Form submit loading feedback
         if (registerForm && submitBtn) {
             registerForm.addEventListener('submit', function () {
