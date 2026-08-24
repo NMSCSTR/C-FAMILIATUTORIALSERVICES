@@ -58,6 +58,15 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <title>C-Familia Tutorial Services</title>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+            border-radius: 0.5rem;
+        }
+        .dark a:focus-visible, .dark button:focus-visible, .dark [tabindex]:focus-visible,
+        .dark input:focus-visible, .dark select:focus-visible, .dark textarea:focus-visible {
+            outline-color: #60a5fa;
+        }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         @keyframes pulse-slow { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
@@ -117,7 +126,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <nav class="sticky top-0 z-40 bg-white/75 dark:bg-slate-950/75 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 px-4 py-4 sm:px-6 transition-all">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <!-- Brand Logo -->
-            <a href="index.php" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1 z-50">
+            <a href="index.php" class="flex items-center gap-3 group focus:ring-2 focus:ring-blue-600/40 rounded-xl p-1 z-50">
                 <div class="relative overflow-hidden rounded-xl shadow-md border border-slate-100 dark:border-slate-800">
                     <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110">
                 </div>
@@ -128,19 +137,19 @@ $recent_announcements = array_slice($announcements, 0, 3);
 
             <!-- Desktop View: Menu Options -->
             <div class="hidden md:flex space-x-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-full text-sm font-bold text-slate-600 dark:text-slate-400">
-                <a href="#announcements" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all focus:outline-none">Announcements</a>
-                <a href="#posts" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all focus:outline-none">Learning Materials</a>
-                <a href="#passers" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all focus:outline-none">Passers</a>
+                <a href="#announcements" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all ">Announcements</a>
+                <a href="#posts" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all ">Learning Materials</a>
+                <a href="#passers" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all ">Passers</a>
                 <?php if ($has_gallery): ?>
-                <a href="#gallery" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all focus:outline-none">Gallery</a>
+                <a href="#gallery" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all ">Gallery</a>
                 <?php endif; ?>
-                <a href="#contact" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all focus:outline-none">Contact</a>
+                <a href="#contact" class="hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 rounded-full px-4 py-1.5 transition-all ">Contact</a>
             </div>
 
             <!-- Theme Toggle & Action Items Container -->
             <div class="flex items-center space-x-3 z-50">
                 <!-- Theme Toggle Button -->
-                <button id="themeToggleBtn" class="w-11 h-11 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 rounded-xl flex items-center justify-center font-bold border border-slate-200 dark:border-slate-800 shadow-sm hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors focus:outline-none" aria-label="Toggle visual background theme">
+                <button id="themeToggleBtn" class="w-11 h-11 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 rounded-xl flex items-center justify-center font-bold border border-slate-200 dark:border-slate-800 shadow-sm hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors " aria-label="Toggle visual background theme">
                     <!-- Sun Icon (Hidden in Light Mode) -->
                     <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -151,13 +160,13 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     </svg>
                 </button>
 
-                <a href="login.php" class="hidden sm:inline-block text-slate-700 dark:text-slate-300 font-bold px-4 py-2 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors focus:outline-none">Login</a>
-                <a href="register.php" class="hidden sm:inline-block px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 text-sm font-bold rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 dark:hover:text-white active:scale-[0.98] transition-all shadow-md shadow-slate-900/10 focus:outline-none focus:ring-2 focus:ring-blue-600/40">
+                <a href="login.php" class="hidden sm:inline-block text-slate-700 dark:text-slate-300 font-bold px-4 py-2 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors ">Login</a>
+                <a href="register.php" class="hidden sm:inline-block px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 text-sm font-bold rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 dark:hover:text-white active:scale-[0.98] transition-all shadow-md shadow-slate-900/10 focus:ring-2 focus:ring-blue-600/40">
                     Join Us 
                 </a>
                 
                 <!-- Mobile Menu Button Icon -->
-                <button id="mobileMenuBtn" class="flex md:hidden w-11 h-11 bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl items-center justify-center font-bold border border-slate-200 dark:border-slate-800 shadow-sm hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors focus:outline-none" aria-label="Toggle navigation menu">
+                <button id="mobileMenuBtn" class="flex md:hidden w-11 h-11 bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl items-center justify-center font-bold border border-slate-200 dark:border-slate-800 shadow-sm hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors " aria-label="Toggle navigation menu">
                     <svg id="menuIconToggle" class="w-5 h-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -213,8 +222,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     "Join our family, and together, we will help you pass your professional board exams."
                 </p>
                 <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
-                    <a href="register.php" class="px-8 py-4 bg-blue-600 text-white rounded-xl text-base font-bold hover:bg-blue-500 active:scale-[0.98] transition-all shadow-lg shadow-blue-600/20 focus:outline-none">Enroll Now</a>
-                    <a href="#passers" class="px-8 py-4 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-xl text-base font-bold hover:bg-slate-200 dark:hover:bg-slate-800 active:scale-[0.98] transition-all focus:outline-none">View Success Stories</a>
+                    <a href="register.php" class="px-8 py-4 bg-blue-600 text-white rounded-xl text-base font-bold hover:bg-blue-500 active:scale-[0.98] transition-all shadow-lg shadow-blue-600/20 ">Enroll Now</a>
+                    <a href="#passers" class="px-8 py-4 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-xl text-base font-bold hover:bg-slate-200 dark:hover:bg-slate-800 active:scale-[0.98] transition-all ">View Success Stories</a>
                 </div>
             </div>
 
@@ -299,7 +308,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
 
             <?php if($top_count > 6): ?>
             <div class="mt-16 text-center">
-                <button onclick="openModal('topPerformanceModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all text-xs uppercase tracking-widest text-slate-700 dark:text-slate-300 focus:outline-none">
+                <button onclick="openModal('topPerformanceModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all text-xs uppercase tracking-widest text-slate-700 dark:text-slate-300 ">
                     See More Top Performers
                 </button>
             </div>
@@ -337,7 +346,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         $img_path = $gallery_dir . $img['image_path'];
                     ?>
                     <div class="gallery-item relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-900 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all hover:-translate-y-1 <?= $index > 0 ? 'gallery-extra hidden sm:block' : '' ?>">
-                        <button type="button" class="gallery-lightbox-trigger group absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-inset" data-gallery-src="<?= htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8') ?>" data-gallery-caption="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
+                        <button type="button" class="gallery-lightbox-trigger group absolute inset-0 w-full h-full focus:ring-2 focus:ring-emerald-500/40 focus:ring-inset" data-gallery-src="<?= htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8') ?>" data-gallery-caption="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
                             <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
                                 <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-white text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg">View</span>
@@ -345,7 +354,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         </button>
                         <?php if ($index === 0 && $image_count > 1): ?>
                         <div class="gallery-see-more-overlay absolute inset-0 z-10 flex items-center justify-center bg-slate-900/35 sm:hidden">
-                            <button type="button" class="gallery-see-more-btn px-5 py-2.5 bg-white text-slate-900 text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg hover:bg-emerald-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                            <button type="button" class="gallery-see-more-btn px-5 py-2.5 bg-white text-slate-900 text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg hover:bg-emerald-50 transition-colors focus:ring-2 focus:ring-emerald-500/40">
                                 See more images
                             </button>
                         </div>
@@ -408,7 +417,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
 
         <?php if($total_passers_count > 10): ?>
         <div class="mt-16 text-center">
-            <button onclick="openModal('passersModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold rounded-xl shadow-sm transition-all text-xs uppercase tracking-widest focus:outline-none">
+            <button onclick="openModal('passersModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold rounded-xl shadow-sm transition-all text-xs uppercase tracking-widest ">
                 View All Hall of Fame Passers
             </button>
         </div>
@@ -432,7 +441,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Recent Announcements</h3>
             </div>
             <?php if ($ann_count > 3): ?>
-            <button type="button" onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1 group focus:outline-none">
+            <button type="button" onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1 group ">
                 See All Announcements <span class="transition-transform group-hover:translate-x-1">→</span>
             </button>
             <?php endif; ?>
@@ -458,7 +467,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium line-clamp-3"><?= htmlspecialchars($ann['message']) ?></p>
                 </div>
                 <?php if ($is_long): ?>
-                <button type="button" class="announcement-read-more mt-5 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors focus:outline-none" data-ann-id="<?= (int) $ann['id'] ?>">
+                <button type="button" class="announcement-read-more mt-5 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors " data-ann-id="<?= (int) $ann['id'] ?>">
                     Read full announcement <span class="transition-transform group-hover:translate-x-0.5">→</span>
                 </button>
                 <?php endif; ?>
@@ -482,7 +491,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 $posts_count = mysqli_fetch_assoc($posts_total_query)['count'];
                 if($posts_count > 6): 
                 ?>
-                <button onclick="openModal('postsModal')" class="text-xs font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-wider hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1 group focus:outline-none">
+                <button onclick="openModal('postsModal')" class="text-xs font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-wider hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1 group ">
                     Browse All Materials <span class="transition-transform group-hover:translate-x-1">→</span>
                 </button>
                 <?php endif; ?>
@@ -503,7 +512,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     </div>
                     <?php if($post['file_path']): ?>
                     <div class="border-t border-slate-200/80 dark:border-slate-800 pt-5 mt-2">
-                        <a href="uploads/resources/<?= rawurlencode((string) $post['file_path']) ?>" class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-[11px] uppercase tracking-wider hover:text-indigo-700 dark:hover:text-indigo-300 transition-all focus:outline-none">
+                        <a href="uploads/resources/<?= rawurlencode((string) $post['file_path']) ?>" class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-[11px] uppercase tracking-wider hover:text-indigo-700 dark:hover:text-indigo-300 transition-all ">
                             Download File <span class="text-sm transition-transform group-hover:translate-x-1">→</span>
                         </a>
                     </div>
@@ -570,7 +579,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
 
             <?php if($test_count > 6): ?>
             <div class="mt-16 text-center">
-                <button onclick="openModal('testimonialsModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold rounded-xl transition-all text-xs uppercase tracking-widest focus:outline-none">
+                <button onclick="openModal('testimonialsModal')" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold rounded-xl transition-all text-xs uppercase tracking-widest ">
                     Read All Testimonials
                 </button>
             </div>
@@ -734,7 +743,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center flex-shrink-0">
                 <h3 class="text-lg font-[900] text-slate-900 dark:text-white tracking-tight">Announcement</h3>
-                <button type="button" onclick="closeModal('announcementDetailModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+                <button type="button" onclick="closeModal('announcementDetailModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div id="announcementDetailBody" class="p-6 sm:p-8 overflow-y-auto"></div>
         </div>
@@ -748,7 +757,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Announcements</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Complete list of public announcements from C-Familia.</p>
                 </div>
-                <button type="button" onclick="closeModal('announcementsModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+                <button type="button" onclick="closeModal('announcementsModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div class="p-6 sm:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-950">
                 <?php foreach ($announcements as $ann):
@@ -780,7 +789,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">All Top Performers</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Our top reviewees with high scores of 95% and above.</p>
                 </div>
-                <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+                <button onclick="closeModal('topPerformanceModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div class="p-8 overflow-y-auto bg-slate-50 dark:bg-slate-950">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -820,7 +829,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <h3 class="text-2xl font-[900] text-slate-900 dark:text-white tracking-tight">The Complete Hall of Fame</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">List of all certified C-Familia passers who finished their board exams successfully.</p>
                 </div>
-                <button type="button" onclick="closeModal('passersModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+                <button type="button" onclick="closeModal('passersModal')" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold ">✕</button>
             </div>
             <div class="p-8 overflow-y-auto bg-slate-50 dark:bg-slate-950">
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -853,7 +862,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <!-- Gallery Lightbox -->
     <div id="galleryLightbox" class="fixed inset-0 z-[60] hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
         <div class="relative max-w-5xl w-full">
-            <button type="button" id="galleryLightboxClose" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold focus:outline-none">✕</button>
+            <button type="button" id="galleryLightboxClose" class="absolute -top-12 right-0 w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-sm font-bold ">✕</button>
             <img id="galleryLightboxImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
             <p id="galleryLightboxCaption" class="text-center text-white/80 text-sm font-semibold mt-4"></p>
         </div>
