@@ -61,10 +61,23 @@ function activity_log_enrollment_label($conn, $enrollment_id) {
 }
 
 function activity_log_entity_label($conn, $entity_type, $entity_id) {
+    static $label_cache = [];
+
     $entity_id = (int) $entity_id;
     if ($entity_id <= 0 || !$entity_type) {
         return null;
     }
+
+    $cache_key = $entity_type . ':' . $entity_id;
+    if (!array_key_exists($cache_key, $label_cache)) {
+        $label_cache[$cache_key] = activity_log_entity_label_uncached($conn, $entity_type, $entity_id);
+    }
+
+    return $label_cache[$cache_key];
+}
+
+function activity_log_entity_label_uncached($conn, $entity_type, $entity_id) {
+    $entity_id = (int) $entity_id;
 
     switch ($entity_type) {
         case 'user':
@@ -229,6 +242,7 @@ function activity_action_label($action) {
         'gallery.delete' => 'Deleted gallery image',
         'gallery.delete_caption' => 'Deleted gallery caption group',
         'testimonial.submit' => 'Submitted testimonial',
+        'backup.download' => 'Downloaded database backup',
     ];
 
     return $labels[$action] ?? ucwords(str_replace(['.', '_'], ' ', $action));
