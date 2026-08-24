@@ -239,6 +239,19 @@ if (isset($_POST['login'])) {
                     </svg>
                     <span id="btn-text">Sign In</span>
                 </button>
+
+                <!-- Forgot Password -->
+                <div class="pt-1 text-center">
+                    <button type="button" id="forgot-toggle-btn" class="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false" aria-controls="forgot-panel">
+                        Forgot password?
+                    </button>
+                    <div id="forgot-panel" class="hidden mt-3 p-4 bg-blue-50/60 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/40 rounded-2xl text-left">
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-2">Contact us to reset your password</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 font-medium">📞 <a href="tel:09101676805" class="font-bold text-blue-600 dark:text-blue-400 hover:underline">0910 167 6805</a></p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 font-medium break-all">✉️ <a href="mailto:shielamariscuevas@gmail.com" class="font-bold text-blue-600 dark:text-blue-400 hover:underline">shielamariscuevas@gmail.com</a></p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Or visit any campus front desk — bring a valid ID.</p>
+                    </div>
+                </div>
             </form>
             
             <!-- Bottom Navigation -->
@@ -291,6 +304,17 @@ if (isset($_POST['login'])) {
             passwordInput.addEventListener('keyup', handler);
             passwordInput.addEventListener('blur', function () { note.classList.add('hidden'); });
         })();
+
+        // Forgot password disclosure
+        const forgotBtn = document.getElementById('forgot-toggle-btn');
+        const forgotPanel = document.getElementById('forgot-panel');
+        if (forgotBtn && forgotPanel) {
+            forgotBtn.addEventListener('click', function () {
+                const isOpen = !forgotPanel.classList.contains('hidden');
+                forgotPanel.classList.toggle('hidden', isOpen);
+                forgotBtn.setAttribute('aria-expanded', String(!isOpen));
+            });
+        }
 
         // Form submit loading feedback
         if (loginForm && submitBtn) {
