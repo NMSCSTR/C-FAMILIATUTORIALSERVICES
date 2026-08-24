@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/lib/uploads.php';
+secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
 
@@ -7,21 +9,35 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 // Logic to Save Post
 if (isset($_POST['save_post'])) {
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $content = mysqli_real_escape_string($conn, $_POST['content']);
+    csrf_verify();
+
+    $title = trim($_POST['title'] ?? '');
+    $content = trim($_POST['content'] ?? '');
     $file_name = null;
 
-    // Handle File Upload
-    if (!empty($_FILES['resource']['name'])) {
-        $target_dir = "uploads/resources/";
-        if (!is_dir($target_dir)) { mkdir($target_dir, 0777, true); }
-        $file_name = time() . "_" . basename($_FILES["resource"]["name"]);
-        move_uploaded_file($_FILES["resource"]["tmp_name"], $target_dir . $file_name);
+    if ($title === '' || mb_strlen($title) > 255) {
+        header("Location: admin_posts.php?error=invalid");
+        exit();
     }
 
-    $sql = "INSERT INTO posts (title, content, file_path) VALUES ('$title', '$content', '$file_name')";
-    if (mysqli_query($conn, $sql)) {
-        $post_id = mysqli_insert_id($conn);
+    if (!empty($_FILES['resource']['name'])) {
+        [$ok, $file_name, $upload_error] = store_uploaded_file(
+            $_FILES['resource'],
+            'uploads/resources/',
+            ['pdf', 'doc', 'docx', 'zip', 'rar']
+        );
+
+        if (!$ok) {
+            header("Location: admin_posts.php?error=upload");
+            exit();
+        }
+    }
+
+    $stmt = $conn->prepare("INSERT INTO posts (title, content, file_path) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $title, $content, $file_name);
+
+    if ($stmt->execute()) {
+        $post_id = $stmt->insert_id;
         log_activity($conn, 'post.create', "Created learning resource: $title", [
             'entity_type' => 'post',
             'entity_id' => $post_id,
@@ -29,21 +45,39 @@ if (isset($_POST['save_post'])) {
         header("Location: admin_posts.php?success=1");
         exit();
     }
+
+    if ($file_name && is_file('uploads/resources/' . $file_name)) {
+        @unlink('uploads/resources/' . $file_name);
+    }
+    error_log('Post insert failed: ' . $stmt->error);
+    header("Location: admin_posts.php?error=failed");
+    exit();
 }
 
 // Logic to Delete
-if (isset($_GET['delete'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['delete']);
-    $post_result = mysqli_query($conn, "SELECT title FROM posts WHERE id = '$id' LIMIT 1");
-    $post_row = mysqli_fetch_assoc($post_result);
-    $post_title = $post_row['title'] ?? 'Unknown resource';
+if (isset($_POST['delete_id'])) {
+    csrf_verify();
 
-    mysqli_query($conn, "DELETE FROM posts WHERE id = '$id'");
-    log_activity($conn, 'post.delete', null, [
-        'entity_type' => 'post',
-        'entity_id' => (int) $id,
-        'entity_label' => $post_title,
-    ]);
+    $id = intval($_POST['delete_id']);
+    $post_result = mysqli_query($conn, "SELECT title, file_path FROM posts WHERE id = '" . intval($id) . "' LIMIT 1");
+    $post_row = mysqli_fetch_assoc($post_result);
+
+    if ($post_row) {
+        if (!empty($post_row['file_path']) && is_file('uploads/resources/' . $post_row['file_path'])) {
+            @unlink('uploads/resources/' . $post_row['file_path']);
+        }
+
+        $stmt = $conn->prepare("DELETE FROM posts WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        log_activity($conn, 'post.delete', null, [
+            'entity_type' => 'post',
+            'entity_id' => $id,
+            'entity_label' => $post_row['title'] ?? 'Unknown resource',
+        ]);
+    }
+
     header("Location: admin_posts.php?deleted=1");
     exit();
 }
@@ -92,6 +126,7 @@ if (isset($_GET['delete'])) {
                                 Create New Post
                             </h3>
                             <form action="" method="POST" enctype="multipart/form-data" class="space-y-5">
+                                <?= csrf_field() ?>
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block px-1">Post Title</label>
                                     <input type="text" name="title" required class="w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition text-sm font-semibold text-white placeholder:text-slate-600">
@@ -125,12 +160,12 @@ if (isset($_GET['delete'])) {
                                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 </div>
                                 <div class="flex-1">
-                                    <h5 class="font-bold text-white leading-tight text-lg group-hover:text-blue-400 transition-colors"><?= $row['title'] ?></h5>
-                                    <p class="text-sm text-slate-400 mt-2 leading-relaxed"><?= $row['content'] ?></p>
-                                    
+                                    <h5 class="font-bold text-white leading-tight text-lg group-hover:text-blue-400 transition-colors"><?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?></h5>
+                                    <p class="text-sm text-slate-400 mt-2 leading-relaxed"><?= nl2br(htmlspecialchars($row['content'], ENT_QUOTES, 'UTF-8')) ?></p>
+
                                     <?php if($row['file_path']): ?>
                                     <div class="mt-4">
-                                        <a href="uploads/resources/<?= $row['file_path'] ?>" target="_blank" class="inline-flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase tracking-widest bg-blue-950/20 border border-blue-900/30 px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white transition-all">
+                                        <a href="uploads/resources/<?= rawurlencode($row['file_path']) ?>" target="_blank" class="inline-flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase tracking-widest bg-blue-950/20 border border-blue-900/30 px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white transition-all">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                             Download Resource
                                         </a>
@@ -143,9 +178,13 @@ if (isset($_GET['delete'])) {
                                     </div>
                                 </div>
                             </div>
-                            <a href="?delete=<?= $row['id'] ?>" onclick="return confirm('Delete this resource permanently?')" class="self-end md:self-center p-3 text-slate-600 hover:text-red-400 hover:bg-red-950/20 rounded-2xl transition-all md:opacity-0 md:group-hover:opacity-100">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                            </a>
+                            <form method="POST" action="" class="self-end md:self-center" onsubmit="return confirm('Delete this resource permanently?')">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="delete_id" value="<?= (int) $row['id'] ?>">
+                                <button type="submit" class="p-3 text-slate-600 hover:text-red-400 hover:bg-red-950/20 rounded-2xl transition-all md:opacity-0 md:group-hover:opacity-100">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </form>
                         </div>
                         <?php endwhile; else: ?>
                         <div class="bg-slate-900/40 border-2 border-dashed border-slate-800 rounded-[2.5rem] p-16 text-center backdrop-blur-xl">

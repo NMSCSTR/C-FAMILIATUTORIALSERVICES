@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/lib/uploads.php';
+secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
 
@@ -7,52 +9,74 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 // --- Logic to Add Passer ---
 if (isset($_POST['add_passer'])) {
-    // If a manual input name is supplied, it overrides the auto-selected user link
-    $name = !empty($_POST['custom_name']) ? $_POST['custom_name'] : $_POST['name'];
-    $name = mysqli_real_escape_string($conn, $name);
-    
-    $program = mysqli_real_escape_string($conn, $_POST['program']);
-    $batch = mysqli_real_escape_string($conn, $_POST['batch']);
-    $rating = mysqli_real_escape_string($conn, $_POST['rating']);
-    $exam_date = mysqli_real_escape_string($conn, $_POST['exam_date']);
-    $photo_name = mysqli_real_escape_string($conn, $_POST['existing_photo']);
+    csrf_verify();
 
-    // Handle fresh manual file uploads
-    if (!empty($_FILES['photo']['name'])) {
-        $target_dir = "uploads/passers/";
-        if (!is_dir($target_dir)) { mkdir($target_dir, 0777, true); }
-        $photo_name = time() . "_" . basename($_FILES["photo"]["name"]);
-        move_uploaded_file($_FILES["photo"]["tmp_name"], $target_dir . $photo_name);
+    $name = trim(!empty($_POST['custom_name']) ? $_POST['custom_name'] : ($_POST['name'] ?? ''));
+    $program = trim($_POST['program'] ?? '');
+    $batch = trim($_POST['batch'] ?? '');
+    $rating = filter_var($_POST['rating'] ?? '', FILTER_VALIDATE_FLOAT);
+    $exam_date = trim($_POST['exam_date'] ?? '');
+    $photo_name = trim($_POST['existing_photo'] ?? '');
+
+    if ($name === '' || mb_strlen($name) > 255 || $program === '' || $batch === '' || $rating === false || $rating < 0 || $rating > 100) {
+        header("Location: admin_passers.php?error=invalid");
+        exit();
     }
 
-    $sql = "INSERT INTO passers (name, program, batch, rating, exam_date, photo) VALUES ('$name', '$program', '$batch', '$rating', '$exam_date', '$photo_name')";
-    if (mysqli_query($conn, $sql)) {
-        $passer_id = mysqli_insert_id($conn);
+    if (!empty($_FILES['photo']['name'])) {
+        [$ok, $photo_name, $upload_error] = store_uploaded_file(
+            $_FILES['photo'],
+            'uploads/passers/',
+            ['jpg', 'jpeg', 'png', 'gif', 'webp']
+        );
+
+        if (!$ok) {
+            header("Location: admin_passers.php?error=upload");
+            exit();
+        }
+    }
+
+    $stmt = $conn->prepare("INSERT INTO passers (name, program, batch, rating, exam_date, photo) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssdss", $name, $program, $batch, $rating, $exam_date, $photo_name);
+
+    if ($stmt->execute()) {
         log_activity($conn, 'passer.create', "Added passer: $name ($program)", [
             'entity_type' => 'passer',
-            'entity_id' => $passer_id,
+            'entity_id' => $stmt->insert_id,
         ]);
         header("Location: admin_passers.php?posted=1");
         exit();
     }
+
+    error_log('Passer insert failed: ' . $stmt->error);
+    header("Location: admin_passers.php?error=failed");
+    exit();
 }
 
 // --- Logic to Delete Passer ---
-if (isset($_GET['delete'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['delete']);
-    $result = mysqli_query($conn, "SELECT photo, name FROM passers WHERE id = '$id'");
+if (isset($_POST['delete_id'])) {
+    csrf_verify();
+
+    $id = intval($_POST['delete_id']);
+    $result = mysqli_query($conn, "SELECT photo, name FROM passers WHERE id = '" . intval($id) . "' LIMIT 1");
     $data = mysqli_fetch_assoc($result);
-    $passer_name = $data['name'] ?? 'Unknown passer';
-    
-    if ($data && $data['photo'] != 'default_user.jpg' && file_exists("uploads/passers/" . $data['photo'])) {
-        @unlink("uploads/passers/" . $data['photo']);
+
+    if ($data) {
+        if ($data['photo'] != 'default_user.jpg' && is_file("uploads/passers/" . $data['photo'])) {
+            @unlink("uploads/passers/" . $data['photo']);
+        }
+
+        $stmt = $conn->prepare("DELETE FROM passers WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        log_activity($conn, 'passer.delete', null, [
+            'entity_type' => 'passer',
+            'entity_id' => $id,
+            'entity_label' => $data['name'] ?? 'Unknown passer',
+        ]);
     }
-    mysqli_query($conn, "DELETE FROM passers WHERE id = '$id'");
-    log_activity($conn, 'passer.delete', null, [
-        'entity_type' => 'passer',
-        'entity_id' => (int) $id,
-        'entity_label' => $passer_name,
-    ]);
+
     header("Location: admin_passers.php?deleted=1");
     exit();
 }
@@ -114,6 +138,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                             </div>
 
                             <form action="" method="POST" enctype="multipart/form-data" class="space-y-4">
+                                <?= csrf_field() ?>
                                 <input type="hidden" name="name" id="studentName">
                                 <input type="hidden" name="existing_photo" id="existingPhoto" value="default_user.jpg">
 
@@ -122,8 +147,8 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                     <select id="studentSelector" class="w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition text-sm font-semibold appearance-none text-white">
                                         <option value="" data-photo="default_user.jpg" class="bg-slate-900 text-white">-- Choose a Student --</option>
                                         <?php while($s = mysqli_fetch_assoc($students_query)): ?>
-                                            <option value="<?= $s['firstname'] . ' ' . $s['lastname'] ?>" data-photo="<?= !empty($s['profile_pic']) ? $s['profile_pic'] : 'default_user.jpg' ?>" class="bg-slate-900 text-white">
-                                                <?= $s['lastname'] . ', ' . $s['firstname'] ?>
+                                            <option value="<?= htmlspecialchars($s['firstname'] . ' ' . $s['lastname'], ENT_QUOTES, 'UTF-8') ?>" data-photo="<?= htmlspecialchars(!empty($s['profile_pic']) ? $s['profile_pic'] : 'default_user.jpg', ENT_QUOTES, 'UTF-8') ?>" class="bg-slate-900 text-white">
+                                                <?= htmlspecialchars($s['lastname'] . ', ' . $s['firstname'], ENT_QUOTES, 'UTF-8') ?>
                                             </option>
                                         <?php endwhile; ?>
                                     </select>
@@ -188,9 +213,13 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                 }
                             ?>
                             <div class="bg-slate-900/60 p-6 rounded-[2.5rem] border border-slate-800 text-center group hover:border-blue-500/50 transition-all relative flex flex-col justify-between items-center backdrop-blur-xl">
-                                <button onclick="confirmDelete(<?= $p['id'] ?>)" class="absolute top-5 right-5 p-2 text-slate-500 hover:text-red-400 transition-colors md:opacity-0 md:group-hover:opacity-100">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
+                                <form method="POST" action="" class="absolute top-5 right-5" onsubmit="return confirm('Delete this passer permanently?')">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="delete_id" value="<?= (int) $p['id'] ?>">
+                                    <button type="submit" class="p-2 text-slate-500 hover:text-red-400 transition-colors md:opacity-0 md:group-hover:opacity-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
                                 
                                 <div class="w-full">
                                     <img src="<?= $computedPath ?>" class="w-20 h-20 rounded-[2rem] mx-auto object-cover border-4 border-slate-950 mb-3 shadow-sm">
@@ -326,26 +355,6 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
         if (urlParams.get('deleted') === '1') {
             Toast.fire({ icon: 'info', title: 'Record removed successfully' });
             window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        function confirmDelete(id) {
-            customSwalMixin.fire({
-                title: 'Remove Record?',
-                text: "This profile entry will be dropped from the public Hall of Fame page.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#1e293b',
-                confirmButtonText: 'Yes, delete it',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    title: 'font-extrabold text-white',
-                    confirmButton: 'rounded-xl font-bold px-6 py-3 text-sm',
-                    cancelButton: 'rounded-xl font-bold px-6 py-3 text-sm text-slate-400'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) { window.location.href = `?delete=${id}`; }
-            });
         }
     </script>
 </body>

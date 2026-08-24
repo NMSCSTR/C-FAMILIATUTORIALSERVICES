@@ -1,39 +1,27 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/lib/uploads.php';
+secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 $target_dir = "uploads/gallery/";
-$allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-$max_file_size = 5 * 1024 * 1024;
 $gallery_table_exists = mysqli_num_rows(mysqli_query($conn, "SHOW TABLES LIKE 'gallery_images'")) > 0;
-
-function is_valid_gallery_image($file, $allowed_extensions, $max_file_size) {
-    if ($file['error'] !== UPLOAD_ERR_OK || empty($file['name'])) {
-        return false;
-    }
-    if ($file['size'] > $max_file_size) {
-        return false;
-    }
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    return in_array($ext, $allowed_extensions, true);
-}
 
 // --- Add gallery images ---
 if ($gallery_table_exists && isset($_POST['add_gallery'])) {
+    csrf_verify();
+
     $caption = trim($_POST['caption'] ?? '');
     if ($caption === '') {
         header("Location: admin_gallery.php?error=empty_caption");
         exit();
     }
 
-    $caption = mysqli_real_escape_string($conn, $caption);
     $uploaded = 0;
 
     if (!empty($_FILES['images']['name'][0])) {
-        if (!is_dir($target_dir)) { mkdir($target_dir, 0777, true); }
-
         foreach ($_FILES['images']['name'] as $index => $name) {
             $file = [
                 'name' => $_FILES['images']['name'][$index],
@@ -43,22 +31,22 @@ if ($gallery_table_exists && isset($_POST['add_gallery'])) {
                 'size' => $_FILES['images']['size'][$index],
             ];
 
-            if (!is_valid_gallery_image($file, $allowed_extensions, $max_file_size)) {
+            [$ok, $image_name] = store_uploaded_file($file, $target_dir, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+            if (!$ok) {
                 continue;
             }
 
-            $image_name = time() . "_" . $index . "_" . basename($file['name']);
-            if (move_uploaded_file($file['tmp_name'], $target_dir . $image_name)) {
-                $image_name = mysqli_real_escape_string($conn, $image_name);
-                $sort_order = (int) $index;
-                mysqli_query($conn, "INSERT INTO gallery_images (caption, image_path, sort_order) VALUES ('$caption', '$image_name', $sort_order)");
+            $sort_order = (int) $index;
+            $stmt = $conn->prepare("INSERT INTO gallery_images (caption, image_path, sort_order) VALUES (?, ?, ?)");
+            $stmt->bind_param("ssi", $caption, $image_name, $sort_order);
+            if ($stmt->execute()) {
                 $uploaded++;
             }
         }
     }
 
     if ($uploaded > 0) {
-        log_activity($conn, 'gallery.create', "Added $uploaded image(s) under caption: $caption", [
+        log_activity($conn, 'gallery.create', "Added gallery images", [
             'entity_type' => 'gallery',
         ]);
         header("Location: admin_gallery.php?posted=1&count=$uploaded");
@@ -69,38 +57,55 @@ if ($gallery_table_exists && isset($_POST['add_gallery'])) {
 }
 
 // --- Delete single image ---
-if ($gallery_table_exists && isset($_GET['delete'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['delete']);
-    $result = mysqli_query($conn, "SELECT image_path, caption FROM gallery_images WHERE id = '$id'");
-    $data = mysqli_fetch_assoc($result);
-    $gallery_label = $data['caption'] ?? ($data['image_path'] ?? 'Unknown image');
+if ($gallery_table_exists && isset($_POST['delete_id'])) {
+    csrf_verify();
 
-    if ($data && file_exists($target_dir . $data['image_path'])) {
-        @unlink($target_dir . $data['image_path']);
+    $id = intval($_POST['delete_id']);
+    $result = mysqli_query($conn, "SELECT image_path, caption FROM gallery_images WHERE id = '" . intval($id) . "' LIMIT 1");
+    $data = mysqli_fetch_assoc($result);
+
+    if ($data) {
+        if (is_file($target_dir . $data['image_path'])) {
+            @unlink($target_dir . $data['image_path']);
+        }
+
+        $stmt = $conn->prepare("DELETE FROM gallery_images WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        log_activity($conn, 'gallery.delete', null, [
+            'entity_type' => 'gallery',
+            'entity_id' => $id,
+            'entity_label' => $data['caption'] ?: ($data['image_path'] ?? 'Unknown image'),
+        ]);
     }
-    mysqli_query($conn, "DELETE FROM gallery_images WHERE id = '$id'");
-    log_activity($conn, 'gallery.delete', null, [
-        'entity_type' => 'gallery',
-        'entity_id' => (int) $id,
-        'entity_label' => $gallery_label,
-    ]);
+
     header("Location: admin_gallery.php?deleted=1");
     exit();
 }
 
 // --- Delete all images under a caption ---
-if ($gallery_table_exists && isset($_GET['delete_caption'])) {
-    $caption = mysqli_real_escape_string($conn, $_GET['delete_caption']);
-    $result = mysqli_query($conn, "SELECT image_path FROM gallery_images WHERE caption = '$caption'");
-    while ($row = mysqli_fetch_assoc($result)) {
-        if (file_exists($target_dir . $row['image_path'])) {
-            @unlink($target_dir . $row['image_path']);
+if ($gallery_table_exists && isset($_POST['delete_caption'])) {
+    csrf_verify();
+
+    $caption = trim($_POST['delete_caption'] ?? '');
+    if ($caption !== '') {
+        $result = mysqli_query($conn, "SELECT image_path FROM gallery_images WHERE caption = '" . mysqli_real_escape_string($conn, $caption) . "'");
+        while ($row = mysqli_fetch_assoc($result)) {
+            if (is_file($target_dir . $row['image_path'])) {
+                @unlink($target_dir . $row['image_path']);
+            }
         }
+
+        $stmt = $conn->prepare("DELETE FROM gallery_images WHERE caption = ?");
+        $stmt->bind_param("s", $caption);
+        $stmt->execute();
+
+        log_activity($conn, 'gallery.delete_caption', null, [
+            'entity_type' => 'gallery',
+        ]);
     }
-    mysqli_query($conn, "DELETE FROM gallery_images WHERE caption = '$caption'");
-    log_activity($conn, 'gallery.delete_caption', "Deleted all gallery images for caption: $caption", [
-        'entity_type' => 'gallery',
-    ]);
+
     header("Location: admin_gallery.php?deleted=1");
     exit();
 }
@@ -175,6 +180,7 @@ if ($gallery_table_exists) {
                     <div class="lg:col-span-5">
                         <div class="bg-slate-900/60 p-6 md:p-8 rounded-[2.5rem] border border-slate-800 sticky top-12 backdrop-blur-xl">
                             <form action="" method="POST" enctype="multipart/form-data" class="space-y-5" <?= $gallery_table_exists ? '' : 'inert' ?>>
+                                <?= csrf_field() ?>
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-500 mb-1.5 block px-1">Caption</label>
                                     <input type="text" name="caption" required placeholder="e.g. Batch 2026 Graduation, Campus Tour" class="w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition text-sm font-semibold text-white placeholder:text-slate-600">
@@ -209,15 +215,23 @@ if ($gallery_table_exists) {
                                         <h3 class="text-lg font-bold text-white"><?= htmlspecialchars($caption) ?></h3>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1"><?= count($images) ?> image<?= count($images) > 1 ? 's' : '' ?></p>
                                     </div>
-                                    <button onclick="confirmDeleteCaption(<?= json_encode($caption) ?>)" class="text-[10px] font-black uppercase text-red-400 hover:text-red-500 tracking-wider shrink-0">Delete Group</button>
+                                    <form method="POST" action="" class="shrink-0">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="delete_caption" value="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
+                                        <button type="submit" onclick="return confirm('Delete this entire caption group and its images?')" class="text-[10px] font-black uppercase text-red-400 hover:text-red-500 tracking-wider">Delete Group</button>
+                                    </form>
                                 </div>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     <?php foreach ($images as $img): ?>
                                     <div class="relative group rounded-2xl overflow-hidden border border-slate-800 aspect-square">
                                         <img src="<?= $target_dir . htmlspecialchars($img['image_path']) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover">
-                                        <button onclick="confirmDelete(<?= (int) $img['id'] ?>)" class="absolute top-2 right-2 p-1.5 bg-slate-900/90 text-slate-400 hover:text-red-400 rounded-lg shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-slate-800 backdrop-blur-md">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
+                                        <form method="POST" action="" class="absolute top-2 right-2">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="delete_id" value="<?= (int) $img['id'] ?>">
+                                            <button type="submit" onclick="return confirm('Delete this image?')" class="p-1.5 bg-slate-900/90 text-slate-400 hover:text-red-400 rounded-lg shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-slate-800 backdrop-blur-md">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </form>
                                     </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -307,36 +321,6 @@ if ($gallery_table_exists) {
         if (urlParams.get('error') === 'no_images') {
             Toast.fire({ icon: 'error', title: 'Please upload at least one valid image' });
             window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        function confirmDelete(id) {
-            customSwalMixin.fire({
-                title: 'Remove Image?',
-                text: 'This image will be removed from the public gallery.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#1e293b',
-                confirmButtonText: 'Yes, delete it',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) { window.location.href = `?delete=${id}`; }
-            });
-        }
-
-        function confirmDeleteCaption(caption) {
-            customSwalMixin.fire({
-                title: 'Remove Entire Group?',
-                html: `All images under <strong>"${caption}"</strong> will be deleted permanently.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#1e293b',
-                confirmButtonText: 'Yes, delete all',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) { window.location.href = `?delete_caption=${encodeURIComponent(caption)}`; }
-            });
         }
     </script>
 </body>

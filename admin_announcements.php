@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
 
@@ -7,36 +8,61 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 // Logic to Post Announcement
 if (isset($_POST['post_announcement'])) {
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $message = mysqli_real_escape_string($conn, $_POST['message']);
-    $category = mysqli_real_escape_string($conn, $_POST['category']);
-    $audience = mysqli_real_escape_string($conn, $_POST['audience']); 
-    
-    $sql = "INSERT INTO announcements (title, message, category, audience, created_at) VALUES ('$title', '$message', '$category', '$audience', NOW())";
-    if (mysqli_query($conn, $sql)) {
-        $announcement_id = mysqli_insert_id($conn);
+    csrf_verify();
+
+    $title = trim($_POST['title'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+    $category = $_POST['category'] ?? '';
+    $audience = $_POST['audience'] ?? '';
+
+    if ($title === '' || $message === '' || mb_strlen($title) > 255) {
+        header("Location: admin_announcements.php?error=invalid");
+        exit();
+    }
+    if (!in_array($category, ['General', 'Urgent', 'Event', 'Academic'], true)) {
+        $category = 'General';
+    }
+    if (!in_array($audience, ['General', 'Students'], true)) {
+        $audience = 'General';
+    }
+
+    $stmt = $conn->prepare("INSERT INTO announcements (title, message, category, audience, created_at) VALUES (?, ?, ?, ?, NOW())");
+    $stmt->bind_param("ssss", $title, $message, $category, $audience);
+
+    if ($stmt->execute()) {
         log_activity($conn, 'announcement.create', "Posted announcement: $title", [
             'entity_type' => 'announcement',
-            'entity_id' => $announcement_id,
+            'entity_id' => $stmt->insert_id,
         ]);
         header("Location: admin_announcements.php?posted=1");
         exit();
     }
+
+    error_log('Announcement insert failed: ' . $stmt->error);
+    header("Location: admin_announcements.php?error=failed");
+    exit();
 }
 
 // Logic to Delete
-if (isset($_GET['delete'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['delete']);
-    $announcement_result = mysqli_query($conn, "SELECT title FROM announcements WHERE id = '$id' LIMIT 1");
-    $announcement_row = mysqli_fetch_assoc($announcement_result);
-    $announcement_title = $announcement_row['title'] ?? 'Unknown announcement';
+if (isset($_POST['delete_id'])) {
+    csrf_verify();
 
-    mysqli_query($conn, "DELETE FROM announcements WHERE id = '$id'");
-    log_activity($conn, 'announcement.delete', null, [
-        'entity_type' => 'announcement',
-        'entity_id' => (int) $id,
-        'entity_label' => $announcement_title,
-    ]);
+    $id = intval($_POST['delete_id']);
+    $announcement_result = mysqli_query($conn, "SELECT title FROM announcements WHERE id = '" . intval($id) . "' LIMIT 1");
+    $announcement_row = mysqli_fetch_assoc($announcement_result);
+
+    if ($announcement_row) {
+        $stmt = $conn->prepare("DELETE FROM announcements WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        log_activity($conn, 'announcement.delete', null, [
+            'entity_type' => 'announcement',
+            'entity_id' => $id,
+            'entity_label' => $announcement_row['title'],
+        ]);
+    }
+
     header("Location: admin_announcements.php?deleted=1");
     exit();
 }
@@ -83,6 +109,7 @@ if (isset($_GET['delete'])) {
                     <div class="absolute -top-12 -right-12 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
                     
                     <form action="" method="POST" class="space-y-6 relative z-10">
+                        <?= csrf_field() ?>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Announcement Title</label>
@@ -153,9 +180,13 @@ if (isset($_GET['delete'])) {
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="deletePost(<?= $row['id'] ?>)" class="self-end md:self-center p-3 text-slate-600 hover:text-red-400 hover:bg-red-950/20 rounded-xl transition-all md:opacity-0 md:group-hover:opacity-100">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                            </button>
+                            <form method="POST" action="" class="self-end md:self-center" onsubmit="return confirm('Remove this announcement permanently?')">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="delete_id" value="<?= (int) $row['id'] ?>">
+                                <button type="submit" class="p-3 text-slate-600 hover:text-red-400 hover:bg-red-950/20 rounded-xl transition-all md:opacity-0 md:group-hover:opacity-100">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </form>
                         </div>
                         <?php endwhile; ?>
                     </div>
@@ -199,29 +230,6 @@ if (isset($_GET['delete'])) {
                 title: 'Announcement has been deleted'
             });
             window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        // Intercept Deletions using styled confirmation dialogs
-        function deletePost(id) {
-            customSwalMixin.fire({
-                title: 'Are you sure?',
-                text: "You are about to remove this announcement entry permanently.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#1e293b',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    title: 'font-bold text-white',
-                    confirmButton: 'rounded-xl font-bold px-5 py-3 text-sm tracking-tight',
-                    cancelButton: 'rounded-xl font-bold px-5 py-3 text-sm text-slate-400'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `?delete=${id}`;
-                }
-            });
         }
 
         // Menu Toggle Logic
