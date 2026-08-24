@@ -232,6 +232,7 @@ function activity_action_label($action) {
         'payment.refund' => 'Processed refund',
         'payment.cancel' => 'Cancelled payment',
         'profile.update' => 'Updated profile',
+        'password.change' => 'Changed password',
         'announcement.create' => 'Posted announcement',
         'announcement.delete' => 'Deleted announcement',
         'post.create' => 'Created learning resource',

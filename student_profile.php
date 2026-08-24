@@ -74,6 +74,44 @@ if (isset($_POST['update_profile'])) {
     }
 }
 
+if (isset($_POST['change_password'])) {
+    csrf_verify();
+
+    $current     = $_POST['current_password'] ?? '';
+    $new         = $_POST['new_password'] ?? '';
+    $confirm_new = $_POST['confirm_new_password'] ?? '';
+
+    if ($new !== $confirm_new) {
+        $pw_error = "New passwords do not match.";
+    } elseif (strlen($new) < 8) {
+        $pw_error = "New password must be at least 8 characters long.";
+    } else {
+        $pw_stmt = $conn->prepare("SELECT password FROM users WHERE id = ? LIMIT 1");
+        $pw_stmt->bind_param("i", $user_id);
+        $pw_stmt->execute();
+        $hash = $pw_stmt->get_result()->fetch_assoc()['password'] ?? '';
+
+        if ($hash === '' || !password_verify($current, $hash)) {
+            $pw_error = "Your current password is incorrect.";
+        } else {
+            $new_hash = password_hash($new, PASSWORD_DEFAULT);
+            $up = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
+            $up->bind_param("si", $new_hash, $user_id);
+
+            if ($up->execute()) {
+                log_activity($conn, 'password.change', null, [
+                    'entity_type' => 'user',
+                    'entity_id' => (int) $user_id,
+                ]);
+                $pw_success = "Password updated successfully!";
+            } else {
+                error_log('Password change failed: ' . $up->error);
+                $pw_error = "System error. Please try again later.";
+            }
+        }
+    }
+}
+
 $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -286,6 +324,48 @@ $user = $stmt->get_result()->fetch_assoc();
                         </div>
                     </div>
                 </form>
+
+                <!-- Change Password -->
+                <div class="mt-10 glass-card rounded-[2.5rem] p-6 sm:p-8">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2 mb-1.5">
+                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                        Change Password
+                    </h3>
+                    <p class="text-xs text-slate-500 font-medium mb-6">Use at least 8 characters. You'll stay signed in on this device.</p>
+
+                    <?php if (!empty($pw_success)): ?>
+                    <div role="status" class="mb-6 p-4 bg-emerald-950/20 border border-emerald-900/30 text-emerald-400 rounded-2xl text-sm font-bold"><?= $pw_success ?></div>
+                    <?php endif; ?>
+                    <?php if (!empty($pw_error)): ?>
+                    <div role="alert" class="mb-6 p-4 bg-rose-950/20 border border-rose-900/30 text-rose-400 rounded-2xl text-sm font-bold"><?= $pw_error ?></div>
+                    <?php endif; ?>
+
+                    <form action="" method="POST" class="space-y-5 max-w-xl">
+                        <?= csrf_field() ?>
+                        <div>
+                            <label for="current_password" class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Current Password</label>
+                            <input type="password" id="current_password" name="current_password" required autocomplete="current-password"
+                                   class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label for="new_password" class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">New Password</label>
+                                <input type="password" id="new_password" name="new_password" required minlength="8" autocomplete="new-password" aria-describedby="new-password-hint"
+                                       class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
+                                <p id="new-password-hint" class="mt-1.5 ml-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">At least 8 characters.</p>
+                            </div>
+                            <div>
+                                <label for="confirm_new_password" class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Confirm New Password</label>
+                                <input type="password" id="confirm_new_password" name="confirm_new_password" required autocomplete="new-password"
+                                       class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
+                            </div>
+                        </div>
+                        <button type="submit" name="change_password"
+                                class="w-full sm:w-auto px-10 py-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-[11px] font-black rounded-2xl transition-all uppercase tracking-widest">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
             </div>
         </main>
     </div>
