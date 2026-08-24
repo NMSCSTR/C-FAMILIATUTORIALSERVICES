@@ -1,18 +1,28 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 include 'db.php';
 
+$error = "";
+
 if (isset($_POST['login'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
+    csrf_verify();
 
-    $sql = "SELECT * FROM users WHERE email = '$email'";
-    $result = mysqli_query($conn, $sql);
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    if (mysqli_num_rows($result) === 1) {
-        $user = mysqli_fetch_assoc($result);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+
         if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
+            session_regenerate_id(true);
+
+            $_SESSION['user_id'] = (int) $user['id'];
             $_SESSION['username'] = $user['name'];
             $_SESSION['role'] = $user['role'];
 
@@ -27,13 +37,13 @@ if (isset($_POST['login'])) {
                 header("Location: student_dashboard.php");
             }
             exit();
-        } else {
-            log_activity($conn, 'login.failed', "Invalid password for $email");
-            $error = "Invalid password.";
         }
+
+        log_activity($conn, 'login.failed', 'Invalid password attempt');
+        $error = "Invalid email or password.";
     } else {
-        log_activity($conn, 'login.failed', "No account found for $email");
-        $error = "No account found with that email.";
+        log_activity($conn, 'login.failed', 'Login attempt for unknown account');
+        $error = "Invalid email or password.";
     }
 }
 ?>
@@ -191,6 +201,7 @@ if (isset($_POST['login'])) {
 
             <!-- Form -->
             <form action="" method="POST" id="login-form" class="space-y-6">
+                <?= csrf_field() ?>
                 <input type="hidden" name="login" value="1">
                 <!-- Email Input -->
                 <div>

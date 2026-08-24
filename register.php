@@ -1,53 +1,81 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 include 'db.php';
 $message = ""; $error = "";
 
 if (isset($_POST['register'])) {
-    // Sanitize multi-part name inputs
-    $firstname = mysqli_real_escape_string($conn, $_POST['firstname']);
-    $middlename = mysqli_real_escape_string($conn, $_POST['middlename']);
-    $lastname = mysqli_real_escape_string($conn, $_POST['lastname']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+    csrf_verify();
 
-    // Sanitize newly added inputs
-    $birthday = mysqli_real_escape_string($conn, $_POST['birthday']);
-    $cellphone_no = mysqli_real_escape_string($conn, $_POST['cellphone_no']);
-    $address = mysqli_real_escape_string($conn, $_POST['address']);
-    $parents_name_guardian = mysqli_real_escape_string($conn, $_POST['parents_name_guardian']);
-    $parents_phone_no = mysqli_real_escape_string($conn, $_POST['parents_phone_no']);
-    $fb_messenger_account = mysqli_real_escape_string($conn, $_POST['fb_messenger_account']);
+    $firstname = trim($_POST['firstname'] ?? '');
+    $middlename = trim($_POST['middlename'] ?? '');
+    $lastname = trim($_POST['lastname'] ?? '');
+    $email = strtolower(trim($_POST['email'] ?? ''));
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
 
-    if ($password !== $confirm_password) {
+    $birthday = trim($_POST['birthday'] ?? '');
+    $cellphone_no = trim($_POST['cellphone_no'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $parents_name_guardian = trim($_POST['parents_name_guardian'] ?? '');
+    $parents_phone_no = trim($_POST['parents_phone_no'] ?? '');
+    $fb_messenger_account = trim($_POST['fb_messenger_account'] ?? '');
+
+    if ($firstname === '' || $lastname === '' || $email === '') {
+        $error = "Please fill in all required fields.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Please enter a valid email address.";
+    } elseif (strlen($password) < 8) {
+        $error = "Password must be at least 8 characters long.";
+    } elseif ($password !== $confirm_password) {
         $error = "Passwords do not match!";
     } else {
-        // Check if email already exists
-        $check_email = mysqli_query($conn, "SELECT id FROM users WHERE email = '$email'");
-        if (mysqli_num_rows($check_email) > 0) {
+        $check_stmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+        $check_stmt->bind_param("s", $email);
+        $check_stmt->execute();
+
+        if ($check_stmt->get_result()->num_rows > 0) {
             $error = "Email is already registered!";
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $role = 'student';
-            
-            // Updated SQL query to include the new columns
-            $sql = "INSERT INTO users (firstname, middlename, lastname, email, password, role, birthday, cellphone_no, address, parents_name_guardian, parents_phone_no, fb_messenger_account) 
-                    VALUES ('$firstname', '$middlename', '$lastname', '$email', '$hashed_password', '$role', '$birthday', '$cellphone_no', '$address', '$parents_name_guardian', '$parents_phone_no', '$fb_messenger_account')";
-            
-            if (mysqli_query($conn, $sql)) {
-                $new_user_id = mysqli_insert_id($conn);
-                log_activity($conn, 'register', "New student account: $firstname $lastname ($email)", [
-                    'user_id' => $new_user_id,
-                    'user_role' => 'student',
-                    'entity_type' => 'user',
-                    'entity_id' => $new_user_id,
-                ]);
-                $message = "Registration successful! You can now <a href='login.php' class='underline font-bold'>Login</a>.";
+
+            $stmt = $conn->prepare("INSERT INTO users (firstname, middlename, lastname, email, password, role, birthday, cellphone_no, address, parents_name_guardian, parents_phone_no, fb_messenger_account)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            if ($stmt) {
+                $stmt->bind_param(
+                    "ssssssssssss",
+                    $firstname,
+                    $middlename,
+                    $lastname,
+                    $email,
+                    $hashed_password,
+                    $role,
+                    $birthday,
+                    $cellphone_no,
+                    $address,
+                    $parents_name_guardian,
+                    $parents_phone_no,
+                    $fb_messenger_account
+                );
+
+                if ($stmt->execute()) {
+                    $new_user_id = $stmt->insert_id;
+                    log_activity($conn, 'register', "New student account registered", [
+                        'user_id' => $new_user_id,
+                        'user_role' => 'student',
+                        'entity_type' => 'user',
+                        'entity_id' => $new_user_id,
+                    ]);
+                    $message = "Registration successful! You can now <a href='login.php' class='underline font-bold'>Login</a>.";
+                } else {
+                    error_log('Registration failed: ' . $stmt->error);
+                    $error = "Registration failed. Please try again.";
+                }
             } else {
-                $error = "Registration failed: " . mysqli_error($conn);
+                error_log('Registration prepare failed: ' . $conn->error);
+                $error = "Registration failed. Please try again.";
             }
         }
     }
@@ -219,6 +247,7 @@ if (isset($_POST['register'])) {
 
             <!-- Form -->
             <form action="" method="POST" id="register-form" class="space-y-6">
+                <?= csrf_field() ?>
                 <input type="hidden" name="register" value="1">
                 
                 <!-- Section: Personal Information -->
