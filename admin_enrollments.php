@@ -1,33 +1,38 @@
 <?php
-session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { 
-    header("Location: login.php"); 
-    exit(); 
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: login.php");
+    exit();
 }
 include 'db.php';
 
 // --- AJAX HANDLER FOR GRADE INPUT VARIATIONS ---
 if (isset($_POST['action']) && $_POST['action'] === 'update_grades') {
-    $user_id = intval($_POST['user_id']);
-    
-    // Check if empty or whitespace, assign NULL value dynamically
-    $diagnostic = (trim($_POST['diagnostic']) === '') ? "NULL" : intval($_POST['diagnostic']);
-    $preboard   = (trim($_POST['preboard']) === '') ? "NULL" : intval($_POST['preboard']);
-    $compre     = (trim($_POST['compre']) === '') ? "NULL" : intval($_POST['compre']);
-    
-    // Check for an existing row match
-    $check = mysqli_query($conn, "SELECT exam_id FROM exam_result WHERE user_id = $user_id");
-    
-    if (mysqli_num_rows($check) > 0) {
-        $save_sql = "UPDATE exam_result 
-                     SET diagnostic_exam = $diagnostic, preboard_exam = $preboard, compre_exam = $compre 
-                     WHERE user_id = $user_id";
+    csrf_verify();
+
+    $user_id = intval($_POST['user_id'] ?? 0);
+
+    $diagnostic = (trim($_POST['diagnostic'] ?? '') === '') ? null : intval($_POST['diagnostic']);
+    $preboard   = (trim($_POST['preboard'] ?? '') === '') ? null : intval($_POST['preboard']);
+    $compre     = (trim($_POST['compre'] ?? '') === '') ? null : intval($_POST['compre']);
+
+    $check = $conn->prepare("SELECT exam_id FROM exam_result WHERE user_id = ?");
+    $check->bind_param("i", $user_id);
+    $check->execute();
+
+    if ($check->get_result()->num_rows > 0) {
+        $save = $conn->prepare("UPDATE exam_result
+                     SET diagnostic_exam = ?, preboard_exam = ?, compre_exam = ?
+                     WHERE user_id = ?");
+        $save->bind_param("iiii", $diagnostic, $preboard, $compre, $user_id);
     } else {
-        $save_sql = "INSERT INTO exam_result (user_id, diagnostic_exam, preboard_exam, compre_exam) 
-                     VALUES ($user_id, $diagnostic, $preboard, $compre)";
+        $save = $conn->prepare("INSERT INTO exam_result (user_id, diagnostic_exam, preboard_exam, compre_exam)
+                     VALUES (?, ?, ?, ?)");
+        $save->bind_param("iiii", $user_id, $diagnostic, $preboard, $compre);
     }
-    
-    if (mysqli_query($conn, $save_sql)) {
+
+    if ($save->execute()) {
         log_activity($conn, 'enrollment.grades_update', null, [
             'entity_type' => 'user',
             'entity_id' => $user_id,
@@ -41,11 +46,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_grades') {
 
 // --- AJAX HANDLER FOR INSURANCE UPDATE ---
 if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
-    $enrollment_id = intval($_POST['enrollment_id']);
-    $is_insured = intval($_POST['insured']);
-    
-    $update_sql = "UPDATE enrollments SET insured = $is_insured WHERE id = $enrollment_id";
-    if (mysqli_query($conn, $update_sql)) {
+    csrf_verify();
+
+    $enrollment_id = intval($_POST['enrollment_id'] ?? 0);
+    $is_insured = intval($_POST['insured'] ?? 0) === 1 ? 1 : 0;
+
+    $update = $conn->prepare("UPDATE enrollments SET insured = ? WHERE id = ?");
+    $update->bind_param("ii", $is_insured, $enrollment_id);
+
+    if ($update->execute()) {
         log_activity($conn, 'enrollment.insurance_update', null, [
             'entity_type' => 'enrollment',
             'entity_id' => $enrollment_id,
@@ -58,9 +67,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_insurance') {
     exit();
 }
 
-if (isset($_GET['approve'])) {
-    $id = intval($_GET['approve']);
-    mysqli_query($conn, "UPDATE enrollments SET status = 'enrolled' WHERE id = $id");
+if (isset($_POST['approve_id'])) {
+    csrf_verify();
+
+    $id = intval($_POST['approve_id']);
+    $stmt = $conn->prepare("UPDATE enrollments SET status = 'enrolled' WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
     log_activity($conn, 'enrollment.approve', null, [
         'entity_type' => 'enrollment',
         'entity_id' => $id,
@@ -69,10 +83,9 @@ if (isset($_GET['approve'])) {
     exit();
 }
 
-$current_page = basename($_SERVER['PHP_SELF']);
-$view = isset($_GET['view']) ? $_GET['view'] : 'all'; 
-$batch_filter = isset($_GET['batch']) ? mysqli_real_escape_string($conn, $_GET['batch']) : '';
-$location_filter = isset($_GET['location']) ? mysqli_real_escape_string($conn, $_GET['location']) : '';
+$view = isset($_GET['view']) && $_GET['view'] === 'pending' ? 'pending' : 'all';
+$batch_filter = trim($_GET['batch'] ?? '');
+$location_filter = trim($_GET['location'] ?? '');
 $base_fee = 5000;
 
 $batches_res = mysqli_query($conn, "SELECT DISTINCT batch FROM enrollments WHERE batch IS NOT NULL AND batch != '' ORDER BY batch DESC");
@@ -175,40 +188,56 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
                             <tbody id="enrollmentTable" class="divide-y divide-slate-800/50">
                                 <?php
                                 $where = ($view === 'pending') ? "WHERE enrollments.status = 'pending'" : "WHERE 1=1";
-                                if ($batch_filter) $where .= " AND enrollments.batch = '$batch_filter'";
-                                if ($location_filter) $where .= " AND enrollments.enrolled_at = '$location_filter'";
+                                $types = '';
+                                $params = [];
+                                if ($batch_filter !== '') {
+                                    $where .= " AND enrollments.batch = ?";
+                                    $types .= 's';
+                                    $params[] = $batch_filter;
+                                }
+                                if ($location_filter !== '') {
+                                    $where .= " AND enrollments.enrolled_at = ?";
+                                    $types .= 's';
+                                    $params[] = $location_filter;
+                                }
 
-                                $sql = "SELECT enrollments.*, users.firstname, users.lastname, users.email, users.profile_pic 
-                                        FROM enrollments 
-                                        JOIN users ON enrollments.user_id = users.id 
-                                        $where 
+                                $sql = "SELECT enrollments.*, users.firstname, users.lastname, users.email, users.profile_pic,
+                                            (SELECT COALESCE(SUM(p.amount), 0) FROM payments p WHERE p.user_id = enrollments.user_id AND p.status = 'paid') AS total_paid
+                                        FROM enrollments
+                                        JOIN users ON enrollments.user_id = users.id
+                                        $where
                                         ORDER BY enrollments.enrolled_at ASC, enrollments.created_at DESC";
-                                $result = mysqli_query($conn, $sql);
+
+                                $listing = $conn->prepare($sql);
+                                if ($types !== '') {
+                                    $listing->bind_param($types, ...$params);
+                                }
+                                $listing->execute();
+                                $result = $listing->get_result();
 
                                 while($row = mysqli_fetch_assoc($result)):
-                                    $p_sql = "SELECT SUM(amount) as paid FROM payments WHERE user_id = '{$row['user_id']}' AND status = 'paid'";
-                                    $paid = mysqli_fetch_assoc(mysqli_query($conn, $p_sql))['paid'] ?? 0;
-                                    $prog = ($paid / $base_fee) * 100;
+                                    $paid = (float) $row['total_paid'];
+                                    $prog = min(100, ($paid / $base_fee) * 100);
                                 ?>
                                 <tr class="group hover:bg-slate-900/40 transition-colors">
                                     <td class="px-8 py-6" data-label="Student">
                                         <div class="flex items-center gap-4">
                                             <div class="w-10 h-10 rounded-xl bg-slate-800 text-blue-400 flex items-center justify-center font-bold text-sm border border-slate-700 shrink-0">
-                                                <?= strtoupper(substr($row['firstname'],0,1)) ?>
+                                                <?= strtoupper(mb_substr((string) $row['firstname'], 0, 1)) ?>
                                             </div>
                                             <div class="text-left">
-                                                <p class="font-bold text-white text-[14px] leading-tight"><?= $row['firstname'] ?> <?= $row['lastname'] ?></p>
-                                                <p class="text-[11px] text-slate-400 font-medium truncate max-w-[150px]"><?= $row['email'] ?></p>
+                                                <p class="font-bold text-white text-[14px] leading-tight"><?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname'], ENT_QUOTES, 'UTF-8') ?></p>
+                                                <p class="text-[11px] text-slate-400 font-medium truncate max-w-[150px]"><?= htmlspecialchars($row['email'], ENT_QUOTES, 'UTF-8') ?></p>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-8 py-6 text-center" data-label="Insurance">
-                                        <input type="checkbox" class="w-5 h-5 accent-blue-600 cursor-pointer" onchange="toggleInsurance(<?= $row['id'] ?>, this.checked)" <?= $row['insured'] ? 'checked' : '' ?>>
+                                        <input type="checkbox" class="w-5 h-5 accent-blue-600 cursor-pointer" onchange="toggleInsurance(<?= (int) $row['id'] ?>, this.checked)" <?= $row['insured'] ? 'checked' : '' ?>>
                                     </td>
                                     <td class="px-8 py-6" data-label="Center">
                                         <div class="flex flex-col text-left lg:text-left">
-                                            <span class="text-xs font-bold text-slate-300"><?= $row['enrolled_at'] ?: 'N/A' ?></span>
-                                            <span class="text-[10px] text-slate-500 font-black uppercase"><?= $row['batch'] ?></span>
+                                            <span class="text-xs font-bold text-slate-300"><?= htmlspecialchars($row['enrolled_at'] ?: 'N/A', ENT_QUOTES, 'UTF-8') ?></span>
+                                            <span class="text-[10px] text-slate-500 font-black uppercase"><?= htmlspecialchars((string) $row['batch'], ENT_QUOTES, 'UTF-8') ?></span>
                                         </div>
                                     </td>
                                     <td class="px-8 py-6" data-label="Paid Status">
@@ -225,9 +254,13 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                             </button>
                                             <?php if($row['status'] === 'pending'): ?>
-                                                <a href="?approve=<?= $row['id'] ?>" class="p-2 bg-slate-800 text-blue-400 rounded-lg hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white transition-all">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                                </a>
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Approve this enrollment?')">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="approve_id" value="<?= (int) $row['id'] ?>">
+                                                    <button type="submit" class="p-2 bg-slate-800 text-blue-400 rounded-lg hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white transition-all">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                    </button>
+                                                </form>
                                             <?php endif; ?>
                                         </div>
                                     </td>
@@ -283,9 +316,28 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
         closeBtn?.addEventListener('click', () => toggleSidebar(false));
         overlay?.addEventListener('click', () => toggleSidebar(false));
 
+        const CSRF_TOKEN = <?= json_encode(csrf_token()) ?>;
+
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const form = event.target;
+            customSwalMixin.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#1e293b'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+            return false;
+        }
+
         async function toggleInsurance(enrollmentId, isChecked) {
             const formData = new FormData();
             formData.append('action', 'update_insurance');
+            formData.append('csrf_token', CSRF_TOKEN);
             formData.append('enrollment_id', enrollmentId);
             formData.append('insured', isChecked ? 1 : 0);
 
