@@ -256,6 +256,7 @@ $field = function (string $key) use ($old): string {
             <form action="" method="POST" id="register-form" class="space-y-6">
                 <?= csrf_field() ?>
                 <input type="hidden" name="register" value="1">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-2 ml-1">Fields marked <span class="text-rose-500 font-bold" aria-hidden="true">*</span> are required.</p>
                 
                 <!-- Section: Personal Information -->
                 <div>
@@ -264,7 +265,7 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <!-- First Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="firstname">First Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="firstname">First Name <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <div class="relative group">
                                 <input type="text" id="firstname" autocomplete="given-name" name="firstname" value="<?= $field('firstname') ?>" required placeholder="Juan"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
@@ -280,7 +281,7 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Last Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="lastname">Last Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="lastname">Last Name <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <div class="relative group">
                                 <input type="text" id="lastname" autocomplete="family-name" name="lastname" value="<?= $field('lastname') ?>" required placeholder="Cruz"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
@@ -291,7 +292,7 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Birthday -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="birthday">Birthday</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="birthday">Birthday <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -304,7 +305,7 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Cellphone -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="cellphone_no">Cellphone #</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="cellphone_no">Cellphone # <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -325,7 +326,7 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <!-- Email -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Email Address</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Email Address <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -353,7 +354,7 @@ $field = function (string $key) use ($old): string {
 
                     <!-- Address -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="address">Full Address</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="address">Full Address <span class="text-rose-500" aria-hidden="true">*</span></label>
                         <div class="relative group">
                             <div class="absolute left-4 top-4 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -379,13 +380,13 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Guardian Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="parents_name_guardian">Parent / Guardian Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="parents_name_guardian">Parent / Guardian Name <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <input type="text" id="parents_name_guardian" autocomplete="name" name="parents_name_guardian" value="<?= $field('parents_name_guardian') ?>" required placeholder="Maria Dela Cruz"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
                         <!-- Guardian Phone -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="parents_phone_no">Guardian Contact #</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="parents_phone_no">Guardian Contact # <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <input type="text" id="parents_phone_no" autocomplete="tel" name="parents_phone_no" value="<?= $field('parents_phone_no') ?>" required placeholder="09987654321"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
@@ -399,7 +400,7 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Password -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Password</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Password <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -425,7 +426,7 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Confirm Password -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Confirm Password</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Confirm Password <span class="text-rose-500" aria-hidden="true">*</span></label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
