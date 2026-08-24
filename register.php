@@ -125,7 +125,14 @@ $field = function (string $key) use ($old): string {
     </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
+        .dark a:focus-visible, .dark button:focus-visible, .dark input:focus-visible,
+        .dark select:focus-visible, .dark textarea:focus-visible {
+            outline-color: #60a5fa;
+        }    </style>
 </head>
 <body class="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
 
@@ -257,7 +264,7 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <!-- First Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="firstname">First Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="firstname">First Name</label>
                             <div class="relative group">
                                 <input type="text" id="firstname" autocomplete="given-name" name="firstname" value="<?= $field('firstname') ?>" required placeholder="Juan"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
@@ -265,7 +272,7 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Middle Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="middlename">Middle Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="middlename">Middle Name</label>
                             <div class="relative group">
                                 <input type="text" id="middlename" autocomplete="additional-name" name="middlename" value="<?= $field('middlename') ?>" placeholder="Dela"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
@@ -273,7 +280,7 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Last Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="lastname">Last Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="lastname">Last Name</label>
                             <div class="relative group">
                                 <input type="text" id="lastname" autocomplete="family-name" name="lastname" value="<?= $field('lastname') ?>" required placeholder="Cruz"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
@@ -284,9 +291,9 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Birthday -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="birthday">Birthday</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="birthday">Birthday</label>
                             <div class="relative group">
-                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
@@ -297,9 +304,9 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Cellphone -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="cellphone_no">Cellphone #</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="cellphone_no">Cellphone #</label>
                             <div class="relative group">
-                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                     </svg>
@@ -318,9 +325,9 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <!-- Email -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Email Address</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Email Address</label>
                             <div class="relative group">
-                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                     </svg>
@@ -331,9 +338,9 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Messenger -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="fb_messenger_account">FB / Messenger Link</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="fb_messenger_account">FB / Messenger Link</label>
                             <div class="relative group">
-                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                     </svg>
@@ -346,9 +353,9 @@ $field = function (string $key) use ($old): string {
 
                     <!-- Address -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="address">Full Address</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="address">Full Address</label>
                         <div class="relative group">
-                            <div class="absolute left-4 top-4 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                            <div class="absolute left-4 top-4 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -372,13 +379,13 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Guardian Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="parents_name_guardian">Parent / Guardian Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="parents_name_guardian">Parent / Guardian Name</label>
                             <input type="text" id="parents_name_guardian" autocomplete="name" name="parents_name_guardian" value="<?= $field('parents_name_guardian') ?>" required placeholder="Maria Dela Cruz"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
                         <!-- Guardian Phone -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="parents_phone_no">Guardian Contact #</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="parents_phone_no">Guardian Contact #</label>
                             <input type="text" id="parents_phone_no" autocomplete="tel" name="parents_phone_no" value="<?= $field('parents_phone_no') ?>" required placeholder="09987654321"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
@@ -392,9 +399,9 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Password -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Password</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Password</label>
                             <div class="relative group">
-                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                     </svg>
@@ -405,7 +412,7 @@ $field = function (string $key) use ($old): string {
                                 <p id="capslock-note" role="status" class="hidden mt-1 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                                 
                                 <button type="button" id="password-toggle-btn" aria-label="Show password" aria-pressed="false" 
-                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
                                     <svg id="eye-open-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -418,9 +425,9 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Confirm Password -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Confirm Password</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1">Confirm Password</label>
                             <div class="relative group">
-                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                     </svg>
@@ -431,7 +438,7 @@ $field = function (string $key) use ($old): string {
                                 <p id="capslock-note-confirm" role="status" class="hidden mt-1 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                                 
                                 <button type="button" id="confirm-password-toggle-btn" aria-label="Show password" aria-pressed="false" 
-                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
                                     <svg id="confirm-eye-open-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
