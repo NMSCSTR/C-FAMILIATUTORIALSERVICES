@@ -124,18 +124,11 @@ if ($gallery_table_exists) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/app.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
-    <title>Image Gallery | C-Familia Admin</title>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; background-color: #020617; } /* slate-950 */
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; } /* slate-800 */
-    </style>
+    <?php
+    $page_title = 'Image Gallery';
+$load_sweetalert = true;
+    include __DIR__ . '/partials/head.php';
+    ?>
 </head>
 <body class="bg-slate-950 text-white antialiased">
 
@@ -219,7 +212,7 @@ if ($gallery_table_exists) {
                                     <form method="POST" action="" class="shrink-0">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="delete_caption" value="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
-                                        <button type="submit" onclick="return confirmAction(event, 'Delete this entire caption group and its images?')" class="text-[10px] font-black uppercase text-red-400 hover:text-red-500 tracking-wider">Delete Group</button>
+                                        <button type="submit" onsubmit-ignore class="text-[10px] font-black uppercase text-red-400 hover:text-red-500 tracking-wider">Delete Group</button>
                                     </form>
                                 </div>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -229,7 +222,7 @@ if ($gallery_table_exists) {
                                         <form method="POST" action="" class="absolute top-2 right-2">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="delete_id" value="<?= (int) $img['id'] ?>">
-                                            <button type="submit" onclick="return confirmAction(event, 'Delete this image?')" class="p-1.5 bg-slate-900/90 text-slate-400 hover:text-red-400 rounded-lg shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-slate-800 backdrop-blur-md">
+                                            <button type="submit" onclick="return AdminUI.confirmForm(event, 'Delete this image?')" class="p-1.5 bg-slate-900/90 text-slate-400 hover:text-red-400 rounded-lg shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-slate-800 backdrop-blur-md">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             </button>
                                         </form>
@@ -248,97 +241,6 @@ if ($gallery_table_exists) {
 
     <script>
         // Setup SweetAlert2 Custom Dark Config Mixin
-        const customSwalMixin = Swal.mixin({
-            background: '#0f172a',
-            color: '#fff',
-            confirmButtonColor: '#2563eb'
-        });
-
-        const Toast = customSwalMixin.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 2800,
-            timerProgressBar: true
-        });
-
-        const openBtn = document.getElementById('openMenu');
-        const closeBtn = document.getElementById('closeMenu');
-        const sidebar = document.getElementById('mobileSidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-
-        function toggleSidebar(state) {
-            if (state) {
-                sidebar?.classList.remove('-translate-x-full');
-                overlay?.classList.remove('hidden');
-                setTimeout(() => overlay?.classList.add('opacity-100'), 10);
-            } else {
-                sidebar?.classList.add('-translate-x-full');
-                overlay?.classList.remove('opacity-100');
-                setTimeout(() => overlay?.classList.add('hidden'), 300);
-            }
-        }
-
-        openBtn?.addEventListener('click', () => toggleSidebar(true));
-        closeBtn?.addEventListener('click', () => toggleSidebar(false));
-        overlay?.addEventListener('click', () => toggleSidebar(false));
-
-        const galleryImages = document.getElementById('galleryImages');
-        const previewGrid = document.getElementById('previewGrid');
-
-        galleryImages?.addEventListener('change', function() {
-            previewGrid.innerHTML = '';
-            if (!this.files || !this.files.length) {
-                previewGrid.classList.add('hidden');
-                return;
-            }
-            previewGrid.classList.remove('hidden');
-            Array.from(this.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'w-full h-20 object-cover rounded-xl border border-slate-800';
-                    previewGrid.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-
-
-        function confirmAction(event, message) {
-            event.preventDefault();
-            const form = event.target;
-            customSwalMixin.fire({
-                title: 'Are you sure?',
-                text: message,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#2563eb',
-                cancelButtonColor: '#1e293b'
-            }).then((result) => {
-                if (result.isConfirmed) form.submit();
-            });
-            return false;
-        }
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('posted') === '1') {
-            const count = urlParams.get('count') || '1';
-            Toast.fire({ icon: 'success', title: `${count} image(s) added to gallery` });
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        if (urlParams.get('deleted') === '1') {
-            Toast.fire({ icon: 'info', title: 'Gallery item removed' });
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        if (urlParams.get('error') === 'empty_caption') {
-            Toast.fire({ icon: 'error', title: 'Please enter a caption' });
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        if (urlParams.get('error') === 'no_images') {
-            Toast.fire({ icon: 'error', title: 'Please upload at least one valid image' });
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
     </script>
 </body>
 </html>
