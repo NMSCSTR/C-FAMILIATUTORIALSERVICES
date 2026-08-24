@@ -206,8 +206,8 @@ if (isset($_POST['submit_enrollment'])) {
                                     <div class="relative">
                                         <select id="batch" name="batch" required class="w-full p-5 rounded-2xl border border-slate-800 bg-slate-950 text-white focus:border-blue-500 outline-none transition font-bold appearance-none">
                                             <option value="" disabled selected class="text-slate-600">Select a Batch</option>
-                                            <option value="January <?= date('Y') ?>">January <?= date('Y') ?></option>
-                                            <option value="August <?= date('Y') ?>">August <?= date('Y') ?></option>
+                                            <option value="Batch January <?= date('Y') ?>">Batch January <?= date('Y') ?></option>
+                                            <option value="Batch August <?= date('Y') ?>">Batch August <?= date('Y') ?></option>
                                         </select>
                                         <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs">▼</div>
                                     </div>

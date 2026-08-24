@@ -12,8 +12,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 $user_id = $_SESSION['user_id'];
 
 // 2. Fetch User Data
-$user_query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
-$user = mysqli_fetch_assoc($user_query);
+$user_stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+$user_stmt->bind_param("i", $user_id);
+$user_stmt->execute();
+$user = $user_stmt->get_result()->fetch_assoc();
+
+$enr_stmt = $conn->prepare("SELECT status FROM enrollments WHERE user_id = ? AND status != 'completed' LIMIT 1");
+$enr_stmt->bind_param("i", $user_id);
+$enr_stmt->execute();
+$enrollment_status = $enr_stmt->get_result()->fetch_assoc()['status'] ?? null;
 
 // Helper function for visual file identification with Midnight theme classes
 function getFileStyle($filename) {
@@ -109,7 +116,7 @@ function getFileStyle($filename) {
                          class="w-10 h-10 rounded-full object-cover ring-2 ring-blue-900/40">
                     <div class="hidden sm:block">
                         <span class="text-xs font-bold text-white block"><?= $user['firstname'] ?> <?= $user['middlename'] ?> <?= $user['lastname'] ?></span>
-                        <span class="text-[10px] font-semibold text-blue-400">Active Student</span>
+                        <span class="text-[10px] font-semibold text-blue-400"><?= $enrollment_status ? ucfirst($enrollment_status) . " Student" : "Enrollment Pending" ?></span>
                     </div>
                 </div>
             </header>

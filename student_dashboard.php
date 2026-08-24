@@ -214,7 +214,7 @@ $grades = $grades_stmt->get_result()->fetch_assoc();
                     <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.htmlspecialchars($user['profile_pic'], ENT_QUOTES, 'UTF-8') : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=2563eb&color=fff' ?>" class="w-10 h-10 rounded-full object-cover ring-2 ring-blue-900/40">
                     <div class="hidden sm:block">
                         <span class="text-xs font-bold text-white block"><?= htmlspecialchars(trim($user['firstname'] . ' ' . $user['middlename'] . ' ' . $user['lastname']), ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="text-[10px] font-semibold text-blue-400">Active Student</span>
+                        <span class="text-[10px] font-semibold text-blue-400"><?= $is_enrolled ? "Active Student" : "Enrollment Pending" ?></span>
                     </div>
                 </div>
             </header>

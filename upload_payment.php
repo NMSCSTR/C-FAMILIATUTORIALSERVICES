@@ -183,6 +183,7 @@ if (isset($_POST['submit_payment'])) {
         input.onchange = evt => {
             const [file] = input.files;
             if (file) {
+                if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
                 preview.src = URL.createObjectURL(file);
                 previewContainer.classList.remove('hidden');
                 placeholder.classList.add('hidden');
@@ -191,6 +192,8 @@ if (isset($_POST['submit_payment'])) {
 
         function resetFile() {
             input.value = "";
+            if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
+            preview.src = '';
             previewContainer.classList.add('hidden');
             placeholder.classList.remove('hidden');
         }

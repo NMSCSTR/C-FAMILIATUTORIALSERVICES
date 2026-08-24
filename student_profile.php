@@ -116,6 +116,11 @@ $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
+
+$enr_stmt = $conn->prepare("SELECT status FROM enrollments WHERE user_id = ? AND status != 'completed' LIMIT 1");
+$enr_stmt->bind_param("i", $user_id);
+$enr_stmt->execute();
+$enrollment_status = $enr_stmt->get_result()->fetch_assoc()['status'] ?? null;
 ?>
 
 <!DOCTYPE html>
@@ -197,7 +202,7 @@ $user = $stmt->get_result()->fetch_assoc();
                          class="w-10 h-10 rounded-full object-cover ring-2 ring-blue-900/40">
                     <div class="hidden sm:block">
                         <span class="text-xs font-bold text-white block"><?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></span>
-                        <span class="text-[10px] font-semibold text-blue-400">Active Student</span>
+                        <span class="text-[10px] font-semibold text-blue-400"><?= $enrollment_status ? ucfirst($enrollment_status) . " Student" : "Enrollment Pending" ?></span>
                     </div>
                 </div>
             </header>
