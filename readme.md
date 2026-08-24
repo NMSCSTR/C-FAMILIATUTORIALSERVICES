@@ -94,10 +94,9 @@ backup_handler.php          Backup logic
 activity_log.php            General activity logging
 
 aside.php                   Shared sidebar layout
-dsidebar_nav_items.php      Dashboard sidebar nav items
-msidebar_nav_items.php      Member sidebar nav items
 
-cfts.sql                    Database schema / dump
+config.sample.php           Database configuration template (copy to config.php)
+cfts.sql                    Canonical database schema (structure only)
 ```
 
 ---

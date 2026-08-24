@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/session.php';
+secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit();
@@ -16,17 +17,23 @@ $filter_role = trim($_GET['role'] ?? '');
 $search = trim($_GET['q'] ?? '');
 
 $where = [];
+$types = '';
+$params = [];
 if ($filter_action !== '') {
-    $escaped_action = mysqli_real_escape_string($conn, $filter_action);
-    $where[] = "al.action = '$escaped_action'";
+    $where[] = "al.action = ?";
+    $types .= 's';
+    $params[] = $filter_action;
 }
 if ($filter_role !== '') {
-    $escaped_role = mysqli_real_escape_string($conn, $filter_role);
-    $where[] = "al.user_role = '$escaped_role'";
+    $where[] = "al.user_role = ?";
+    $types .= 's';
+    $params[] = $filter_role;
 }
 if ($search !== '') {
-    $escaped_search = mysqli_real_escape_string($conn, $search);
-    $where[] = "(al.description LIKE '%$escaped_search%' OR u.firstname LIKE '%$escaped_search%' OR u.lastname LIKE '%$escaped_search%' OR u.email LIKE '%$escaped_search%' OR al.action LIKE '%$escaped_search%')";
+    $like = '%' . $search . '%';
+    $where[] = "(al.description LIKE ? OR u.firstname LIKE ? OR u.lastname LIKE ? OR u.email LIKE ? OR al.action LIKE ?)";
+    $types .= 'sssss';
+    array_push($params, $like, $like, $like, $like, $like);
 }
 
 $where_sql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
@@ -37,19 +44,31 @@ $action_options = [];
 $table_exists = mysqli_num_rows(mysqli_query($conn, "SHOW TABLES LIKE 'activity_logs'")) > 0;
 
 if ($table_exists) {
-    $count_query = "SELECT COUNT(*) as total
+    $count_stmt = $conn->prepare("SELECT COUNT(*) as total
                     FROM activity_logs al
                     LEFT JOIN users u ON al.user_id = u.id
-                    $where_sql";
-    $total_logs = (int) (mysqli_fetch_assoc(mysqli_query($conn, $count_query))['total'] ?? 0);
+                    $where_sql");
+    if ($types !== '') {
+        $count_stmt->bind_param($types, ...$params);
+    }
+    $count_stmt->execute();
+    $total_logs = (int) ($count_stmt->get_result()->fetch_assoc()['total'] ?? 0);
 
-    $logs_query = "SELECT al.*, u.firstname, u.lastname, u.email
+    $logs_stmt = $conn->prepare("SELECT al.*, u.firstname, u.lastname, u.email
                    FROM activity_logs al
                    LEFT JOIN users u ON al.user_id = u.id
                    $where_sql
                    ORDER BY al.created_at DESC
-                   LIMIT $per_page OFFSET $offset";
-    $logs = mysqli_query($conn, $logs_query);
+                   LIMIT ? OFFSET ?");
+    $limit = $per_page;
+    $offset_param = $offset;
+    if ($types !== '') {
+        $logs_stmt->bind_param($types . 'ii', ...array_merge($params, [$limit, $offset_param]));
+    } else {
+        $logs_stmt->bind_param('ii', $limit, $offset_param);
+    }
+    $logs_stmt->execute();
+    $logs = $logs_stmt->get_result();
 
     $actions_res = mysqli_query($conn, "SELECT DISTINCT action FROM activity_logs ORDER BY action ASC");
     while ($row = mysqli_fetch_assoc($actions_res)) {

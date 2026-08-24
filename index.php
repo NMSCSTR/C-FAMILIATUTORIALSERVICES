@@ -2,9 +2,11 @@
 include 'db.php'; 
 
 // --- Auto-Calculate Passing Rate ---
-$total_passers_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM passers");
-$total_passers = mysqli_fetch_assoc($total_passers_query)['count'];
-$display_rate = ($total_passers > 0) ? "95%" : "0%";
+$passers_stats = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as count, AVG(rating) as avg_rating FROM passers"));
+$total_passers = (int) ($passers_stats['count'] ?? 0);
+$avg_rating = round((float) ($passers_stats['avg_rating'] ?? 0), 2);
+$display_rate = ($total_passers > 0 && $avg_rating > 0) ? $avg_rating . '%' : '0%';
+$rate_bar_width = min(100, max(0, $avg_rating));
 
 // --- Gallery (safe for production if table not migrated yet) ---
 $grouped_gallery = [];
@@ -228,7 +230,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     </div>
                     <div class="space-y-4">
                         <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-300 dark:border-slate-700">
-                            <div class="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 w-[95%] rounded-full shadow-[0_0_10px_rgba(37,99,235,0.2)]"></div>
+                            <div class="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.2)]" style="width: <?= $rate_bar_width ?>%"></div>
                         </div>
                         <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             <span>Excellent Results</span>
@@ -275,8 +277,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
                             <div class="absolute -top-2 -right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-md uppercase tracking-widest">TOP</div>
                         </div>
                         <div class="min-w-0">
-                            <h4 class="text-xl font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"><?= $top['name'] ?></h4>
-                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mt-1 truncate"><?= $top['program'] ?></p>
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"><?= htmlspecialchars($top['name'], ENT_QUOTES, 'UTF-8') ?></h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mt-1 truncate"><?= htmlspecialchars($top['program'], ENT_QUOTES, 'UTF-8') ?></p>
                         </div>
                     </div>
                     <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
@@ -389,8 +391,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
             <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1.5 text-center group flex flex-col justify-between">
                 <div>
                     <img src="<?= $pPath ?>" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 dark:border-slate-950 group-hover:scale-105 transition-transform shadow-inner">
-                    <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
-                    <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-4 truncate"><?= $passer['program'] ?></p>
+                    <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate"><?= htmlspecialchars($passer['name'], ENT_QUOTES, 'UTF-8') ?></h5>
+                    <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-4 truncate"><?= htmlspecialchars($passer['program'], ENT_QUOTES, 'UTF-8') ?></p>
                 </div>
                 <div class="flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-950 rounded-xl py-2.5 border border-slate-100 dark:border-slate-850">
                     <span class="text-base font-[900] text-blue-600 dark:text-blue-400 tracking-tight"><?= $passer['rating'] ?>%</span>
@@ -496,12 +498,12 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <div class="mb-4">
                             <span class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[9px] font-black rounded uppercase tracking-wider border border-indigo-100 dark:border-indigo-900">Study File</span>
                         </div>
-                        <h4 class="text-xl font-bold mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors text-slate-900 dark:text-white leading-snug"><?= $post['title'] ?></h4>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 font-medium"><?= $post['content'] ?></p>
+                        <h4 class="text-xl font-bold mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors text-slate-900 dark:text-white leading-snug"><?= htmlspecialchars($post['title'], ENT_QUOTES, 'UTF-8') ?></h4>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 font-medium"><?= htmlspecialchars($post['content'], ENT_QUOTES, 'UTF-8') ?></p>
                     </div>
                     <?php if($post['file_path']): ?>
                     <div class="border-t border-slate-200/80 dark:border-slate-800 pt-5 mt-2">
-                        <a href="uploads/resources/<?= $post['file_path'] ?>" class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-[11px] uppercase tracking-wider hover:text-indigo-700 dark:hover:text-indigo-300 transition-all focus:outline-none">
+                        <a href="uploads/resources/<?= rawurlencode((string) $post['file_path']) ?>" class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-[11px] uppercase tracking-wider hover:text-indigo-700 dark:hover:text-indigo-300 transition-all focus:outline-none">
                             Download File <span class="text-sm transition-transform group-hover:translate-x-1">→</span>
                         </a>
                     </div>
@@ -549,7 +551,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <div class="flex items-center gap-4 border-t border-slate-100 dark:border-slate-800 pt-6">
                             <img src="<?= $userPic ?>" class="w-12 h-12 rounded-xl object-cover ring-4 ring-white dark:ring-slate-950 shadow-sm flex-shrink-0">
                             <div class="min-w-0">
-                                <h5 class="font-extrabold text-slate-900 dark:text-white text-sm truncate"><?= $row['firstname'] . ' ' . $row['lastname'] ?></h5>
+                                <h5 class="font-extrabold text-slate-900 dark:text-white text-sm truncate"><?= htmlspecialchars(trim($row['firstname'] . ' ' . $row['lastname']), ENT_QUOTES, 'UTF-8') ?></h5>
                                 <p class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-0.5">Verified Alumni</p>
                             </div>
                         </div>
