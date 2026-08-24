@@ -394,7 +394,7 @@ $field = function (string $key) use ($old): string {
                         <!-- Guardian Phone -->
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 ml-1" for="parents_phone_no">Guardian Contact # <span class="text-rose-500" aria-hidden="true">*</span></label>
-                            <input type="text" id="parents_phone_no" autocomplete="tel" name="parents_phone_no" value="<?= $field('parents_phone_no') ?>" required placeholder="09987654321"
+                            <input type="tel" id="parents_phone_no" inputmode="numeric" autocomplete="tel" pattern="[0-9 ]{10,15}" title="Digits only, e.g. 09987654321" name="parents_phone_no" value="<?= $field('parents_phone_no') ?>" required placeholder="09987654321"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
                     </div>
