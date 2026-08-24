@@ -200,8 +200,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
     <header class="relative py-24 sm:py-32 overflow-hidden flex-shrink-0 border-b border-slate-100 dark:border-slate-900">
         <!-- Alternating Background Images Layer -->
         <div class="absolute inset-0 z-0 pointer-events-none">
-            <img id="headerBg0" src="passers.jpg" alt="Background Passes 1" class="absolute inset-0 w-full h-full object-cover opacity-10 dark:opacity-5 transition-opacity duration-1000">
-            <img id="headerBg1" src="passers1.jpg" alt="Background Passes 2" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+            <img id="headerBg0" src="passers.jpg" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover opacity-10 dark:opacity-5 transition-opacity duration-1000">
+            <img id="headerBg1" src="passers1.jpg" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
         </div>
         
         <!-- Ambient Design Graphics Layers -->
@@ -282,7 +282,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="flex items-center gap-5 mb-8">
                         <div class="relative flex-shrink-0">
-                            <img src="<?= $photoPath ?>" class="w-20 h-20 rounded-2xl object-cover ring-4 ring-slate-100 dark:ring-slate-800 shadow-md transition-transform duration-500 group-hover:scale-105">
+                            <img src="<?= $photoPath ?>" alt="Portrait of <?= htmlspecialchars($top['name'], ENT_QUOTES, 'UTF-8') ?>, top passer in <?= htmlspecialchars($top['program'], ENT_QUOTES, 'UTF-8') ?>" class="w-20 h-20 rounded-2xl object-cover ring-4 ring-slate-100 dark:ring-slate-800 shadow-md transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute -top-2 -right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-md uppercase tracking-widest">TOP</div>
                         </div>
                         <div class="min-w-0">
@@ -399,7 +399,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
             ?>
             <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1.5 text-center group flex flex-col justify-between">
                 <div>
-                    <img src="<?= $pPath ?>" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 dark:border-slate-950 group-hover:scale-105 transition-transform shadow-inner">
+                    <img src="<?= $pPath ?>" alt="Portrait of <?= htmlspecialchars($passer['name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy" decoding="async" width="80" height="80" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-slate-50 dark:border-slate-950 group-hover:scale-105 transition-transform shadow-inner">
                     <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate"><?= htmlspecialchars($passer['name'], ENT_QUOTES, 'UTF-8') ?></h5>
                     <p class="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-4 truncate"><?= htmlspecialchars($passer['program'], ENT_QUOTES, 'UTF-8') ?></p>
                 </div>
@@ -558,7 +558,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                             <?= htmlspecialchars($row['content']) ?>
                         </p>
                         <div class="flex items-center gap-4 border-t border-slate-100 dark:border-slate-800 pt-6">
-                            <img src="<?= $userPic ?>" class="w-12 h-12 rounded-xl object-cover ring-4 ring-white dark:ring-slate-950 shadow-sm flex-shrink-0">
+                            <img src="<?= $userPic ?>" alt="Photo of <?= htmlspecialchars(trim($row['firstname'] . ' ' . $row['lastname']), ENT_QUOTES, 'UTF-8') ?>" loading="lazy" decoding="async" width="48" height="48" class="w-12 h-12 rounded-xl object-cover ring-4 ring-white dark:ring-slate-950 shadow-sm flex-shrink-0">
                             <div class="min-w-0">
                                 <h5 class="font-extrabold text-slate-900 dark:text-white text-sm truncate"><?= htmlspecialchars(trim($row['firstname'] . ' ' . $row['lastname']), ENT_QUOTES, 'UTF-8') ?></h5>
                                 <p class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-0.5">Verified Alumni</p>
@@ -801,7 +801,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     ?>
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl flex flex-col justify-between shadow-sm">
                         <div class="flex items-center gap-4 mb-5">
-                            <img src="<?= $photoPath ?>" class="w-14 h-14 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-slate-800">
+                            <img src="<?= $photoPath ?>" alt="Portrait of <?= htmlspecialchars($top['name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy" decoding="async" width="56" height="56" class="w-14 h-14 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-slate-800">
                             <div class="min-w-0">
                                 <h4 class="font-bold text-slate-900 dark:text-white text-base truncate"><?= $top['name'] ?></h4>
                                 <p class="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider truncate"><?= $top['program'] ?></p>
@@ -841,7 +841,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     ?>
                     <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-all text-center group flex flex-col justify-between">
                         <div>
-                            <img src="<?= $pPath ?>" class="w-16 h-16 rounded-full mx-auto mb-3 object-cover border-4 border-slate-50 dark:border-slate-950 shadow-inner">
+                            <img src="<?= $pPath ?>" alt="Portrait of <?= htmlspecialchars($passer['name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy" decoding="async" width="64" height="64" class="w-16 h-16 rounded-full mx-auto mb-3 object-cover border-4 border-slate-50 dark:border-slate-950 shadow-inner">
                             <h5 class="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1 truncate"><?= $passer['name'] ?></h5>
                             <p class="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-3 truncate"><?= $passer['program'] ?></p>
                         </div>
