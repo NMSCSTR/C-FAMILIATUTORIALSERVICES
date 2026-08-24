@@ -10,6 +10,12 @@ module.exports = {
     darkMode: "class",
     theme: {
         extend: {
+            colors: {
+                "cf-dark": "#0f172a",
+                "cf-card": "#1e293b",
+                "cf-border": "#334155",
+                "cf-accent": "#3b82f6"
+            },
             animation: {
                 "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                 "blob": "blob 10s infinite"

@@ -40,25 +40,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
     <title>Command Center | C-Familia Admin</title>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'cf-dark': '#0f172a',
-                        'cf-card': '#1e293b',
-                        'cf-border': '#334155',
-                        'cf-accent': '#3b82f6',
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         /* Custom Scrollbar */
@@ -307,6 +293,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         overlay.addEventListener('click', () => toggleSidebar(false));
 
         // Revenue Chart
+        document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('revenueChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -331,6 +318,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     y: { grid: { color: '#334155' }, ticks: { color: '#64748b' } }
                 }
             }
+        });
         });
     </script>
 </body>
