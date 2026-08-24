@@ -723,6 +723,21 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 Helping Students Succeed Since 2024
             </div>
         </div>
+
+        <!-- Footer Navigation -->
+        <nav aria-label="Footer" class="max-w-7xl mx-auto mb-12 relative">
+            <ul class="flex flex-wrap justify-center gap-x-8 gap-y-3 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                <li><a href="#announcements" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Announcements</a></li>
+                <li><a href="#posts" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Learning Materials</a></li>
+                <li><a href="#passers" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Passers</a></li>
+                <?php if ($has_gallery): ?>
+                <li><a href="#gallery" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Gallery</a></li>
+                <?php endif; ?>
+                <li><a href="#contact" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</a></li>
+                <li><a href="login.php" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Login</a></li>
+                <li><a href="register.php" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Join Us</a></li>
+            </ul>
+        </nav>
         
         <!-- Developer Credit Badge -->
         <div class="max-w-7xl mx-auto text-center mb-6 relative">
@@ -884,6 +899,11 @@ $recent_announcements = array_slice($announcements, 0, 3);
         </div>
     </div>
 
+    <!-- Back to Top -->
+    <button id="backToTop" type="button" aria-label="Back to top" class="fixed bottom-6 right-6 z-40 hidden w-11 h-11 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 shadow-lg shadow-slate-900/20 items-center justify-center text-lg font-black hover:bg-blue-600 dark:hover:bg-blue-500 dark:hover:text-white transition-all">
+        ↑
+    </button>
+
     <!-- Interface Animation & Light/Dark Switcher Script -->
     <script>
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -1032,9 +1052,18 @@ $recent_announcements = array_slice($announcements, 0, 3);
             });
         });
 
-        // Background Image Switcher (Every 5 seconds)
+        // Background Image Switcher (Every 5 seconds, paused while hero is off-screen)
+        const heroSection = document.querySelector('header');
+        let heroVisible = true;
+        if ('IntersectionObserver' in window && heroSection) {
+            new IntersectionObserver(function (entries) {
+                heroVisible = entries[0].isIntersecting;
+            }).observe(heroSection);
+        }
+
         let activeBgIndex = 0;
         setInterval(() => {
+            if (!heroVisible) return;
             const currentBg = document.getElementById('headerBg' + activeBgIndex);
             activeBgIndex = activeBgIndex === 0 ? 1 : 0;
             const nextBg = document.getElementById('headerBg' + activeBgIndex);
@@ -1046,6 +1075,21 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 nextBg.classList.add('opacity-10', 'dark:opacity-5');
             }
         }, 5000);
+
+        // Back to Top
+        const backToTopBtn = document.getElementById('backToTop');
+        if (backToTopBtn) {
+            const toggleBackToTop = () => {
+                const show = window.scrollY > 600;
+                backToTopBtn.classList.toggle('hidden', !show);
+                backToTopBtn.classList.toggle('flex', show);
+            };
+            window.addEventListener('scroll', toggleBackToTop, { passive: true });
+            toggleBackToTop();
+            backToTopBtn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
     </script>
 </body>
 </html>
