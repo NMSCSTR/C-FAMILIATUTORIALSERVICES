@@ -131,9 +131,9 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 <div class="relative overflow-hidden rounded-xl shadow-md border border-slate-100 dark:border-slate-800">
                     <img src="cuevaslogo.jpg" alt="C-Familia Logo" class="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110">
                 </div>
-                <h1 class="text-2xl font-[900] tracking-tighter text-slate-900 dark:text-white">
+                <div class="text-2xl font-[900] tracking-tighter text-slate-900 dark:text-white">
                     C-Familia<span class="text-blue-600">.</span>
-                </h1>
+                </div>
             </a>
 
             <!-- Desktop View: Menu Options -->
@@ -216,7 +216,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
                     <span class="text-blue-600 dark:text-blue-400 font-extrabold tracking-widest uppercase text-[10px]">C-Familia Tutorial Services</span>
                 </div>
-                <h2 class="text-4xl sm:text-6xl font-[900] text-slate-900 dark:text-white tracking-tight leading-[1.05]">
+                <h1 class="text-4xl sm:text-6xl font-[900] text-slate-900 dark:text-white tracking-tight leading-[1.05]">
                     Your Future Starts <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">Right Here.</span>
                 </h2>
                 <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
@@ -262,7 +262,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
                         <span class="text-blue-600 dark:text-blue-400 font-black uppercase text-[11px] tracking-[0.3em]">Top Achievers</span>
                     </div>
-                    <h3 class="text-3xl sm:text-5xl font-[900] tracking-tight text-slate-900 dark:text-white">Top Performance<span class="text-blue-600">.</span></h3>
+                    <h2 class="text-3xl sm:text-5xl font-[900] tracking-tight text-slate-900 dark:text-white">Top Performance<span class="text-blue-600">.</span></h3>
                 </div>
                 <p class="text-slate-500 dark:text-slate-400 max-w-sm font-medium text-sm sm:text-base leading-relaxed border-l-2 border-slate-200 dark:border-slate-800 pl-4">Celebrating our students who got excellent board exam ratings of 95% and higher.</p>
             </div>
@@ -328,7 +328,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
             <div class="flex items-center gap-3">
                 <span class="w-3 h-8 bg-emerald-500 rounded-full"></span>
-                <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Photo Gallery</h3>
+                <h2 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Photo Gallery</h2>
             </div>
             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium max-w-md">Moments from our review center, events, and student milestones.</p>
         </div>
@@ -381,7 +381,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="absolute top-32 right-16 w-6 h-6 rounded-full bg-blue-100/50 dark:bg-blue-900/20 opacity-70 pointer-events-none animate-float-slow"></div>
         <div class="absolute bottom-24 left-1/3 w-8 h-8 rounded-full border border-indigo-100 dark:border-indigo-900 opacity-50 pointer-events-none animate-float-medium"></div>
         <div class="max-w-7xl mx-auto text-center mb-16 sm:mb-24">
-            <h3 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900 dark:text-white">The Hall of Fame</h3>
+            <h2 class="text-3xl sm:text-5xl font-[900] mb-4 tracking-tight text-slate-900 dark:text-white">The Hall of Fame</h2>
             <p class="text-slate-500 dark:text-slate-400 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">Celebrating the hard work of every C-Familia student who passed their board exams.</p>
         </div>
         
@@ -439,7 +439,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
             <div class="flex items-center gap-3">
                 <span class="w-3 h-8 bg-blue-600 rounded-full"></span>
-                <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Recent Announcements</h3>
+                <h2 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Recent Announcements</h2>
             </div>
             <?php if ($ann_count > 3): ?>
             <button type="button" onclick="openModal('announcementsModal')" class="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1 group ">
@@ -491,7 +491,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 sm:mb-16">
                 <div class="flex items-center gap-3">
                     <span class="w-3 h-8 bg-indigo-600 rounded-full"></span>
-                    <h3 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Learning Materials</h3>
+                    <h2 class="text-3xl font-[900] tracking-tight text-slate-900 dark:text-white">Learning Materials</h2>
                 </div>
                 <?php 
                 $posts_total_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM posts");
@@ -548,7 +548,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 sm:mb-24">
                 <span class="text-blue-600 dark:text-blue-400 font-black uppercase text-[11px] tracking-[0.35em] mb-3 block">Student Feedback</span>
-                <h3 class="text-3xl sm:text-5xl font-[900] text-slate-900 dark:text-white tracking-tight">Voice of Success<span class="text-blue-600">.</span></h3>
+                <h2 class="text-3xl sm:text-5xl font-[900] text-slate-900 dark:text-white tracking-tight">Voice of Success<span class="text-blue-600">.</span></h3>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -624,7 +624,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="space-y-10">
             <div class="space-y-3">
                 <span class="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">Our Network</span>
-                <h3 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">Visit our Branches<span class="text-blue-600">.</span></h3>
+                <h2 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">Visit our Branches<span class="text-blue-600">.</span></h3>
                 <p class="text-slate-500 dark:text-slate-400 max-w-md text-sm sm:text-base">Drop by any of our learning centers to learn more about our tailored academic programs.</p>
             </div>
             
@@ -714,7 +714,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-12 relative">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-lg text-white">C</div>
-                <h1 class="text-2xl font-[900] tracking-tighter">C-Familia<span class="text-blue-600">.</span></h1>
+                <p class="text-2xl font-[900] tracking-tighter m-0">C-Familia<span class="text-blue-600">.</span></p>
             </div>
             <div class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-[0.25em] text-center md:text-left">
                 Helping Students Succeed Since 2024
