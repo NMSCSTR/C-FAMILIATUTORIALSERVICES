@@ -670,7 +670,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
             <h3 class="text-2xl font-black mb-6 text-slate-900 dark:text-white tracking-tight">Contact Us Directly</h3>
             <div class="space-y-4">
                 <!-- Phone Card -->
-                <a href="tel:09101676805" class="group flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-100 dark:hover:border-blue-900 hover:-translate-y-0.5 block">
+                <a href="tel:09101676805" class="group flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-100 dark:hover:border-blue-900 hover:-translate-y-0.5">
                     <div class="w-10 h-10 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-400 shadow-sm border border-slate-200 dark:border-slate-800 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                     </div>
@@ -681,7 +681,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 </a>
 
                 <!-- Email Card -->
-                <a href="mailto:shielamariscuevas@gmail.com" class="group flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-100 dark:hover:border-blue-900 hover:-translate-y-0.5 block">
+                <a href="mailto:shielamariscuevas@gmail.com" class="group flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-100 dark:hover:border-blue-900 hover:-translate-y-0.5">
                     <div class="w-10 h-10 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-400 shadow-sm border border-slate-200 dark:border-slate-800 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
@@ -692,7 +692,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 </a>
 
                 <!-- Facebook Card -->
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-100 dark:hover:border-blue-900 hover:-translate-y-0.5 block">
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-100 dark:hover:border-blue-900 hover:-translate-y-0.5">
                     <div class="w-10 h-10 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-400 shadow-sm border border-slate-200 dark:border-slate-800 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
                     </div>
@@ -751,12 +751,16 @@ $recent_announcements = array_slice($announcements, 0, 3);
 
     <!-- MODAL INTEGRATIONS -->
 
-    <?php foreach ($announcements as $ann): ?>
+    <?php foreach ($announcements as $ann):
+        $detail_badge = $ann['category'] === 'Urgent'
+            ? 'text-rose-600 bg-rose-50 border-rose-100 dark:bg-rose-950/40 dark:border-rose-900'
+            : 'text-slate-400 bg-slate-50 border-slate-100 dark:bg-slate-900 dark:border-slate-800';
+    ?>
     <div id="ann-detail-source-<?= (int) $ann['id'] ?>" class="hidden">
         <div class="flex items-center gap-2 mb-4 flex-wrap">
             <p class="text-blue-600 dark:text-blue-400 font-black text-[10px] uppercase tracking-wider"><?= date('M d, Y', strtotime($ann['created_at'])) ?></p>
             <?php if (!empty($ann['category'])): ?>
-            <span class="text-[9px] font-black uppercase tracking-wider <?= $ann['category'] === 'Urgent' ? 'text-rose-600 bg-rose-50 border-rose-100 dark:bg-rose-950/40 dark:border-rose-900' : 'text-slate-400 bg-slate-50 border-slate-100 dark:bg-slate-900 dark:border-slate-800' ?> px-2 py-0.5 rounded-md border"><?= htmlspecialchars($ann['category']) ?></span>
+            <span class="text-[9px] font-black uppercase tracking-wider <?= $detail_badge ?> px-2 py-0.5 rounded-md border"><?= htmlspecialchars($ann['category']) ?></span>
             <?php endif; ?>
         </div>
         <h4 class="text-2xl font-bold text-slate-900 dark:text-white leading-snug mb-4"><?= htmlspecialchars($ann['title']) ?></h4>
