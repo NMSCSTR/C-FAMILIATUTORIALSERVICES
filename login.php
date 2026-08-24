@@ -168,8 +168,8 @@ if (isset($_POST['login'])) {
                         <img src="cuevaslogo.jpg" alt="Logo" class="w-16 h-16 rounded-2xl shadow-md border border-slate-100 p-1.5 bg-white object-contain">
                     </a>
                 </div>
-                <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Login your account</h2>
-                <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Log in to your C-Familia account to continue</p>
+                <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Welcome back</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Log in to continue to your C-Familia portal.</p>
             </div>
 
             <!-- Error Alerts -->

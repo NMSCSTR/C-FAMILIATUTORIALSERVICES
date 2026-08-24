@@ -312,7 +312,7 @@ $field = function (string $key) use ($old): string {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" id="cellphone_no" name="cellphone_no" value="<?= $field('cellphone_no') ?>" required placeholder="09123456789"
+                                <input type="tel" id="cellphone_no" inputmode="numeric" autocomplete="tel-national" pattern="[0-9 ]{10,15}" title="Digits only, e.g. 09123456789" name="cellphone_no" value="<?= $field('cellphone_no') ?>" required placeholder="09123456789"
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
