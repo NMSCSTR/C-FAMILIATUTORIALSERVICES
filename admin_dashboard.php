@@ -140,7 +140,7 @@ $disk_pct   = ($disk_total && $disk_free) ? round((($disk_total - $disk_free) / 
             <?php endif; ?>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-10">
-                <div class="bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group">
+                <a href="admin_enrollments.php" class="block bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group hover:border-cf-accent/60 transition-colors">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-10 h-10 bg-cf-accent/10 text-cf-accent border border-cf-accent/20 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -148,19 +148,19 @@ $disk_pct   = ($disk_total && $disk_free) ? round((($disk_total - $disk_free) / 
                     </div>
                     <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Students</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= number_format($total_students) ?></h3>
-                </div>
+                </a>
 
-                <div class="bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group">
+                <a href="admin_enrollments.php?view=pending" class="block bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group hover:border-cf-accent/60 transition-colors">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-10 h-10 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                     </div>
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Queue</p>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Pending Enrollments</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= $pending_count ?></h3>
-                </div>
+                </a>
 
-                <div class="bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group">
+                <a href="admin_payments.php" class="block bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group hover:border-cf-accent/60 transition-colors">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-10 h-10 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -168,9 +168,9 @@ $disk_pct   = ($disk_total && $disk_free) ? round((($disk_total - $disk_free) / 
                     </div>
                     <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Revenue</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= $total_revenue ?></h3>
-                </div>
+                </a>
 
-                <div class="bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group">
+                <a href="admin_posts.php" class="block bg-cf-card p-6 rounded-3xl border border-cf-border shadow-lg group hover:border-cf-accent/60 transition-colors">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-10 h-10 bg-purple-500/10 text-purple-500 border border-purple-500/20 rounded-xl flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -178,7 +178,7 @@ $disk_pct   = ($disk_total && $disk_free) ? round((($disk_total - $disk_free) / 
                     </div>
                     <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Resources</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= $total_posts ?></h3>
-                </div>
+                </a>
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
