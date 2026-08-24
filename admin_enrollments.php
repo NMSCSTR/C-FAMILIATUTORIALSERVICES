@@ -98,6 +98,7 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/js/modal.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -274,7 +275,7 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
         </main>
     </div>
 
-    <div id="detailsModal" class="fixed inset-0 z-50 hidden">
+    <div id="detailsModal" data-modal-root role="dialog" aria-modal="true" aria-label="Student profile" class="fixed inset-0 z-50 hidden">
         <div id="modalOverlay" class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
         <div id="modalContent" class="absolute right-0 top-0 h-full w-full sm:max-w-lg bg-slate-900 border-l border-slate-800 shadow-2xl translate-x-full modal-slide flex flex-col">
             <div class="p-6 border-b border-slate-800 flex items-center justify-between">
@@ -368,7 +369,7 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
             const content = document.getElementById('modalContent');
             const body = document.getElementById('modalBody');
 
-            modal.classList.remove('hidden');
+            AdminModal.open('detailsModal');
             setTimeout(() => {
                 overlayM.classList.add('opacity-100');
                 content.classList.remove('translate-x-full');
@@ -384,7 +385,7 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
             const content = document.getElementById('modalContent');
             overlayM.classList.remove('opacity-100');
             content.classList.add('translate-x-full');
-            setTimeout(() => document.getElementById('detailsModal').classList.add('hidden'), 400);
+            setTimeout(() => AdminModal.close('detailsModal'), 400);
         }
 
         // --- Asynchronous Dynamic Grades Manager Trigger Worker ---

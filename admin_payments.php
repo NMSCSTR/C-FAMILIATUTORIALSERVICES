@@ -163,6 +163,7 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/js/modal.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
@@ -327,10 +328,10 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
         </main>
     </div>
 
-    <div id="walkinModal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="walkinModal" data-modal-root data-modal-dismiss role="dialog" aria-modal="true" aria-labelledby="walkinTitle" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden">
             <div class="px-8 py-6 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="text-xl font-black text-white">Record Walk-in</h3>
+                <h3 id="walkinTitle" class="text-xl font-black text-white">Record Walk-in</h3>
                 <button onclick="closeWalkinModal()" class="text-slate-400 hover:text-white p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
             </div>
             
@@ -338,7 +339,7 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
                 <?= csrf_field() ?>
                 <div class="receipt-pill p-5 rounded-2xl border border-dashed border-slate-800">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">OR / Receipt Number</label>
-                    <input type="text" name="receipt_no" required placeholder="OR-XXXX" class="w-full bg-transparent text-lg font-black text-white outline-none placeholder:text-slate-600">
+                    <input type="text" name="receipt_no" required placeholder="OR-XXXX" data-autofocus class="w-full bg-transparent text-lg font-black text-white outline-none placeholder:text-slate-600">
                 </div>
 
                 <div>
@@ -401,8 +402,8 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
         overlay?.addEventListener('click', () => toggleSidebar(false));
 
         // Modal Logic
-        function openWalkinModal() { document.getElementById('walkinModal').classList.remove('hidden'); }
-        function closeWalkinModal() { document.getElementById('walkinModal').classList.add('hidden'); }
+        function openWalkinModal() { AdminModal.open('walkinModal'); }
+        function closeWalkinModal() { AdminModal.close('walkinModal'); }
 
         function confirmAction(event, message) {
             event.preventDefault();
