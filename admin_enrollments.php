@@ -95,11 +95,30 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-    $page_title = 'Admin';
-$load_sweetalert = true;
-    include __DIR__ . '/partials/head.php';
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/js/modal.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Registry Management | Admin Suite</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; } /* slate-950 */
+        .registry-card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-radius: 24px; backdrop-filter: blur(24px); } /* slate-900/60, slate-800, backdrop-blur-xl */
+        .modal-slide { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; } /* slate-900 */
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; } /* slate-700 */
+
+        @media (max-width: 768px) {
+            .responsive-table thead { display: none; }
+            .responsive-table tr { display: block; margin-bottom: 1rem; border: 1px solid #1e293b; border-radius: 16px; padding: 1rem; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(24px); }
+            .responsive-table td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border: none; text-align: right; }
+            .responsive-table td::before { content: attr(data-label); font-weight: 800; font-size: 10px; text-transform: uppercase; color: #64748b; text-align: left; } /* slate-500 */
+        }
+    </style>
 </head>
 <body class="text-white antialiased bg-slate-950">
 
@@ -155,7 +174,7 @@ $load_sweetalert = true;
                     </select>
                 </div>
 
-                <div class="card-dark overflow-hidden">
+                <div class="registry-card overflow-hidden">
                     <div class="overflow-x-auto lg:overflow-visible">
                         <table class="w-full text-left responsive-table">
                             <thead>
@@ -236,7 +255,7 @@ $load_sweetalert = true;
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                             </button>
                                             <?php if($row['status'] === 'pending'): ?>
-                                                <form method="POST" action="" class="inline-flex" onsubmit="return AdminUI.confirmForm(event, 'Approve this enrollment?')">
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Approve this enrollment?')">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="approve_id" value="<?= (int) $row['id'] ?>">
                                                     <button type="submit" class="p-2 bg-slate-800 text-blue-400 rounded-lg hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white transition-all">
@@ -270,6 +289,142 @@ $load_sweetalert = true;
     </div>
 
     <script>
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu');
+        const sidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        // Overriding target alert color logic configurations gracefully for sweetalert styling consistency
+        const customSwalMixin = Swal.mixin({
+            background: '#0f172a',
+            color: '#fff',
+            confirmButtonColor: '#2563eb'
+        });
+
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
+
+        const CSRF_TOKEN = <?= json_encode(csrf_token()) ?>;
+
+
+        const Toast = customSwalMixin.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2800,
+            timerProgressBar: true
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('approved') === '1') {
+            Toast.fire({ icon: 'success', title: 'Enrollment approved' });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const form = event.target;
+            customSwalMixin.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#1e293b'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+            return false;
+        }
+
+        async function toggleInsurance(enrollmentId, isChecked) {
+            const formData = new FormData();
+            formData.append('action', 'update_insurance');
+            formData.append('csrf_token', CSRF_TOKEN);
+            formData.append('enrollment_id', enrollmentId);
+            formData.append('insured', isChecked ? 1 : 0);
+
+            try {
+                const response = await fetch('admin_enrollments.php', { method: 'POST', body: formData });
+                const result = await response.text();
+                if (result.trim() !== 'success') alert('Error updating status.');
+            } catch (error) { alert('Connection error.'); }
+        }
+
+        async function viewDetails(userId) {
+            const modal = document.getElementById('detailsModal');
+            const overlayM = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            const body = document.getElementById('modalBody');
+
+            AdminModal.open('detailsModal');
+            setTimeout(() => {
+                overlayM.classList.add('opacity-100');
+                content.classList.remove('translate-x-full');
+            }, 10);
+
+            body.innerHTML = '<div class="flex items-center justify-center h-48"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div></div>';
+            const response = await fetch(`get_student_details.php?user_id=${userId}`);
+            body.innerHTML = await response.text();
+        }
+
+        function closeModal() {
+            const overlayM = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            overlayM.classList.remove('opacity-100');
+            content.classList.add('translate-x-full');
+            setTimeout(() => AdminModal.close('detailsModal'), 400);
+        }
+
+        // --- Asynchronous Dynamic Grades Manager Trigger Worker ---
+        async function submitGradesForm(event, userId) {
+            event.preventDefault();
+            const form = event.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Saving Changes...';
+            
+            const formData = new FormData(form);
+            formData.append('action', 'update_grades');
+            formData.append('user_id', userId);
+            
+            try {
+                const response = await fetch('admin_enrollments.php', { method: 'POST', body: formData });
+                const result = await response.text();
+                if(result.trim() === 'success') {
+                    customSwalMixin.fire({ icon: 'success', title: 'Saved', text: 'Student metrics updated successfully.', timer: 2000, showConfirmButton: false });
+                } else {
+                    customSwalMixin.fire({ icon: 'error', title: 'Failed', text: 'Error executing backend metrics save operation.' });
+                }
+            } catch (e) {
+                customSwalMixin.fire({ icon: 'error', title: 'Network Failure', text: 'Connection timed out.' });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        document.getElementById('studentSearch').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#enrollmentTable tr');
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
+            });
+        });
     </script>
 </body>
 </html>

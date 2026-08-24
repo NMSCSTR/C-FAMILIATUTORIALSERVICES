@@ -67,11 +67,27 @@ $disk_pct   = ($disk_total && $disk_free) ? round((($disk_total - $disk_free) / 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-    $page_title = 'Command Center';
-$load_charts = true;
-    include __DIR__ . '/partials/head.php';
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <title>Command Center | C-Familia Admin</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        @media (max-width: 768px) {
+            .mobile-table-card thead { display: none; }
+            .mobile-table-card tr { display: block; border-bottom: 1px solid #334155; padding: 1rem 0; }
+            .mobile-table-card td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; border: none; }
+            .mobile-table-card td::before { content: attr(data-label); font-weight: 700; font-size: 10px; color: #64748b; text-transform: uppercase; }
+        }
+    </style>
 </head>
 
 <body class="bg-cf-dark text-slate-100 antialiased">
@@ -176,7 +192,7 @@ $load_charts = true;
                             <a href="admin_activity_log.php" class="text-center md:text-left text-cf-accent text-[10px] font-black uppercase tracking-widest bg-cf-accent/10 px-4 py-2.5 rounded-xl">View All</a>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left table-responsive">
+                            <table class="w-full text-left mobile-table-card">
                                 <thead class="bg-cf-dark/30 border-b border-cf-border">
                                     <tr class="text-[10px] font-black text-slate-500 uppercase tracking-widest">
                                         <th class="px-8 py-4">User</th>
@@ -284,6 +300,27 @@ $load_charts = true;
     </div>
 
     <script>
+        // Sidebar Mobile Logic
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu');
+        const sidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        openBtn.addEventListener('click', () => toggleSidebar(true));
+        closeBtn.addEventListener('click', () => toggleSidebar(false));
+        overlay.addEventListener('click', () => toggleSidebar(false));
 
         // Revenue Chart
         document.addEventListener('DOMContentLoaded', function () {

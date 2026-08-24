@@ -160,11 +160,27 @@ $students_res = mysqli_query($conn, "SELECT id, firstname, lastname FROM users W
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-    $page_title = 'Admin';
-$load_sweetalert = true;
-    include __DIR__ . '/partials/head.php';
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/js/modal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <title>Financial Ledger | Review Center Admin</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; background-color: #020617; } /* slate-950 */
+        .bento-card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-radius: 2rem; backdrop-filter: blur(24px); } /* slate-900/60, slate-800, backdrop-blur-xl */
+        .receipt-pill { background: repeating-linear-gradient(45deg, #0f172a, #0f172a 10px, #1e293b 10px, #1e293b 20px); }
+        
+        /* Responsive Table */
+        @media (max-width: 1024px) {
+            .responsive-table thead { display: none; }
+            .responsive-table tr { display: block; margin-bottom: 1.5rem; border: 1px solid #1e293b; border-radius: 1.5rem; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(24px); padding: 1rem; }
+            .responsive-table td { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0.5rem; border: none; text-align: right; }
+            .responsive-table td::before { content: attr(data-label); font-weight: 800; font-size: 10px; text-transform: uppercase; color: #64748b; text-align: left; } /* slate-500 */
+        }
+    </style>
 </head>
 <body class="text-white antialiased bg-slate-950">
 
@@ -199,21 +215,21 @@ $load_sweetalert = true;
                         <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Total Collections</p>
                         <h3 class="text-3xl md:text-4xl font-bold">₱<?= number_format($total_collected, 2) ?></h3>
                     </div>
-                    <div class="card-dark p-8 shadow-sm border-l-4 border-emerald-500">
+                    <div class="bento-card p-8 shadow-sm border-l-4 border-emerald-500">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Walk-in Revenue</p>
                         <h3 class="text-3xl md:text-4xl font-bold text-emerald-400">₱<?= number_format($walkin_revenue, 2) ?></h3>
                     </div>
-                    <div class="card-dark p-8 shadow-sm border-l-4 border-orange-500">
+                    <div class="bento-card p-8 shadow-sm border-l-4 border-orange-500">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Verification Needed</p>
                         <h3 class="text-3xl md:text-4xl font-bold text-orange-400"><?= $pending_verification ?></h3>
                     </div>
-                    <div class="card-dark p-8 shadow-sm border-l-4 border-red-500 sm:col-span-2 lg:col-span-1">
+                    <div class="bento-card p-8 shadow-sm border-l-4 border-red-500 sm:col-span-2 lg:col-span-1">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Refund Requests</p>
                         <h3 class="text-3xl md:text-4xl font-bold text-red-400"><?= $refund_requests ?></h3>
                     </div>
                 </div>
 
-                <div class="lg:card-dark overflow-hidden lg:shadow-sm">
+                <div class="lg:bento-card overflow-hidden lg:shadow-sm">
                     <div class="overflow-x-auto lg:overflow-visible">
                         <table class="w-full text-left responsive-table">
                             <thead>
@@ -263,7 +279,7 @@ $load_sweetalert = true;
                                             <?php endif; ?>
 
                                             <?php if($row['status'] == 'pending'): ?>
-                                                <form method="POST" action="" class="inline-flex" onsubmit="return AdminUI.confirmForm(event, 'Verify this payment?')">
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Verify this payment?')">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="verify_id" value="<?= (int) $row['id'] ?>">
                                                     <button type="submit" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md">Verify</button>
@@ -273,7 +289,7 @@ $load_sweetalert = true;
                                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                                     <span class="text-[9px] font-black uppercase">Paid</span>
                                                 </div>
-                                                <form method="POST" action="" class="inline-flex" onsubmit="return AdminUI.confirmForm(event, 'Refund this payment?')">
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Refund this payment?')">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="refund_id" value="<?= (int) $row['id'] ?>">
                                                     <button type="submit" class="bg-red-950/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-900/30 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Refund</button>
@@ -283,7 +299,7 @@ $load_sweetalert = true;
                                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                     <span class="text-[9px] font-black uppercase">Refund Requested</span>
                                                 </div>
-                                                <form method="POST" action="" class="inline-flex" onsubmit="return AdminUI.confirmForm(event, 'Process this refund?')">
+                                                <form method="POST" action="" class="inline-flex" onsubmit="return confirmAction(event, 'Process this refund?')">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="refund_id" value="<?= (int) $row['id'] ?>">
                                                     <button type="submit" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md">Process Refund</button>
@@ -357,13 +373,56 @@ $load_sweetalert = true;
 
     <script>
         // SweetAlert Custom Dynamic Dark Mixin
+        const customSwalMixin = Swal.mixin({
+            background: '#0f172a',
+            color: '#fff',
+            confirmButtonColor: '#2563eb'
+        });
+
+        // Menu Toggle
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu');
+        const sidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
 
         // Modal Logic
         function openWalkinModal() { AdminModal.open('walkinModal'); }
         function closeWalkinModal() { AdminModal.close('walkinModal'); }
 
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const form = event.target;
+            customSwalMixin.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#1e293b'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+            return false;
+        }
+
         <?php if(isset($_GET['success'])): ?>
-        Swal.fire({
+        customSwalMixin.fire({
             icon: 'success',
             title: <?= json_encode(
                 $_GET['success'] === 'refunded' ? 'Refund Processed' :

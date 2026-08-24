@@ -89,11 +89,18 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-    $page_title = 'Manage Passers';
-$load_sweetalert = true;
-    include __DIR__ . '/partials/head.php';
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <title>Manage Passers | C-Familia Admin</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; background-color: #020617; } /* slate-950 */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; } /* slate-800 */
+    </style>
 </head>
 <body class="bg-slate-950 text-white antialiased">
 
@@ -306,7 +313,56 @@ $load_sweetalert = true;
             }
         });
 
-        // Sidebar + URL-param toasts handled by assets/js/ui.js
+        // Menu Toggle Logic
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu'); 
+        const sidebar = document.getElementById('mobileSidebar'); 
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar?.classList.remove('-translate-x-full');
+                overlay?.classList.remove('hidden');
+                setTimeout(() => overlay?.classList.add('opacity-100'), 10);
+            } else {
+                sidebar?.classList.add('-translate-x-full');
+                overlay?.classList.remove('opacity-100');
+                setTimeout(() => overlay?.classList.add('hidden'), 300);
+            }
+        }
+
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
+
+        // Setup SweetAlert2 Notifications Custom Dark Config Mixin
+        const customSwalMixin = Swal.mixin({
+            background: '#0f172a',
+            color: '#fff',
+            confirmButtonColor: '#2563eb'
+        });
+
+        const Toast = customSwalMixin.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2800,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('posted') === '1') {
+            Toast.fire({ icon: 'success', title: 'Passer registered successfully' });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        if (urlParams.get('deleted') === '1') {
+            Toast.fire({ icon: 'info', title: 'Record removed successfully' });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     </script>
 </body>
 </html>

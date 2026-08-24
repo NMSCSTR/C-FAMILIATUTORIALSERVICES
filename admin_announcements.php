@@ -71,10 +71,18 @@ if (isset($_POST['delete_id'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-    $page_title = 'Announcements';
-    include __DIR__ . '/partials/head.php';
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Announcements | C-Familia Admin</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; background-color: #020617; } /* slate-950 */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; } /* slate-800 */
+    </style>
 </head>
 <body class="bg-slate-950 text-white antialiased">
 
@@ -194,7 +202,63 @@ if (isset($_POST['delete_id'])) {
     </div>
 
     <script>
-        // Sidebar + URL-param toasts handled by assets/js/ui.js
+        // Setup SweetAlert2 Toast Layout Base Configurations for Theme Consistency
+        const customSwalMixin = Swal.mixin({
+            background: '#0f172a',
+            color: '#fff',
+            confirmButtonColor: '#2563eb'
+        });
+
+        const Toast = customSwalMixin.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2800,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // Parse URL Parameters to trigger toasts dynamically
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('posted') === '1') {
+            Toast.fire({
+                icon: 'success',
+                title: 'Announcement posted successfully'
+            });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        if (urlParams.get('deleted') === '1') {
+            Toast.fire({
+                icon: 'info',
+                title: 'Announcement has been deleted'
+            });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Menu Toggle Logic
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu');
+        const sidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar(state) {
+            if(state) {
+                sidebar?.classList.remove('-translate-x-full');
+                overlay?.classList.remove('hidden');
+                setTimeout(() => overlay?.classList.add('opacity-100'), 10);
+            } else {
+                sidebar?.classList.add('-translate-x-full');
+                overlay?.classList.remove('opacity-100');
+                setTimeout(() => overlay?.classList.add('hidden'), 300);
+            }
+        }
+
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
     </script>
 </body>
 </html>

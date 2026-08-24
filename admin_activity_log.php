@@ -96,10 +96,23 @@ function activity_log_query_string($overrides = []) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-    $page_title = 'Activity Log';
-    include __DIR__ . '/partials/head.php';
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <title>Activity Log | C-Familia Admin</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; background-color: #020617; } /* slate-950 */
+        .log-card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-radius: 24px; backdrop-filter: blur(24px); } /* slate-900/60 & slate-800 */
+
+        @media (max-width: 1024px) {
+            .responsive-table thead { display: none; }
+            .responsive-table tr { display: block; margin-bottom: 1rem; border: 1px solid #1e293b; border-radius: 16px; padding: 1rem; background: rgba(15, 23, 42, 0.4); }
+            .responsive-table td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border: none; text-align: right; }
+            .responsive-table td::before { content: attr(data-label); font-weight: 800; font-size: 10px; text-transform: uppercase; color: #64748b; text-align: left; margin-right: 1rem; } /* slate-500 */
+        }
+    </style>
 </head>
 <body class="text-white antialiased">
 
@@ -124,12 +137,12 @@ function activity_log_query_string($overrides = []) {
                 </header>
 
                 <?php if (!$table_exists): ?>
-                    <div class="card-dark p-8 text-center">
+                    <div class="log-card p-8 text-center">
                         <p class="text-slate-400 font-medium">The activity log table has not been created yet.</p>
                         <p class="text-slate-500 text-sm mt-2">Run <code class="bg-slate-950 border border-slate-800 text-slate-400 px-2 py-1 rounded">migrations/add_activity_logs.sql</code> against your database.</p>
                     </div>
                 <?php else: ?>
-                    <form method="GET" class="card-dark p-6 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <form method="GET" class="log-card p-6 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label for="log_q" class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Search</label>
                             <input type="text" id="log_q" name="q" value="<?= htmlspecialchars($search) ?>" placeholder="User, email, or details"
@@ -160,7 +173,7 @@ function activity_log_query_string($overrides = []) {
                         </div>
                     </form>
 
-                    <div class="card-dark overflow-hidden">
+                    <div class="log-card overflow-hidden">
                         <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
                             <p class="text-sm font-semibold text-slate-400"><?= number_format($total_logs) ?> total entries</p>
                         </div>
@@ -240,6 +253,26 @@ function activity_log_query_string($overrides = []) {
     </div>
 
     <script>
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu');
+        const sidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar(state) {
+            if (state) {
+                sidebar?.classList.remove('-translate-x-full');
+                overlay?.classList.remove('hidden');
+                setTimeout(() => overlay?.classList.add('opacity-100'), 10);
+            } else {
+                sidebar?.classList.add('-translate-x-full');
+                overlay?.classList.remove('opacity-100');
+                setTimeout(() => overlay?.classList.add('hidden'), 300);
+            }
+        }
+
+        openBtn?.addEventListener('click', () => toggleSidebar(true));
+        closeBtn?.addEventListener('click', () => toggleSidebar(false));
+        overlay?.addEventListener('click', () => toggleSidebar(false));
     </script>
 </body>
 </html>

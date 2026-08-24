@@ -43,10 +43,37 @@ if ($al_exists) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-    $page_title = 'Database Backup';
-    include __DIR__ . '/partials/head.php';
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
+    <title>Database Backup | C-Familia Admin</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; background-color: #020617; } /* slate-950 */
+        .card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-radius: 24px; backdrop-filter: blur(24px); } /* slate-900/60 & slate-800 */
+
+        .table-row-check:checked + label .check-box { background: #2563eb; border-color: #2563eb; }
+        .table-row-check:checked + label .check-icon { display: block; }
+        .check-icon { display: none; }
+
+        .progress-bar-inner { animation: shimmer 1.8s infinite linear; background-size: 200% 100%;
+            background-image: linear-gradient(90deg, #3b82f6 0%, #6366f1 50%, #3b82f6 100%); }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+        /* Responsive sidebar */
+        @media (max-width: 1024px) {
+            #mobileSidebar { transform: translateX(-100%); }
+            #mobileSidebar.open { transform: translateX(0); }
+        }
+
+        /* Pulse animation for download button */
+        @keyframes btn-glow { 0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.2)} 50%{box-shadow:0 0 0 8px rgba(37,99,235,0)} }
+        .btn-glow { animation: btn-glow 2s ease-in-out infinite; }
+
+        .stat-card { transition: transform .2s, box-shadow .2s; }
+        .stat-card:hover { transform: translateY(-2px); border-color: #334155; } /* slate-700 */
+    </style>
 </head>
 <body class="text-white antialiased">
 
@@ -278,7 +305,26 @@ if ($al_exists) {
 </div>
 
 <script>
-    // Sidebar handled by assets/js/ui.js
+    // --- Sidebar toggle ---
+    const openBtn = document.getElementById('openMenu');
+    const closeBtn = document.getElementById('closeMenu');
+    const sidebar = document.getElementById('mobileSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    function toggleSidebar(state) {
+        if (state) {
+            sidebar?.classList.remove('-translate-x-full');
+            overlay?.classList.remove('hidden');
+            setTimeout(() => overlay?.classList.add('opacity-100'), 10);
+        } else {
+            sidebar?.classList.add('-translate-x-full');
+            overlay?.classList.remove('opacity-100');
+            setTimeout(() => overlay?.classList.add('hidden'), 300);
+        }
+    }
+    openBtn?.addEventListener('click', () => toggleSidebar(true));
+    closeBtn?.addEventListener('click', () => toggleSidebar(false));
+    overlay?.addEventListener('click', () => toggleSidebar(false));
 
     // --- Table selection ---
     function toggleAll(checked) {
