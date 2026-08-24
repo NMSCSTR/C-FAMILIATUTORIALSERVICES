@@ -120,19 +120,23 @@ function getFileStyle($filename) {
                         <span class="absolute inset-y-0 left-4 flex items-center text-slate-500 group-focus-within:text-blue-500 transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </span>
-                        <input type="text" placeholder="Search resources..." 
+                        <input type="text" id="resource-search" placeholder="Search resources..."
                                class="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-sm font-medium bg-slate-900/40 placeholder:text-slate-600">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div id="search-empty-note" class="hidden py-16 text-center bg-slate-900/60 rounded-[3rem] border border-slate-800 backdrop-blur-xl">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">No resources match your search.</p>
+                </div>
+
+                <div id="resources-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <?php 
                     $resources_query = mysqli_query($conn, "SELECT * FROM posts ORDER BY created_at DESC");
                     if(mysqli_num_rows($resources_query) > 0):
                         while($res = mysqli_fetch_assoc($resources_query)):
                             $style = getFileStyle($res['file_path'] ?? '');
                     ?>
-                    <div class="bg-slate-900/60 p-6 sm:p-8 rounded-[2.5rem] border border-slate-800 resource-card flex flex-col <?= $style['border'] ?> backdrop-blur-xl">
+                    <div data-resource-card class="bg-slate-900/60 p-6 sm:p-8 rounded-[2.5rem] border border-slate-800 resource-card flex flex-col <?= $style['border'] ?> backdrop-blur-xl">
                         <div class="flex justify-between items-start mb-6">
                             <div class="w-14 h-14 <?= $style['bg'] ?> <?= $style['text'] ?> rounded-2xl flex items-center justify-center text-[10px] font-black tracking-tighter border border-slate-800/80 shadow-inner">
                                 <?= $style['label'] ?>
@@ -195,6 +199,24 @@ function getFileStyle($filename) {
             }
         }
 
+
+        // Live resource search
+        const searchInput = document.getElementById('resource-search');
+        const resourcesGrid = document.getElementById('resources-grid');
+        const emptyNote = document.getElementById('search-empty-note');
+        if (searchInput && resourcesGrid) {
+            const cards = Array.from(resourcesGrid.querySelectorAll('[data-resource-card]'));
+            searchInput.addEventListener('input', function () {
+                const term = this.value.trim().toLowerCase();
+                let visible = 0;
+                cards.forEach(function (card) {
+                    const hit = card.textContent.toLowerCase().includes(term);
+                    card.style.display = hit ? '' : 'none';
+                    if (hit) visible++;
+                });
+                if (emptyNote) emptyNote.classList.toggle('hidden', visible > 0);
+            });
+        }
         function confirmLogout() {
             customSwalMixin.fire({
                 title: 'Are you sure?',
