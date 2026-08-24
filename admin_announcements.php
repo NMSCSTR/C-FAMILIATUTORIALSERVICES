@@ -148,7 +148,12 @@ if (isset($_POST['delete_id'])) {
                     <div class="grid grid-cols-1 gap-4">
                         <?php
                         $res = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_at DESC");
-                        while($row = mysqli_fetch_assoc($res)):
+                        if (mysqli_num_rows($res) === 0): ?>
+                        <div class="bg-slate-900/40 border-2 border-dashed border-slate-800 rounded-[2rem] p-16 text-center backdrop-blur-xl">
+                            <p class="text-slate-500 font-bold text-sm uppercase tracking-widest">No announcements yet — post your first broadcast.</p>
+                        </div>
+                        <?php else: ?>
+                        <?php while($row = mysqli_fetch_assoc($res)):
                             $badgeClasses = match($row['category']) {
                                 'Urgent' => 'bg-red-950/30 text-red-400 border border-red-900/40',
                                 'Event' => 'bg-purple-950/30 text-purple-400 border border-purple-900/40',
@@ -189,6 +194,7 @@ if (isset($_POST['delete_id'])) {
                             </form>
                         </div>
                         <?php endwhile; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

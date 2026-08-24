@@ -130,7 +130,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                             
                             <div class="mb-6 text-center">
                                 <div class="relative inline-block">
-                                    <img id="previewPhoto" src="uploads/passers/default_user.jpg" class="w-24 h-24 rounded-3xl object-cover border-4 border-slate-800 shadow-md transition-all duration-300">
+                                    <img id="previewPhoto" src="assets/img/avatar-placeholder.svg" alt="Passer photo preview" class="w-24 h-24 rounded-3xl object-cover border-4 border-slate-800 shadow-md transition-all duration-300">
                                     <div class="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-1.5 rounded-xl shadow-lg">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                     </div>
@@ -203,13 +203,18 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <?php
                             $res = mysqli_query($conn, "SELECT * FROM passers ORDER BY id DESC");
-                            while($p = mysqli_fetch_assoc($res)):
+                            if (mysqli_num_rows($res) === 0): ?>
+                            <div class="bg-slate-900/40 border-2 border-dashed border-slate-800 rounded-[2.5rem] p-16 text-center backdrop-blur-xl col-span-full">
+                                <p class="text-slate-500 font-bold text-sm uppercase tracking-widest">No passers yet — publish the first success story.</p>
+                            </div>
+                            <?php else: ?>
+                            <?php while($p = mysqli_fetch_assoc($res)):
                                 if (file_exists("uploads/passers/" . $p['photo'])) {
                                     $computedPath = "uploads/passers/" . $p['photo'];
                                 } elseif (!empty($p['photo']) && file_exists("uploads/profiles/" . $p['photo'])) {
                                     $computedPath = "uploads/profiles/" . $p['photo'];
                                 } else {
-                                    $computedPath = "uploads/passers/default_user.jpg";
+                                    $computedPath = "assets/img/avatar-placeholder.svg";
                                 }
                             ?>
                             <div class="bg-slate-900/60 p-6 rounded-[2.5rem] border border-slate-800 text-center group hover:border-blue-500/50 transition-all relative flex flex-col justify-between items-center backdrop-blur-xl">
@@ -222,7 +227,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                 </form>
                                 
                                 <div class="w-full">
-                                    <img src="<?= $computedPath ?>" class="w-20 h-20 rounded-[2rem] mx-auto object-cover border-4 border-slate-950 mb-3 shadow-sm">
+                                    <img src="<?= $computedPath ?>" alt="Portrait of <?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?>" onerror="this.onerror=null;this.src='assets/img/avatar-placeholder.svg'" loading="lazy" decoding="async" width="80" height="80" class="w-20 h-20 rounded-[2rem] mx-auto object-cover border-4 border-slate-950 mb-3 shadow-sm">
                                     <h5 class="font-bold text-white leading-snug px-2"><?= htmlspecialchars($p['name']) ?></h5>
                                     <div class="flex items-center justify-center gap-2 mt-2 flex-wrap">
                                         <span class="text-[9px] font-black bg-blue-950/20 text-blue-400 px-2 py-0.5 rounded-lg border border-blue-900/30"><?= $p['rating'] ?>%</span>
@@ -241,6 +246,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                 <?php endif; ?>
                             </div>
                             <?php endwhile; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -270,7 +276,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                 
                 studentNameInput.value = name;
                 existingPhotoInput.value = photo;
-                previewPhoto.src = (photo === 'default_user.jpg') ? 'uploads/passers/default_user.jpg' : 'uploads/profiles/' + photo;
+                previewPhoto.src = (photo === 'default_user.jpg') ? 'assets/img/avatar-placeholder.svg' : 'uploads/profiles/' + photo;
             } else {
                 resetSelectionState();
             }
@@ -283,7 +289,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                 existingPhotoInput.value = "default_user.jpg";
                 this.classList.remove('opacity-50');
                 if(!filePhotoInput.files.length) {
-                    previewPhoto.src = 'uploads/passers/default_user.jpg';
+                    previewPhoto.src = 'assets/img/avatar-placeholder.svg';
                 }
             } else {
                 customNameInput.placeholder = "Enter old student full name manually";
@@ -295,7 +301,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
             customNameInput.classList.remove('opacity-50');
             studentNameInput.value = "";
             existingPhotoInput.value = "default_user.jpg";
-            previewPhoto.src = 'uploads/passers/default_user.jpg';
+            previewPhoto.src = 'assets/img/avatar-placeholder.svg';
         }
 
         filePhotoInput.addEventListener('change', function() {
