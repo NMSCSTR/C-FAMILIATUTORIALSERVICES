@@ -329,11 +329,16 @@ $grades = $grades_stmt->get_result()->fetch_assoc();
                             <h3 class="text-2xl font-extrabold text-emerald-400"><?= number_format($total_paid, 2) ?></h3>
                         </div>
                     </div>
-                    <div class="bg-slate-900/60 p-7 rounded-3xl border border-slate-800 stat-card flex items-center gap-5 backdrop-blur-xl">
-                        <div class="w-14 h-14 rounded-2xl bg-slate-950 text-rose-400 border border-slate-800 flex items-center justify-center text-2xl font-black">!</div>
+                    <div class="bg-slate-900/60 p-7 rounded-3xl border <?= $balance < 0 ? 'border-emerald-900/40' : 'border-slate-800' ?> stat-card flex items-center gap-5 backdrop-blur-xl">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-950 <?= $balance < 0 ? 'text-emerald-400' : 'text-rose-400' ?> border border-slate-800 flex items-center justify-center text-2xl font-black"><?= $balance < 0 ? '✓' : '!' ?></div>
                         <div>
-                            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Balance Due</p>
+                            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest"><?= $balance < 0 ? 'Credit Balance' : 'Balance Due' ?></p>
+                            <?php if ($balance < 0): ?>
+                            <h3 class="text-2xl font-extrabold text-emerald-400">₱<?= number_format(abs($balance), 2) ?></h3>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Refunds exceed your total fee — nothing owed.</p>
+                            <?php else: ?>
                             <h3 class="text-2xl font-extrabold text-rose-400"><?= number_format($balance, 2) ?></h3>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-7 rounded-3xl border border-transparent stat-card flex items-center gap-5 shadow-xl shadow-blue-950/20">
