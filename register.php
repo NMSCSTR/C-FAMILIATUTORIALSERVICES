@@ -3,14 +3,29 @@ require_once __DIR__ . '/lib/csrf.php';
 secure_session_start();
 include 'db.php';
 $message = ""; $error = "";
+$error_field = null;
+$old = [];
 
 if (isset($_POST['register'])) {
     csrf_verify();
 
-    $firstname = trim($_POST['firstname'] ?? '');
-    $middlename = trim($_POST['middlename'] ?? '');
-    $lastname = trim($_POST['lastname'] ?? '');
-    $email = strtolower(trim($_POST['email'] ?? ''));
+    $old = [
+        'firstname'             => trim($_POST['firstname'] ?? ''),
+        'middlename'            => trim($_POST['middlename'] ?? ''),
+        'lastname'              => trim($_POST['lastname'] ?? ''),
+        'email'                 => strtolower(trim($_POST['email'] ?? '')),
+        'birthday'              => trim($_POST['birthday'] ?? ''),
+        'cellphone_no'          => trim($_POST['cellphone_no'] ?? ''),
+        'address'               => trim($_POST['address'] ?? ''),
+        'parents_name_guardian' => trim($_POST['parents_name_guardian'] ?? ''),
+        'parents_phone_no'      => trim($_POST['parents_phone_no'] ?? ''),
+        'fb_messenger_account'  => trim($_POST['fb_messenger_account'] ?? ''),
+    ];
+
+    $firstname = $old['firstname'];
+    $middlename = $old['middlename'];
+    $lastname = $old['lastname'];
+    $email = $old['email'];
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
 
@@ -23,12 +38,16 @@ if (isset($_POST['register'])) {
 
     if ($firstname === '' || $lastname === '' || $email === '') {
         $error = "Please fill in all required fields.";
+        $error_field = 'required';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please enter a valid email address.";
+        $error_field = 'email';
     } elseif (strlen($password) < 8) {
         $error = "Password must be at least 8 characters long.";
+        $error_field = 'password';
     } elseif ($password !== $confirm_password) {
         $error = "Passwords do not match!";
+        $error_field = 'password';
     } else {
         $check_stmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
         $check_stmt->bind_param("s", $email);
@@ -36,6 +55,7 @@ if (isset($_POST['register'])) {
 
         if ($check_stmt->get_result()->num_rows > 0) {
             $error = "Email is already registered!";
+            $error_field = 'email';
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $role = 'student';
@@ -80,6 +100,10 @@ if (isset($_POST['register'])) {
         }
     }
 }
+
+$field = function (string $key) use ($old): string {
+    return htmlspecialchars($old[$key] ?? '', ENT_QUOTES, 'UTF-8');
+};
 ?>
 
 <!DOCTYPE html>
@@ -235,7 +259,7 @@ if (isset($_POST['register'])) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">First Name</label>
                             <div class="relative group">
-                                <input type="text" name="firstname" required placeholder="Juan"
+                                <input type="text" name="firstname" value="<?= $field('firstname') ?>" required placeholder="Juan"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -243,7 +267,7 @@ if (isset($_POST['register'])) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Middle Name</label>
                             <div class="relative group">
-                                <input type="text" name="middlename" placeholder="Dela"
+                                <input type="text" name="middlename" value="<?= $field('middlename') ?>" placeholder="Dela"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -251,7 +275,7 @@ if (isset($_POST['register'])) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Last Name</label>
                             <div class="relative group">
-                                <input type="text" name="lastname" required placeholder="Cruz"
+                                <input type="text" name="lastname" value="<?= $field('lastname') ?>" required placeholder="Cruz"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -267,7 +291,7 @@ if (isset($_POST['register'])) {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="date" name="birthday" required
+                                <input type="date" name="birthday" value="<?= $field('birthday') ?>" required
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-700 dark:text-white focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -280,7 +304,7 @@ if (isset($_POST['register'])) {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" name="cellphone_no" required placeholder="09123456789"
+                                <input type="text" name="cellphone_no" value="<?= $field('cellphone_no') ?>" required placeholder="09123456789"
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -301,7 +325,7 @@ if (isset($_POST['register'])) {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="email" name="email" required placeholder="juan@example.com"
+                                <input type="email" name="email" value="<?= $field('email') ?>" required placeholder="juan@example.com" autocomplete="email"
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -314,7 +338,7 @@ if (isset($_POST['register'])) {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" name="fb_messenger_account" placeholder="https://m.me/username"
+                                <input type="text" name="fb_messenger_account" value="<?= $field('fb_messenger_account') ?>" placeholder="https://m.me/username" autocomplete="url"
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -330,8 +354,8 @@ if (isset($_POST['register'])) {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 </svg>
                             </div>
-                            <textarea name="address" required placeholder="House No., Street, Barangay, City, Province" rows="2"
-                                      class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium resize-none"></textarea>
+                            <textarea name="address" required placeholder="House No., Street, Barangay, City, Province" rows="2" autocomplete="street-address"
+                                      class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium resize-none"><?= $field('address') ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -349,13 +373,13 @@ if (isset($_POST['register'])) {
                         <!-- Guardian Name -->
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Parent / Guardian Name</label>
-                            <input type="text" name="parents_name_guardian" required placeholder="Maria Dela Cruz"
+                            <input type="text" name="parents_name_guardian" value="<?= $field('parents_name_guardian') ?>" required placeholder="Maria Dela Cruz"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
                         <!-- Guardian Phone -->
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Guardian Contact #</label>
-                            <input type="text" name="parents_phone_no" required placeholder="09987654321"
+                            <input type="text" name="parents_phone_no" value="<?= $field('parents_phone_no') ?>" required placeholder="09987654321"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
                     </div>

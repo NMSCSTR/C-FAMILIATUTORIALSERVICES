@@ -188,7 +188,7 @@ if (isset($_POST['login'])) {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <input type="email" name="email" required placeholder="name@company.com"
+                        <input type="email" name="email" id="email" value="<?= htmlspecialchars($email ?? '', ENT_QUOTES, 'UTF-8') ?>" autocomplete="email" required placeholder="you@example.com" <?= isset($error) ? 'aria-invalid="true"' : '' ?>
                                class="w-full pl-12 pr-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                     </div>
                 </div>
