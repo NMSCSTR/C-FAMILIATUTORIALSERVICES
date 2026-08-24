@@ -130,7 +130,7 @@ $load_charts = true;
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                         </div>
                     </div>
-                    <p class="label-xs">Total Students</p>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Students</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= number_format($total_students) ?></h3>
                 </a>
 
@@ -140,7 +140,7 @@ $load_charts = true;
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                     </div>
-                    <p class="label-xs">Pending Enrollments</p>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Pending Enrollments</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= $pending_count ?></h3>
                 </a>
 
@@ -150,7 +150,7 @@ $load_charts = true;
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                     </div>
-                    <p class="label-xs">Revenue</p>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Revenue</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= $total_revenue ?></h3>
                 </a>
 
@@ -160,14 +160,14 @@ $load_charts = true;
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </div>
                     </div>
-                    <p class="label-xs">Resources</p>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Resources</p>
                     <h3 class="text-3xl font-[800] text-white mt-1"><?= $total_posts ?></h3>
                 </a>
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 <div class="xl:col-span-2 space-y-8">
-                    <div class="card-dark overflow-hidden">
+                    <div class="bg-cf-card rounded-3xl border border-cf-border shadow-lg overflow-hidden">
                         <div class="p-6 md:p-8 border-b border-cf-border flex flex-col md:flex-row justify-between md:items-center gap-4">
                             <div>
                                 <h4 class="font-bold text-lg text-white">Recent Activity</h4>
