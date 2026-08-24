@@ -4,6 +4,7 @@ require_once __DIR__ . '/lib/uploads.php';
 secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
+require_once __DIR__ . '/lib/thumbs.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
@@ -227,7 +228,7 @@ $students_query = mysqli_query($conn, "SELECT id, firstname, lastname, profile_p
                                 </form>
                                 
                                 <div class="w-full">
-                                    <img src="<?= $computedPath ?>" alt="Portrait of <?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?>" onerror="this.onerror=null;this.src='assets/img/avatar-placeholder.svg'" loading="lazy" decoding="async" width="80" height="80" class="w-20 h-20 rounded-[2rem] mx-auto object-cover border-4 border-slate-950 mb-3 shadow-sm">
+                                    <img src="<?= htmlspecialchars(thumb_url($computedPath, 320), ENT_QUOTES, 'UTF-8') ?>" alt="Portrait of <?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?>" onerror="this.onerror=null;this.src='assets/img/avatar-placeholder.svg'" loading="lazy" decoding="async" width="80" height="80" class="w-20 h-20 rounded-[2rem] mx-auto object-cover border-4 border-slate-950 mb-3 shadow-sm">
                                     <h5 class="font-bold text-white leading-snug px-2"><?= htmlspecialchars($p['name']) ?></h5>
                                     <div class="flex items-center justify-center gap-2 mt-2 flex-wrap">
                                         <span class="text-[9px] font-black bg-blue-950/20 text-blue-400 px-2 py-0.5 rounded-lg border border-blue-900/30"><?= $p['rating'] ?>%</span>

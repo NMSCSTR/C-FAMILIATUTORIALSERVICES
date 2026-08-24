@@ -4,6 +4,7 @@ require_once __DIR__ . '/lib/uploads.php';
 secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit(); }
 include 'db.php';
+require_once __DIR__ . '/lib/thumbs.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 $target_dir = "uploads/gallery/";
@@ -224,7 +225,7 @@ if ($gallery_table_exists) {
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     <?php foreach ($images as $img): ?>
                                     <div class="relative group rounded-2xl overflow-hidden border border-slate-800 aspect-square">
-                                        <img src="<?= $target_dir . htmlspecialchars($img['image_path']) ?>" alt="<?= htmlspecialchars($caption) ?>" class="w-full h-full object-cover">
+                                        <img src="<?= htmlspecialchars(thumb_url($target_dir . $img['image_path'], 480), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($caption) ?>" loading="lazy" decoding="async" width="480" height="480" class="w-full h-full object-cover">
                                         <form method="POST" action="" class="absolute top-2 right-2">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="delete_id" value="<?= (int) $img['id'] ?>">
