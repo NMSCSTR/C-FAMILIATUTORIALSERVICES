@@ -202,7 +202,7 @@ $grades = $grades_stmt->get_result()->fetch_assoc();
         <main class="flex-1 min-w-0 w-full">
             <header class="bg-slate-900/40 backdrop-blur-md border-b border-slate-800/80 px-6 sm:px-10 py-6 flex justify-between items-center sticky top-0 z-40">
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800/60 transition-colors focus:outline-none" aria-label="Toggle Navigation Side Menu">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800/60 transition-colors" aria-label="Toggle Navigation Side Menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>

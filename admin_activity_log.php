@@ -144,13 +144,13 @@ function activity_log_query_string($overrides = []) {
                 <?php else: ?>
                     <form method="GET" class="log-card p-6 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Search</label>
-                            <input type="text" name="q" value="<?= htmlspecialchars($search) ?>" placeholder="User, email, or details"
+                            <label for="log_q" class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Search</label>
+                            <input type="text" id="log_q" name="q" value="<?= htmlspecialchars($search) ?>" placeholder="User, email, or details"
                                    class="mt-2 w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:border-blue-500 font-medium text-white placeholder:text-slate-600">
                         </div>
                         <div>
-                            <label class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Action</label>
-                            <select name="action" class="mt-2 w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:border-blue-500 font-medium text-white">
+                            <label for="log_action" class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Action</label>
+                            log_action" <select name="action" class="mt-2 w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:border-blue-500 font-medium text-white">
                                 <option value="" class="bg-slate-900 text-white">All actions</option>
                                 <?php foreach ($action_options as $action_option): ?>
                                     <option value="<?= htmlspecialchars($action_option) ?>" <?= $filter_action === $action_option ? 'selected' : '' ?> class="bg-slate-900 text-white">
@@ -160,8 +160,8 @@ function activity_log_query_string($overrides = []) {
                             </select>
                         </div>
                         <div>
-                            <label class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Role</label>
-                            <select name="role" class="mt-2 w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:border-blue-500 font-medium text-white">
+                            <label for="log_role" class="text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Role</label>
+                            <select id="log_role" name="role" class="mt-2 w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:border-blue-500 font-medium text-white">
                                 <option value="" class="bg-slate-900 text-white">All roles</option>
                                 <option value="admin" <?= $filter_role === 'admin' ? 'selected' : '' ?> class="bg-slate-900 text-white">Admin</option>
                                 <option value="student" <?= $filter_role === 'student' ? 'selected' : '' ?> class="bg-slate-900 text-white">Student</option>
