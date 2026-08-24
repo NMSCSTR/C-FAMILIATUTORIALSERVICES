@@ -228,7 +228,7 @@ $field = function (string $key) use ($old): string {
 
             <!-- Messages Alerts -->
             <?php if($error): ?>
-                <div class="flex items-start gap-3 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-2xl text-sm mb-6 border border-red-100 dark:border-red-950/30 font-medium">
+                <div role="alert" class="flex items-start gap-3 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-2xl text-sm mb-6 border border-red-100 dark:border-red-950/30 font-medium">
                     <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
@@ -237,7 +237,7 @@ $field = function (string $key) use ($old): string {
             <?php endif; ?>
 
             <?php if($message): ?>
-                <div class="flex items-start gap-3 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 p-4 rounded-2xl text-sm mb-6 border border-emerald-100 dark:border-emerald-950/30 font-medium">
+                <div role="status" class="flex items-start gap-3 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 p-4 rounded-2xl text-sm mb-6 border border-emerald-100 dark:border-emerald-950/30 font-medium">
                     <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
@@ -257,25 +257,25 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <!-- First Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">First Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="firstname">First Name</label>
                             <div class="relative group">
-                                <input type="text" name="firstname" value="<?= $field('firstname') ?>" required placeholder="Juan"
+                                <input type="text" id="firstname" autocomplete="given-name" name="firstname" value="<?= $field('firstname') ?>" required placeholder="Juan"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
                         <!-- Middle Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Middle Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="middlename">Middle Name</label>
                             <div class="relative group">
-                                <input type="text" name="middlename" value="<?= $field('middlename') ?>" placeholder="Dela"
+                                <input type="text" id="middlename" autocomplete="additional-name" name="middlename" value="<?= $field('middlename') ?>" placeholder="Dela"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
                         <!-- Last Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Last Name</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="lastname">Last Name</label>
                             <div class="relative group">
-                                <input type="text" name="lastname" value="<?= $field('lastname') ?>" required placeholder="Cruz"
+                                <input type="text" id="lastname" autocomplete="family-name" name="lastname" value="<?= $field('lastname') ?>" required placeholder="Cruz"
                                        class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -284,27 +284,27 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Birthday -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Birthday</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="birthday">Birthday</label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="date" name="birthday" value="<?= $field('birthday') ?>" required
+                                <input type="date" id="birthday" autocomplete="bday" name="birthday" value="<?= $field('birthday') ?>" required
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-700 dark:text-white focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
                         <!-- Cellphone -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Cellphone #</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="cellphone_no">Cellphone #</label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" name="cellphone_no" value="<?= $field('cellphone_no') ?>" required placeholder="09123456789"
+                                <input type="text" id="cellphone_no" name="cellphone_no" value="<?= $field('cellphone_no') ?>" required placeholder="09123456789"
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -331,14 +331,14 @@ $field = function (string $key) use ($old): string {
                         </div>
                         <!-- Messenger -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">FB / Messenger Link</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="fb_messenger_account">FB / Messenger Link</label>
                             <div class="relative group">
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" name="fb_messenger_account" value="<?= $field('fb_messenger_account') ?>" placeholder="https://m.me/username" autocomplete="url"
+                                <input type="text" id="fb_messenger_account" name="fb_messenger_account" value="<?= $field('fb_messenger_account') ?>" placeholder="https://m.me/username" autocomplete="url"
                                        class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                             </div>
                         </div>
@@ -346,7 +346,7 @@ $field = function (string $key) use ($old): string {
 
                     <!-- Address -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Full Address</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="address">Full Address</label>
                         <div class="relative group">
                             <div class="absolute left-4 top-4 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -354,7 +354,7 @@ $field = function (string $key) use ($old): string {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 </svg>
                             </div>
-                            <textarea name="address" required placeholder="House No., Street, Barangay, City, Province" rows="2" autocomplete="street-address"
+                            <textarea id="address" name="address" required placeholder="House No., Street, Barangay, City, Province" rows="2" autocomplete="street-address"
                                       class="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium resize-none"><?= $field('address') ?></textarea>
                         </div>
                     </div>
@@ -372,14 +372,14 @@ $field = function (string $key) use ($old): string {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Guardian Name -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Parent / Guardian Name</label>
-                            <input type="text" name="parents_name_guardian" value="<?= $field('parents_name_guardian') ?>" required placeholder="Maria Dela Cruz"
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="parents_name_guardian">Parent / Guardian Name</label>
+                            <input type="text" id="parents_name_guardian" autocomplete="name" name="parents_name_guardian" value="<?= $field('parents_name_guardian') ?>" required placeholder="Maria Dela Cruz"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
                         <!-- Guardian Phone -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1">Guardian Contact #</label>
-                            <input type="text" name="parents_phone_no" value="<?= $field('parents_phone_no') ?>" required placeholder="09987654321"
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 ml-1" for="parents_phone_no">Guardian Contact #</label>
+                            <input type="text" id="parents_phone_no" autocomplete="tel" name="parents_phone_no" value="<?= $field('parents_phone_no') ?>" required placeholder="09987654321"
                                    class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
                         </div>
                     </div>
@@ -404,7 +404,7 @@ $field = function (string $key) use ($old): string {
                                 <p id="password-hint" class="mt-1.5 ml-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">At least 8 characters.</p>
                                 <p id="capslock-note" role="status" class="hidden mt-1 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                                 
-                                <button type="button" id="password-toggle-btn" 
+                                <button type="button" id="password-toggle-btn" aria-label="Show password" aria-pressed="false" 
                                         class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
                                     <svg id="eye-open-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -430,7 +430,7 @@ $field = function (string $key) use ($old): string {
                                 <p id="match-note" class="hidden mt-1.5 ml-1 text-[11px] font-bold text-rose-600 dark:text-rose-400">Passwords do not match yet.</p>
                                 <p id="capslock-note-confirm" role="status" class="hidden mt-1 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                                 
-                                <button type="button" id="confirm-password-toggle-btn" 
+                                <button type="button" id="confirm-password-toggle-btn" aria-label="Show password" aria-pressed="false" 
                                         class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
                                     <svg id="confirm-eye-open-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -488,6 +488,8 @@ $field = function (string $key) use ($old): string {
             toggleBtn.addEventListener('click', function () {
                 const isPassword = passwordInput.getAttribute('type') === 'password';
                 passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggleBtn.setAttribute('aria-pressed', String(isPassword));
+                toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
                 
                 if (isPassword) {
                     eyeOpenIcon.classList.add('hidden');
@@ -504,6 +506,8 @@ $field = function (string $key) use ($old): string {
             confirmToggleBtn.addEventListener('click', function () {
                 const isPassword = confirmPasswordInput.getAttribute('type') === 'password';
                 confirmPasswordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                confirmToggleBtn.setAttribute('aria-pressed', String(isPassword));
+                confirmToggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
                 
                 if (isPassword) {
                     confirmEyeOpenIcon.classList.add('hidden');

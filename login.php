@@ -167,7 +167,7 @@ if (isset($_POST['login'])) {
 
             <!-- Error Alerts -->
             <?php if(isset($error)): ?>
-                <div class="flex items-start gap-3 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-2xl text-sm mb-6 border border-red-100 dark:border-red-950/30 font-medium">
+                <div role="alert" class="flex items-start gap-3 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-2xl text-sm mb-6 border border-red-100 dark:border-red-950/30 font-medium">
                     <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
@@ -207,7 +207,7 @@ if (isset($_POST['login'])) {
                         <p id="capslock-note" role="status" class="hidden mt-1.5 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                         
                         <!-- Toggle visibility button -->
-                        <button type="button" id="password-toggle-btn" 
+                        <button type="button" id="password-toggle-btn" aria-label="Show password" aria-pressed="false" 
                                 class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
                             <!-- Eye Open -->
                             <svg id="eye-open-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -259,6 +259,8 @@ if (isset($_POST['login'])) {
             toggleBtn.addEventListener('click', function () {
                 const isPassword = passwordInput.getAttribute('type') === 'password';
                 passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggleBtn.setAttribute('aria-pressed', String(isPassword));
+                toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
                 
                 if (isPassword) {
                     eyeOpenIcon.classList.add('hidden');
