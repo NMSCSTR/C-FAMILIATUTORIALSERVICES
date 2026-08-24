@@ -387,10 +387,8 @@ if ($al_exists) {
             iframe.style.display = 'none';
             document.body.appendChild(iframe);
         }
-        iframe.src = url;
 
-        // Hide progress bar after a moment
-        setTimeout(() => {
+        const finishDownloadUi = () => {
             progress.classList.add('hidden');
             btn.disabled = false;
             btn.classList.remove('opacity-50');
@@ -407,7 +405,21 @@ if ($al_exists) {
                 btn.classList.replace('from-emerald-600', 'from-blue-600');
                 btn.classList.replace('to-emerald-500', 'to-indigo-600');
             }, 3000);
-        }, 2200);
+        };
+
+        // Complete when the transfer finishes; safety timeout for browsers that
+        // do not fire load on attachment responses.
+        let downloadFinished = false;
+        iframe.onload = function () {
+            if (downloadFinished) return;
+            downloadFinished = true;
+            finishDownloadUi();
+        };
+        setTimeout(() => {
+            if (!downloadFinished) { downloadFinished = true; finishDownloadUi(); }
+        }, 30000);
+
+        iframe.src = url;
     }
 
     // Init

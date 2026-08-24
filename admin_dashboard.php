@@ -34,6 +34,35 @@ $refund_request_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) 
 $total_posts = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM posts"))['total'] ?? 0;
 
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Real 6-month revenue series for the dashboard chart
+$series = [];
+for ($i = 5; $i >= 0; $i--) {
+    $ts = strtotime("first day of -$i months");
+    $series[date('Y-m', $ts)] = ['label' => date('M Y', $ts), 'total' => 0.0];
+}
+$rev_res = mysqli_query(
+    $conn,
+    "SELECT DATE_FORMAT(created_at, '%Y-%m') AS ym, SUM(amount) AS total
+     FROM payments
+     WHERE status = 'paid' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+     GROUP BY ym"
+);
+if ($rev_res) {
+    while ($r = mysqli_fetch_assoc($rev_res)) {
+        if (isset($series[$r['ym']])) {
+            $series[$r['ym']]['total'] = (float) $r['total'];
+        }
+    }
+}
+$chart_labels      = array_column($series, 'label');
+$chart_data        = array_map('floatval', array_column($series, 'total'));
+$has_revenue_data  = array_sum($chart_data) > 0;
+
+// Real disk usage (falls back to null when the host blocks the call)
+$disk_total = @disk_total_space('.');
+$disk_free  = @disk_free_space('.');
+$disk_pct   = ($disk_total && $disk_free) ? round((($disk_total - $disk_free) / $disk_total) * 100, 1) : null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,13 +102,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="flex items-center justify-between lg:block">
                     <div>
                         <h2 class="text-2xl md:text-3xl font-[800] text-white tracking-tight">Command Center</h2>
-                        <div class="hidden md:flex items-center gap-2.5 mt-2.5 bg-cf-card/50 border border-cf-border py-1.5 px-4 rounded-full inline-flex">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                            </span>
-                            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Live System Active</p>
-                        </div>
                     </div>
                     <button id="openMenu" class="lg:hidden p-3 bg-cf-card border border-cf-border rounded-2xl text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
@@ -230,9 +252,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                     <div class="bg-cf-card p-6 md:p-8 rounded-3xl border border-cf-border shadow-lg">
                         <h4 class="font-bold text-lg text-white mb-6">Revenue Growth</h4>
+                        <?php if (!$has_revenue_data): ?>
+                        <p class="text-slate-500 text-sm font-medium">No verified payments in the last 6 months yet. Verified transactions will chart here.</p>
+                        <?php else: ?>
                         <div class="h-64 relative">
                             <canvas id="revenueChart"></canvas>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -255,12 +281,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </div>
                             <div class="space-y-2">
                                 <div class="flex justify-between text-xs">
-                                    <span class="text-slate-400 font-bold">Storage</span>
-                                    <span class="text-slate-500">84%</span>
+                                    <span class="text-slate-400 font-bold">Storage used</span>
+                                    <span class="text-slate-500"><?= $disk_pct !== null ? $disk_pct . '%' : 'n/a' ?></span>
                                 </div>
+                                <?php if ($disk_pct !== null): ?>
                                 <div class="w-full h-1.5 bg-cf-dark rounded-full">
-                                    <div class="h-full bg-cf-accent w-[84%] rounded-full"></div>
+                                    <div class="h-full bg-cf-accent rounded-full" style="width: <?= min(100, max(0, $disk_pct)) ?>%"></div>
                                 </div>
+                                <?php else: ?>
+                                <p class="text-[10px] text-slate-600 font-medium">Disk usage is not available on this host.</p>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -294,13 +324,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         // Revenue Chart
         document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const ctxEl = document.getElementById('revenueChart');
+        if (!ctxEl) return;
+        const ctx = ctxEl.getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['W1', 'W2', 'W3', 'W4', 'W5'],
+                labels: <?= json_encode($chart_labels) ?>,
                 datasets: [{
-                    data: [12000, 19000, 15000, 22000, 18000],
+                    data: <?= json_encode($chart_data) ?>,
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.05)',
                     fill: true,
