@@ -40,13 +40,8 @@ $recent_announcements = array_slice($announcements, 0, 3);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/app.css">
     <script>
-        // Configure Tailwind to support manual dark mode class toggling
-        tailwind.config = {
-            darkMode: 'class'
-        }
-        
         // Inline check to prevent flashing during initial load
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
