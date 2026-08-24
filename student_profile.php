@@ -227,7 +227,7 @@ $user = $stmt->get_result()->fetch_assoc();
                             </div>
 
                             <div>
-                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Cellphone #</label>
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="cellphone_no">Cellphone #</label>
                                 <input type="text" id="cellphone_no" name="cellphone_no" value="<?= htmlspecialchars($user['cellphone_no'] ?? '') ?>" required placeholder="0917XXXXXXX" 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                             </div>
@@ -241,8 +241,8 @@ $user = $stmt->get_result()->fetch_assoc();
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="md:col-span-2">
-                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Email Address</label>
-                                <input type="email" value="<?= htmlspecialchars($user['email']) ?>" disabled 
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="email_display">Email Address</label>
+                                <input type="email" id="email_display" value="<?= htmlspecialchars($user['email']) ?>" disabled 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-900 text-slate-500 font-bold cursor-not-allowed">
                             </div>
 
@@ -256,7 +256,7 @@ $user = $stmt->get_result()->fetch_assoc();
                         </div>
 
                         <div>
-                            <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Full Address</label>
+                            <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="address">Full Address</label>
                             <textarea id="address" name="address" required rows="2" placeholder="House No., Street, Barangay, City, Province" 
                                       class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white resize-none"><?= htmlspecialchars($user['address'] ?? '') ?></textarea>
                         </div>
@@ -265,12 +265,12 @@ $user = $stmt->get_result()->fetch_assoc();
                             <p class="text-xs font-black uppercase text-blue-400 tracking-wider mb-4">Parent / Guardian Information</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Parent / Guardian Name</label>
+                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="parents_name_guardian">Parent / Guardian Name</label>
                                     <input type="text" id="parents_name_guardian" name="parents_name_guardian" value="<?= htmlspecialchars($user['parents_name_guardian'] ?? '') ?>" required 
                                            class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Parent Phone Number</label>
+                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="parents_phone_no">Parent Phone Number</label>
                                     <input type="text" id="parents_phone_no" name="parents_phone_no" value="<?= htmlspecialchars($user['parents_phone_no'] ?? '') ?>" required 
                                            class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                                 </div>
