@@ -422,14 +422,20 @@ $grades = $grades_stmt->get_result()->fetch_assoc();
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_action" value="request_refund">
-                                                    <button type="button" onclick="confirmRefundRequest(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-rose-400 hover:text-rose-300">Request Refund</button>
+                                                    <button type="button" onclick="confirmRefundRequest(<?= (int) $pay['id'] ?>)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-rose-900/40 bg-rose-950/20 text-[10px] font-extrabold uppercase tracking-wider text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a4 4 0 110 8h-1m0 0l3-3m-3 3l3 3M7 14H3v4"/></svg>
+                                                        Request Refund
+                                                    </button>
                                                 </form>
                                                 <?php elseif ($st === 'pending'): ?>
                                                 <form method="POST" class="inline" id="cancel-form-<?= (int) $pay['id'] ?>">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_action" value="cancel_payment">
-                                                    <button type="button" onclick="confirmCancelPayment(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-400">Cancel</button>
+                                                    <button type="button" onclick="confirmCancelPayment(<?= (int) $pay['id'] ?>)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-700/60 bg-slate-950 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                        Cancel
+                                                    </button>
                                                 </form>
                                                 <?php else: ?>
                                                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-600">—</span>
