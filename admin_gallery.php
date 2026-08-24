@@ -218,7 +218,7 @@ if ($gallery_table_exists) {
                                     <form method="POST" action="" class="shrink-0">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="delete_caption" value="<?= htmlspecialchars($caption, ENT_QUOTES, 'UTF-8') ?>">
-                                        <button type="submit" onclick="return confirm('Delete this entire caption group and its images?')" class="text-[10px] font-black uppercase text-red-400 hover:text-red-500 tracking-wider">Delete Group</button>
+                                        <button type="submit" onclick="return confirmAction(event, 'Delete this entire caption group and its images?')" class="text-[10px] font-black uppercase text-red-400 hover:text-red-500 tracking-wider">Delete Group</button>
                                     </form>
                                 </div>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -228,7 +228,7 @@ if ($gallery_table_exists) {
                                         <form method="POST" action="" class="absolute top-2 right-2">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="delete_id" value="<?= (int) $img['id'] ?>">
-                                            <button type="submit" onclick="return confirm('Delete this image?')" class="p-1.5 bg-slate-900/90 text-slate-400 hover:text-red-400 rounded-lg shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-slate-800 backdrop-blur-md">
+                                            <button type="submit" onclick="return confirmAction(event, 'Delete this image?')" class="p-1.5 bg-slate-900/90 text-slate-400 hover:text-red-400 rounded-lg shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-slate-800 backdrop-blur-md">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             </button>
                                         </form>
@@ -304,6 +304,22 @@ if ($gallery_table_exists) {
             });
         });
 
+
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const form = event.target;
+            customSwalMixin.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#1e293b'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+            return false;
+        }
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('posted') === '1') {
             const count = urlParams.get('count') || '1';

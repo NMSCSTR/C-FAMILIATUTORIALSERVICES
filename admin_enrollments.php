@@ -79,7 +79,7 @@ if (isset($_POST['approve_id'])) {
         'entity_type' => 'enrollment',
         'entity_id' => $id,
     ]);
-    header("Location: admin_enrollments.php");
+    header("Location: admin_enrollments.php?approved=1");
     exit();
 }
 
@@ -318,6 +318,20 @@ $locations_res = mysqli_query($conn, "SELECT DISTINCT enrolled_at FROM enrollmen
 
         const CSRF_TOKEN = <?= json_encode(csrf_token()) ?>;
 
+
+        const Toast = customSwalMixin.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2800,
+            timerProgressBar: true
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('approved') === '1') {
+            Toast.fire({ icon: 'success', title: 'Enrollment approved' });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
         function confirmAction(event, message) {
             event.preventDefault();
             const form = event.target;

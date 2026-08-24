@@ -89,6 +89,7 @@ if (isset($_POST['delete_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/app.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="cuevaslogo.jpg" type="image/x-icon">
     <title>Manage Resources | C-Familia Admin</title>
@@ -178,7 +179,7 @@ if (isset($_POST['delete_id'])) {
                                     </div>
                                 </div>
                             </div>
-                            <form method="POST" action="" class="self-end md:self-center" onsubmit="return confirm('Delete this resource permanently?')">
+                            <form method="POST" action="" class="self-end md:self-center" onsubmit="return confirmAction(event, 'Delete this resource permanently?')">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="delete_id" value="<?= (int) $row['id'] ?>">
                                 <button type="submit" class="p-3 text-slate-600 hover:text-red-400 hover:bg-red-950/20 rounded-2xl transition-all md:opacity-0 md:group-hover:opacity-100">
@@ -201,6 +202,27 @@ if (isset($_POST['delete_id'])) {
     </div>
 
     <script>
+        const customSwalMixin = Swal.mixin({
+            background: '#0f172a',
+            color: '#fff',
+            confirmButtonColor: '#2563eb'
+        });
+
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const form = event.target;
+            customSwalMixin.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#1e293b'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+            return false;
+        }
         // Menu Toggle Logic
         const openBtn = document.getElementById('openMenu');
         const closeBtn = document.getElementById('closeMenu');
