@@ -218,7 +218,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 </div>
                 <h1 class="text-4xl sm:text-6xl font-[900] text-slate-900 dark:text-white tracking-tight leading-[1.05]">
                     Your Future Starts <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 bg-clip-text text-transparent">Right Here.</span>
-                </h2>
+                </h1>
                 <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
                     "Join our family, and together, we will help you pass your professional board exams."
                 </p>
