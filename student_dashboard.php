@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 include 'db.php';
 
 // 1. Security Check
@@ -11,13 +12,23 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 $user_id = $_SESSION['user_id'];
 
 // 2. Fetch User Personal Data
-$user_query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
-$user = mysqli_fetch_assoc($user_query);
+$stmt = $conn->prepare("SELECT * FROM users WHERE id = ? LIMIT 1");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+
+if (!$user) {
+    header("Location: logout.php");
+    exit();
+}
 
 // 3. Fetch Enrollment Data
-$enroll_query = mysqli_query($conn, "SELECT * FROM enrollments WHERE user_id = '$user_id' AND status != 'completed' LIMIT 1");
-$is_enrolled = mysqli_num_rows($enroll_query) > 0;
-$enroll = mysqli_fetch_assoc($enroll_query);
+$enroll_stmt = $conn->prepare("SELECT * FROM enrollments WHERE user_id = ? AND status != 'completed' LIMIT 1");
+$enroll_stmt->bind_param("i", $user_id);
+$enroll_stmt->execute();
+$enroll_result = $enroll_stmt->get_result();
+$is_enrolled = $enroll_result->num_rows > 0;
+$enroll = $enroll_result->fetch_assoc();
 
 // 4. Calculate Financials
 $total_paid = 0;
@@ -25,29 +36,44 @@ $balance = 0;
 $total_fee = $enroll['total_fee'] ?? 0;
 
 if ($is_enrolled) {
-    $payment_total_query = mysqli_query($conn, "SELECT SUM(amount) as total FROM payments WHERE user_id = '$user_id' AND status = 'paid'");
-    $payment_data = mysqli_fetch_assoc($payment_total_query);
-    $total_paid = $payment_data['total'] ?? 0;
+    $pay_stmt = $conn->prepare("SELECT SUM(amount) as total FROM payments WHERE user_id = ? AND status = 'paid'");
+    $pay_stmt->bind_param("i", $user_id);
+    $pay_stmt->execute();
+    $total_paid = (float) ($pay_stmt->get_result()->fetch_assoc()['total'] ?? 0);
     $balance = $total_fee - $total_paid;
 }
 
 if(isset($_POST['submit_testimonial'])) {
-    $user_id = $_SESSION['user_id'];
-    $content = mysqli_real_escape_string($conn, $_POST['testimonial_content']);
-    if (mysqli_query($conn, "INSERT INTO testimonials (user_id, content) VALUES ('$user_id', '$content')")) {
-        log_activity($conn, 'testimonial.submit', 'Submitted a testimonial', [
-            'entity_type' => 'testimonial',
-            'entity_id' => mysqli_insert_id($conn),
-        ]);
+    csrf_verify();
+
+    $content = trim($_POST['testimonial_content'] ?? '');
+
+    if ($content !== '' && mb_strlen($content) <= 2000) {
+        $stmt = $conn->prepare("INSERT INTO testimonials (user_id, content) VALUES (?, ?)");
+        $stmt->bind_param("is", $user_id, $content);
+        if ($stmt->execute()) {
+            log_activity($conn, 'testimonial.submit', null, [
+                'entity_type' => 'testimonial',
+                'entity_id' => $stmt->insert_id,
+            ]);
+            $msg = "Thank you for your testimonial!";
+        }
     }
-    $msg = "Thank you for your testimonial!";
 }
 
 if (isset($_POST['payment_action']) && $_POST['payment_action'] === 'request_refund') {
-    $payment_id = (int) $_POST['payment_id'];
-    $check = mysqli_query($conn, "SELECT id, amount FROM payments WHERE id = '$payment_id' AND user_id = '$user_id' AND status = 'paid' LIMIT 1");
-    if ($row = mysqli_fetch_assoc($check)) {
-        if (mysqli_query($conn, "UPDATE payments SET status = 'refund_requested' WHERE id = '$payment_id'")) {
+    csrf_verify();
+
+    $payment_id = (int) ($_POST['payment_id'] ?? 0);
+    $check = $conn->prepare("SELECT id, amount FROM payments WHERE id = ? AND user_id = ? AND status = 'paid' LIMIT 1");
+    $check->bind_param("ii", $payment_id, $user_id);
+    $check->execute();
+    $row = $check->get_result()->fetch_assoc();
+
+    if ($row) {
+        $update = $conn->prepare("UPDATE payments SET status = 'refund_requested' WHERE id = ? AND user_id = ?");
+        $update->bind_param("ii", $payment_id, $user_id);
+        if ($update->execute()) {
             log_activity($conn, 'payment.refund_request', null, [
                 'entity_type' => 'payment',
                 'entity_id' => $payment_id,
@@ -62,10 +88,17 @@ if (isset($_POST['payment_action']) && $_POST['payment_action'] === 'request_ref
 }
 
 if (isset($_POST['payment_action']) && $_POST['payment_action'] === 'cancel_payment') {
-    $payment_id = (int) $_POST['payment_id'];
-    $check = mysqli_query($conn, "SELECT id FROM payments WHERE id = '$payment_id' AND user_id = '$user_id' AND status = 'pending' LIMIT 1");
-    if (mysqli_fetch_assoc($check)) {
-        if (mysqli_query($conn, "UPDATE payments SET status = 'cancelled' WHERE id = '$payment_id'")) {
+    csrf_verify();
+
+    $payment_id = (int) ($_POST['payment_id'] ?? 0);
+    $check = $conn->prepare("SELECT id FROM payments WHERE id = ? AND user_id = ? AND status = 'pending' LIMIT 1");
+    $check->bind_param("ii", $payment_id, $user_id);
+    $check->execute();
+
+    if ($check->get_result()->fetch_assoc()) {
+        $update = $conn->prepare("UPDATE payments SET status = 'cancelled' WHERE id = ? AND user_id = ?");
+        $update->bind_param("ii", $payment_id, $user_id);
+        if ($update->execute()) {
             log_activity($conn, 'payment.cancel', null, [
                 'entity_type' => 'payment',
                 'entity_id' => $payment_id,
@@ -79,12 +112,18 @@ if (isset($_POST['payment_action']) && $_POST['payment_action'] === 'cancel_paym
 }
 
 // 5. Fetch Data for UI
-$payments_query = mysqli_query($conn, "SELECT * FROM payments WHERE user_id = '$user_id' ORDER BY created_at DESC");
+$payments_stmt = $conn->prepare("SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC");
+$payments_stmt->bind_param("i", $user_id);
+$payments_stmt->execute();
+$payments_query = $payments_stmt->get_result();
+
 $ann_query = mysqli_query($conn, "SELECT * FROM announcements WHERE audience = 'Students' ORDER BY created_at DESC LIMIT 3");
 
 // 6. Fetch Grade Performance Matrix
-$grades_query = mysqli_query($conn, "SELECT * FROM exam_result WHERE user_id = '$user_id' LIMIT 1");
-$grades = mysqli_fetch_assoc($grades_query);
+$grades_stmt = $conn->prepare("SELECT * FROM exam_result WHERE user_id = ? LIMIT 1");
+$grades_stmt->bind_param("i", $user_id);
+$grades_stmt->execute();
+$grades = $grades_stmt->get_result()->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -172,9 +211,9 @@ $grades = mysqli_fetch_assoc($grades_query);
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.$user['profile_pic'] : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=2563eb&color=fff' ?>" class="w-10 h-10 rounded-full object-cover ring-2 ring-blue-900/40">
+                    <img src="<?= $user['profile_pic'] ? 'uploads/profiles/'.htmlspecialchars($user['profile_pic'], ENT_QUOTES, 'UTF-8') : 'https://ui-avatars.com/api/?name='.urlencode($user['firstname'].' '.$user['lastname']).'&background=2563eb&color=fff' ?>" class="w-10 h-10 rounded-full object-cover ring-2 ring-blue-900/40">
                     <div class="hidden sm:block">
-                        <span class="text-xs font-bold text-white block"><?= $user['firstname'] ?> <?= $user['middlename'] ?> <?= $user['lastname'] ?></span>
+                        <span class="text-xs font-bold text-white block"><?= htmlspecialchars(trim($user['firstname'] . ' ' . $user['middlename'] . ' ' . $user['lastname']), ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="text-[10px] font-semibold text-blue-400">Active Student</span>
                     </div>
                 </div>
@@ -201,13 +240,13 @@ $grades = mysqli_fetch_assoc($grades_query);
                     <div class="space-y-3 w-full lg:w-auto">
                         <div>
                             <p class="text-[10px] font-black uppercase text-blue-400 tracking-widest mb-1">C-Familia Portal</p>
-                            <h1 class="text-3xl sm:text-4xl font-extrabold mb-1 tracking-tight text-white">Welcome, <?= explode(' ', $user['firstname'])[0] ?>!</h1>
+                            <h1 class="text-3xl sm:text-4xl font-extrabold mb-1 tracking-tight text-white">Welcome, <?= htmlspecialchars(explode(' ', (string) $user['firstname'])[0], ENT_QUOTES, 'UTF-8') ?>!</h1>
                             <div class="flex flex-wrap items-center gap-3 mt-3">
                                 <span class="text-sm font-semibold text-slate-300 flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg">
-                                    <span class="text-blue-400">📚</span> <?= $enroll['program_type'] ?>
+                                    <span class="text-blue-400">📚</span> <?= htmlspecialchars((string) $enroll['program_type'], ENT_QUOTES, 'UTF-8') ?>
                                 </span>
                                 <span class="text-sm font-semibold text-slate-300 flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg">
-                                    <span class="text-blue-400">📍</span> <?= $enroll['enrolled_at'] ?: 'Not Specified' ?>
+                                    <span class="text-blue-400">📍</span> <?= htmlspecialchars($enroll['enrolled_at'] ?: 'Not Specified', ENT_QUOTES, 'UTF-8') ?>
                                 </span>
                                 <?php if($enroll['insured'] == 1): ?>
                                 <span class="text-[10px] font-black uppercase tracking-wider bg-emerald-950/20 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-900/30 flex items-center gap-1.5">
@@ -225,7 +264,7 @@ $grades = mysqli_fetch_assoc($grades_query);
                     <div class="flex items-center gap-4 w-full lg:w-auto">
                         <div class="px-8 py-4 bg-blue-950/20 rounded-2xl border border-blue-900/30 text-center w-full lg:min-w-[140px]">
                             <span class="text-[10px] font-extrabold text-blue-400 uppercase tracking-widest block mb-1">Status</span>
-                            <span class="text-sm font-black uppercase text-blue-300 tracking-tighter"><?= $enroll['status'] ?></span>
+                            <span class="text-sm font-black uppercase text-blue-300 tracking-tighter"><?= htmlspecialchars((string) $enroll['status'], ENT_QUOTES, 'UTF-8') ?></span>
                         </div>
                     </div>
                 </div>
@@ -301,7 +340,7 @@ $grades = mysqli_fetch_assoc($grades_query);
                         <div class="w-14 h-14 rounded-2xl bg-white/10 text-indigo-100 flex items-center justify-center text-xl font-black">#</div>
                         <div>
                             <p class="text-indigo-200 text-[10px] font-black uppercase tracking-widest">Review Batch</p>
-                            <h3 class="text-xl font-extrabold text-white leading-tight"><?= $enroll['batch'] ?></h3>
+                            <h3 class="text-xl font-extrabold text-white leading-tight"><?= htmlspecialchars((string) $enroll['batch'], ENT_QUOTES, 'UTF-8') ?></h3>
                         </div>
                     </div>
                 </div>
@@ -310,6 +349,7 @@ $grades = mysqli_fetch_assoc($grades_query);
                     <h3 class="text-xl font-bold mb-4 text-white">Share Your Experience</h3>
                     <p class="text-slate-400 text-sm mb-6">Your testimonial will be featured on our landing page.</p>
                     <form action="" method="POST">
+                        <?= csrf_field() ?>
                         <textarea name="testimonial_content" required class="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none text-sm min-h-[120px] text-white placeholder:text-slate-600" placeholder="How was your experience with C-Familia?"></textarea>
                         <button type="submit" name="submit_testimonial" class="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-950/40 transition">Submit Review</button>
                     </form>
@@ -326,8 +366,8 @@ $grades = mysqli_fetch_assoc($grades_query);
                                 <?php while($ann = mysqli_fetch_assoc($ann_query)): ?>
                                 <div class="space-y-2 border-b border-slate-800/40 pb-4 last:border-0 last:pb-0">
                                     <span class="text-[10px] font-extrabold text-blue-400 uppercase"><?= date('F d, Y', strtotime($ann['created_at'])) ?></span>
-                                    <h4 class="font-bold text-white leading-snug"><?= $ann['title'] ?></h4>
-                                    <p class="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed"><?= $ann['message'] ?></p>
+                                    <h4 class="font-bold text-white leading-snug"><?= htmlspecialchars($ann['title'], ENT_QUOTES, 'UTF-8') ?></h4>
+                                    <p class="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed"><?= htmlspecialchars($ann['message'], ENT_QUOTES, 'UTF-8') ?></p>
                                 </div>
                                 <?php endwhile; ?>
                                 <?php else: ?>
@@ -359,7 +399,7 @@ $grades = mysqli_fetch_assoc($grades_query);
                                         <tr class="hover:bg-slate-900/20 transition-colors">
                                             <td class="px-6 sm:px-10 py-6">
                                                 <p class="text-xs font-bold text-white"><?= date('M d, Y', strtotime($pay['created_at'])) ?></p>
-                                                <p class="text-[10px] text-slate-500 mt-1 uppercase">Ref: <?= $pay['reference_number'] ?: 'N/A' ?></p>
+                                                <p class="text-[10px] text-slate-500 mt-1 uppercase">Ref: <?= htmlspecialchars($pay['reference_number'] ?: 'N/A', ENT_QUOTES, 'UTF-8') ?></p>
                                             </td>
                                             <td class="px-6 sm:px-10 py-6 font-extrabold text-white text-sm">₱<?= number_format($pay['amount'], 2) ?></td>
                                             <td class="px-6 sm:px-10 py-6 text-right">
@@ -379,12 +419,14 @@ $grades = mysqli_fetch_assoc($grades_query);
                                             <td class="px-6 sm:px-10 py-6 text-right">
                                                 <?php if ($st === 'paid'): ?>
                                                 <form method="POST" class="inline" id="refund-form-<?= (int) $pay['id'] ?>">
+                                                    <?= csrf_field() ?>
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_action" value="request_refund">
                                                     <button type="button" onclick="confirmRefundRequest(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-rose-400 hover:text-rose-300">Request Refund</button>
                                                 </form>
                                                 <?php elseif ($st === 'pending'): ?>
                                                 <form method="POST" class="inline" id="cancel-form-<?= (int) $pay['id'] ?>">
+                                                    <?= csrf_field() ?>
                                                     <input type="hidden" name="payment_id" value="<?= (int) $pay['id'] ?>">
                                                     <input type="hidden" name="payment_action" value="cancel_payment">
                                                     <button type="button" onclick="confirmCancelPayment(<?= (int) $pay['id'] ?>)" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-400">Cancel</button>

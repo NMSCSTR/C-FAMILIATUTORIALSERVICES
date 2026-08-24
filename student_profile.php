@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/lib/uploads.php';
+secure_session_start();
 include 'db.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
@@ -11,53 +13,71 @@ $user_id = $_SESSION['user_id'];
 $success_msg = "";
 
 if (isset($_POST['update_profile'])) {
-    $first = mysqli_real_escape_string($conn, $_POST['firstname']);
-    $middle = mysqli_real_escape_string($conn, $_POST['middlename']);
-    $last = mysqli_real_escape_string($conn, $_POST['lastname']);
-    
-    // Sanitize newly added fields
-    $birthday = mysqli_real_escape_string($conn, $_POST['birthday']);
-    $cellphone_no = mysqli_real_escape_string($conn, $_POST['cellphone_no']);
-    $address = mysqli_real_escape_string($conn, $_POST['address']);
-    $parents_name_guardian = mysqli_real_escape_string($conn, $_POST['parents_name_guardian']);
-    $parents_phone_no = mysqli_real_escape_string($conn, $_POST['parents_phone_no']);
-    $fb_messenger_account = mysqli_real_escape_string($conn, $_POST['fb_messenger_account']);
-    
-    // Handle Profile Picture Upload
-    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === 0) {
-        $filename = time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "_", $_FILES['profile_pic']['name']);
-        if(move_uploaded_file($_FILES['profile_pic']['tmp_name'], 'uploads/profiles/' . $filename)) {
-            mysqli_query($conn, "UPDATE users SET profile_pic = '$filename' WHERE id = '$user_id'");
-        }
-    }
+    csrf_verify();
 
-    // Update profile columns including the new fields
-    $update_query = "UPDATE users SET 
-                    firstname = '$first', 
-                    middlename = '$middle', 
-                    lastname = '$last',
-                    birthday = '$birthday',
-                    cellphone_no = '$cellphone_no',
-                    address = '$address',
-                    parents_name_guardian = '$parents_name_guardian',
-                    parents_phone_no = '$parents_phone_no',
-                    fb_messenger_account = '$fb_messenger_account'
-                    WHERE id = '$user_id'";
-    
-    if(mysqli_query($conn, $update_query)) {
-        log_activity($conn, 'profile.update', 'Updated profile information', [
-            'entity_type' => 'user',
-            'entity_id' => (int) $user_id,
-        ]);
-        // Update session name for immediate UI feedback
-        $_SESSION['username'] = $first . ' ' . $last;
-        $success_msg = "Profile updated successfully!";
+    $first  = trim($_POST['firstname'] ?? '');
+    $middle = trim($_POST['middlename'] ?? '');
+    $last   = trim($_POST['lastname'] ?? '');
+    $birthday = trim($_POST['birthday'] ?? '');
+    $cellphone_no = trim($_POST['cellphone_no'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $parents_name_guardian = trim($_POST['parents_name_guardian'] ?? '');
+    $parents_phone_no = trim($_POST['parents_phone_no'] ?? '');
+    $fb_messenger_account = trim($_POST['fb_messenger_account'] ?? '');
+
+    if ($first === '' || $last === '') {
+        $success_msg = "";
+        $error_msg = "First name and last name are required.";
+    } else {
+        if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] !== UPLOAD_ERR_NO_FILE) {
+            [$ok, $filename, $upload_error] = store_uploaded_file(
+                $_FILES['profile_pic'],
+                'uploads/profiles/',
+                ['jpg', 'jpeg', 'png', 'gif', 'webp']
+            );
+
+            if ($ok) {
+                $pic_stmt = $conn->prepare("UPDATE users SET profile_pic = ? WHERE id = ?");
+                $pic_stmt->bind_param("si", $filename, $user_id);
+                $pic_stmt->execute();
+            } else {
+                $error_msg = $upload_error;
+            }
+        }
+
+        if (!isset($error_msg)) {
+            $stmt = $conn->prepare("UPDATE users SET
+                            firstname = ?,
+                            middlename = ?,
+                            lastname = ?,
+                            birthday = ?,
+                            cellphone_no = ?,
+                            address = ?,
+                            parents_name_guardian = ?,
+                            parents_phone_no = ?,
+                            fb_messenger_account = ?
+                            WHERE id = ?");
+            $stmt->bind_param("sssssssssi", $first, $middle, $last, $birthday, $cellphone_no, $address, $parents_name_guardian, $parents_phone_no, $fb_messenger_account, $user_id);
+
+            if ($stmt->execute()) {
+                log_activity($conn, 'profile.update', 'Updated profile information', [
+                    'entity_type' => 'user',
+                    'entity_id' => (int) $user_id,
+                ]);
+                $_SESSION['username'] = $first . ' ' . $last;
+                $success_msg = "Profile updated successfully!";
+            } else {
+                error_log('Profile update failed: ' . $stmt->error);
+                $error_msg = "System error. Please try again later.";
+            }
+        }
     }
 }
 
-// Fetch fresh data
-$user_query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
-$user = mysqli_fetch_assoc($user_query);
+$stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -151,8 +171,15 @@ $user = mysqli_fetch_assoc($user_query);
                     <span class="font-bold text-sm"><?= $success_msg ?></span>
                 </div>
                 <?php endif; ?>
+                <?php if(isset($error_msg) && $error_msg): ?>
+                <div class="mb-8 p-4 bg-rose-950/20 border border-rose-900/30 text-rose-400 rounded-2xl flex items-center gap-3">
+                    <span class="text-lg">⚠️</span>
+                    <span class="font-bold text-sm"><?= $error_msg ?></span>
+                </div>
+                <?php endif; ?>
 
                 <form action="" method="POST" enctype="multipart/form-data" class="space-y-8">
+                    <?= csrf_field() ?>
                     <div class="glass-card rounded-[2.5rem] p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8">
                         <div class="relative group">
                             <div class="w-32 h-32 rounded-[2.5rem] overflow-hidden ring-4 ring-slate-900 shadow-inner">

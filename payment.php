@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/lib/uploads.php';
+secure_session_start();
 include 'db.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -12,39 +14,50 @@ $message = "";
 $error = "";
 
 
-$enroll_check = mysqli_query($conn, "SELECT * FROM enrollments WHERE user_id = '$user_id' AND status != 'completed' ORDER BY created_at DESC LIMIT 1");
-$enrollment = mysqli_fetch_assoc($enroll_check);
+$enroll_stmt = $conn->prepare("SELECT * FROM enrollments WHERE user_id = ? AND status != 'completed' ORDER BY created_at DESC LIMIT 1");
+$enroll_stmt->bind_param("i", $user_id);
+$enroll_stmt->execute();
+$enrollment = $enroll_stmt->get_result()->fetch_assoc();
 
 if (isset($_POST['submit_payment'])) {
-    $amount = mysqli_real_escape_string($conn, $_POST['amount']);
-    $method = mysqli_real_escape_string($conn, $_POST['payment_method']);
-    $ref_no = mysqli_real_escape_string($conn, $_POST['reference_number']);
-    $type   = mysqli_real_escape_string($conn, $_POST['payment_type']);
-    
-    if (!is_dir('uploads/receipts')) {
-        mkdir('uploads/receipts', 0777, true);
-    }
+    csrf_verify();
 
-    $file_name = time() . "_" . preg_replace("/[^a-zA-Z0-9.]/", "_", basename($_FILES["receipt"]["name"]));
-    $target_file = "uploads/receipts/" . $file_name;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    $amount = filter_var($_POST['amount'] ?? '', FILTER_VALIDATE_FLOAT);
+    $method = trim($_POST['payment_method'] ?? '');
+    $ref_no = trim($_POST['reference_number'] ?? '');
+    $type   = $_POST['payment_type'] ?? '';
 
-    if ($_FILES["receipt"]["size"] > 5000000) {
-        $error = "File is too large. Max 5MB.";
-    } elseif (!in_array($imageFileType, ['jpg', 'png', 'jpeg', 'pdf'])) {
-        $error = "Only JPG, PNG, JPEG & PDF files are allowed.";
+    if ($amount === false || $amount <= 0 || $amount > 1000000) {
+        $error = "Enter a valid amount between ₱0.01 and ₱1,000,000.";
+    } elseif (!in_array($method, ['GCash', 'Maya', 'Bank Transfer', 'Cash'], true)) {
+        $error = "Select a valid payment method.";
+    } elseif ($ref_no === '' || mb_strlen($ref_no) > 100) {
+        $error = "Enter a valid reference number (max 100 characters).";
+    } elseif (!in_array($type, ['full', 'installment'], true)) {
+        $error = "Select a valid payment type.";
     } else {
-        if (move_uploaded_file($_FILES["receipt"]["tmp_name"], $target_file)) {
-            $sql = "INSERT INTO payments (user_id, amount, payment_method, reference_number, receipt, payment_type, status, payment_date) 
-                    VALUES ('$user_id', '$amount', '$method', '$ref_no', '$file_name', '$type', 'pending', CURDATE())";
-            
-            if (mysqli_query($conn, $sql)) {
+        [$ok, $file_name, $upload_error] = store_uploaded_file(
+            $_FILES['receipt'] ?? [],
+            'uploads/receipts/',
+            ['jpg', 'jpeg', 'png', 'webp', 'pdf']
+        );
+
+        if (!$ok) {
+            $error = $upload_error;
+        } else {
+            $stmt = $conn->prepare("INSERT INTO payments (user_id, amount, payment_method, reference_number, receipt, payment_type, status, payment_date) VALUES (?, ?, ?, ?, ?, ?, 'pending', CURDATE())");
+            $stmt->bind_param("idssss", $user_id, $amount, $method, $ref_no, $file_name, $type);
+
+            if ($stmt->execute()) {
+                log_activity($conn, 'payment.submit', "Submitted ₱" . number_format((float) $amount, 2) . " via $method ($type)", [
+                    'entity_type' => 'payment',
+                    'entity_id' => $stmt->insert_id,
+                ]);
                 $message = "Payment proof uploaded! Admin will verify your receipt shortly.";
             } else {
-                $error = "Database Error: " . mysqli_error($conn);
+                error_log('Payment insert failed: ' . $stmt->error);
+                $error = "System error. Please try again later.";
             }
-        } else {
-            $error = "Error uploading file. Check folder permissions.";
         }
     }
 }
@@ -93,6 +106,7 @@ if (isset($_POST['submit_payment'])) {
                     <?php else: ?>
 
                         <form action="" method="POST" enctype="multipart/form-data" class="space-y-6">
+                            <?= csrf_field() ?>
                             <div class="bg-slate-900 rounded-3xl p-6 text-white relative overflow-hidden">
                                 <div class="relative z-10 flex justify-between items-center">
                                     <div>

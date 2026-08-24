@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/lib/uploads.php';
+secure_session_start();
 include 'db.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
@@ -11,39 +13,47 @@ $user_id = $_SESSION['user_id'];
 $error = "";
 
 if (isset($_POST['submit_payment'])) {
-    $amount = $_POST['amount'];
-    $ref_no = $_POST['reference_number'];
-    $p_type = $_POST['payment_type'];
-    $p_method = $_POST['payment_method'];
-    
-    $target_dir = "uploads/receipts/";
-    if (!is_dir($target_dir)) { mkdir($target_dir, 0777, true); }
-    
-    $file_ext = pathinfo($_FILES["receipt"]["name"], PATHINFO_EXTENSION);
-    $file_name = "PAY_" . time() . "_" . $user_id . "." . $file_ext;
-    $target_file = $target_dir . $file_name;
+    csrf_verify();
 
-    // Advanced Validation
-    if ($_FILES["receipt"]["size"] > 5000000) {
-        $error = "File is too large. Max 5MB allowed.";
-    } elseif (move_uploaded_file($_FILES["receipt"]["tmp_name"], $target_file)) {
-        // Use Prepared Statements for Advanced Security
-        $stmt = $conn->prepare("INSERT INTO payments (user_id, amount, reference_number, payment_type, payment_method, receipt, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())");
-        $stmt->bind_param("idssss", $user_id, $amount, $ref_no, $p_type, $p_method, $file_name);
-        
-        if ($stmt->execute()) {
-            $payment_id = $stmt->insert_id;
-            log_activity($conn, 'payment.submit', "Submitted ₱" . number_format((float) $amount, 2) . " via $p_method ($p_type)", [
-                'entity_type' => 'payment',
-                'entity_id' => $payment_id,
-            ]);
-            header("Location: student_dashboard.php?success=1");
-            exit();
-        } else {
-            $error = "System error. Please try again later.";
-        }
+    $amount = filter_var($_POST['amount'] ?? '', FILTER_VALIDATE_FLOAT);
+    $ref_no = trim($_POST['reference_number'] ?? '');
+    $p_type = $_POST['payment_type'] ?? '';
+    $p_method = trim($_POST['payment_method'] ?? '');
+
+    if ($amount === false || $amount <= 0 || $amount > 1000000) {
+        $error = "Enter a valid amount between ₱0.01 and ₱1,000,000.";
+    } elseif ($ref_no === '' || mb_strlen($ref_no) > 100) {
+        $error = "Enter a valid reference number (max 100 characters).";
+    } elseif (!in_array($p_type, ['full', 'installment', 'other'], true)) {
+        $error = "Select a valid payment category.";
+    } elseif ($p_method === '' || mb_strlen($p_method) > 50) {
+        $error = "Enter a valid payment method (max 50 characters).";
     } else {
-        $error = "Failed to upload receipt. Check folder permissions.";
+        [$ok, $file_name, $upload_error] = store_uploaded_file(
+            $_FILES['receipt'] ?? [],
+            'uploads/receipts/',
+            ['jpg', 'jpeg', 'png', 'webp', 'pdf']
+        );
+
+        if (!$ok) {
+            $error = $upload_error;
+        } else {
+            $stmt = $conn->prepare("INSERT INTO payments (user_id, amount, reference_number, payment_type, payment_method, receipt, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())");
+            $stmt->bind_param("idssss", $user_id, $amount, $ref_no, $p_type, $p_method, $file_name);
+
+            if ($stmt->execute()) {
+                $payment_id = $stmt->insert_id;
+                log_activity($conn, 'payment.submit', "Submitted ₱" . number_format((float) $amount, 2) . " via $p_method ($p_type)", [
+                    'entity_type' => 'payment',
+                    'entity_id' => $payment_id,
+                ]);
+                header("Location: student_dashboard.php?success=1");
+                exit();
+            } else {
+                error_log('Payment insert failed: ' . $stmt->error);
+                $error = "System error. Please try again later.";
+            }
+        }
     }
 }
 ?>
@@ -104,6 +114,7 @@ if (isset($_POST['submit_payment'])) {
             <?php endif; ?>
 
             <form action="" method="POST" enctype="multipart/form-data" id="paymentForm" class="grid md:grid-cols-2 gap-x-8 gap-y-6">
+                <?= csrf_field() ?>
                 
                 <div class="space-y-2">
                     <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1">Amount Paid (PHP)</label>

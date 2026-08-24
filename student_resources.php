@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/session.php';
+secure_session_start();
 include 'db.php';
 
 // 1. Security Check

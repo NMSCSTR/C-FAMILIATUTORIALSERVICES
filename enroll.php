@@ -1,8 +1,8 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 include 'db.php';
 
-// 1. Security & Identity Check
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -10,9 +10,16 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch current user's full name from database (Updated to match your 3-column name structure)
-$user_query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
-$user_data = mysqli_fetch_assoc($user_query);
+$stmt = $conn->prepare("SELECT * FROM users WHERE id = ? LIMIT 1");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user_data = $stmt->get_result()->fetch_assoc();
+
+if (!$user_data) {
+    header("Location: logout.php");
+    exit();
+}
+
 $enrollee_name = $user_data['firstname'] . ' ' . ($user_data['middlename'] ? $user_data['middlename'] . ' ' : '') . $user_data['lastname'];
 
 // 2. Configuration for Dynamic Programs & Fees
@@ -25,33 +32,43 @@ $error = "";
 
 // 3. Form Submission Logic
 if (isset($_POST['submit_enrollment'])) {
-    $program = mysqli_real_escape_string($conn, $_POST['program_type']);
-    $batch = mysqli_real_escape_string($conn, $_POST['batch']);
-    $location = mysqli_real_escape_string($conn, $_POST['enrolled_at']);
-    // $insured = isset($_POST['insured']) ? 1 : 0; // Map checkbox to tinyint(1)
-    
-    // Dynamically assign fee based on the selected program
-    $fee = isset($programs[$program]) ? $programs[$program]['fee'] : 5000.00;
+    csrf_verify();
 
-    // Prevent duplicate active applications
-    $check = mysqli_query($conn, "SELECT id FROM enrollments WHERE user_id = '$user_id' AND program_type = '$program' AND status != 'completed'");
-    
-    if (mysqli_num_rows($check) > 0) {
-        $error = "You already have an active application for the $program.";
+    $program = trim($_POST['program_type'] ?? '');
+    $batch = trim($_POST['batch'] ?? '');
+    $location = trim($_POST['enrolled_at'] ?? '');
+
+    if (!isset($programs[$program])) {
+        $error = "Please select a valid program.";
+    } elseif ($batch === '' || mb_strlen($batch) > 50) {
+        $error = "Please select a valid batch.";
+    } elseif ($location === '' || mb_strlen($location) > 100) {
+        $error = "Please select a valid review location.";
     } else {
-        // Updated SQL to include insured and enrolled_at (location) columns
-        $sql = "INSERT INTO enrollments (user_id, program_type, batch, total_fee, status, enrollment_date, enrolled_at) 
-                VALUES ('$user_id', '$program', '$batch', '$fee', 'pending', CURDATE(), '$location')";
+        $fee = $programs[$program]['fee'];
 
-        if (mysqli_query($conn, $sql)) {
-            $enrollment_id = mysqli_insert_id($conn);
-            log_activity($conn, 'enrollment.submit', "Applied for $program (Batch $batch, $location)", [
-                'entity_type' => 'enrollment',
-                'entity_id' => $enrollment_id,
-            ]);
-            $message = "Your application for <b>$program</b> has been submitted successfully.";
+        $check = $conn->prepare("SELECT id FROM enrollments WHERE user_id = ? AND program_type = ? AND status != 'completed'");
+        $check->bind_param("is", $user_id, $program);
+        $check->execute();
+
+        if ($check->get_result()->num_rows > 0) {
+            $error = "You already have an active application for the $program.";
         } else {
-            $error = "System Error: " . mysqli_error($conn);
+            $insert = $conn->prepare("INSERT INTO enrollments (user_id, program_type, batch, total_fee, status, enrollment_date, enrolled_at)
+                    VALUES (?, ?, ?, ?, 'pending', CURDATE(), ?)");
+            $insert->bind_param("issds", $user_id, $program, $batch, $fee, $location);
+
+            if ($insert->execute()) {
+                $enrollment_id = $insert->insert_id;
+                log_activity($conn, 'enrollment.submit', null, [
+                    'entity_type' => 'enrollment',
+                    'entity_id' => $enrollment_id,
+                ]);
+                $message = "Your application for <b>" . htmlspecialchars($program, ENT_QUOTES, 'UTF-8') . "</b> has been submitted successfully.";
+            } else {
+                error_log('Enrollment failed: ' . $insert->error);
+                $error = "System error. Please try again later.";
+            }
         }
     }
 }
@@ -135,6 +152,7 @@ if (isset($_POST['submit_enrollment'])) {
                     <?php else: ?>
 
                         <form action="" method="POST" class="space-y-8">
+                            <?= csrf_field() ?>
                             
                             <div class="flex items-center gap-4 p-5 bg-slate-950/40 border border-slate-800 rounded-[1.5rem] mb-6">
                                 <div class="w-12 h-12 bg-blue-950/40 border border-blue-900/30 rounded-xl flex items-center justify-center text-blue-400 text-xl shadow-lg">
