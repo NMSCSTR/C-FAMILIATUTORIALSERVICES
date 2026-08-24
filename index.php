@@ -448,6 +448,11 @@ $recent_announcements = array_slice($announcements, 0, 3);
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <?php if (empty($recent_announcements)): ?>
+            <div class="col-span-full py-20 text-center bg-slate-50 dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+                <p class="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs sm:text-sm">No announcements right now — check back soon.</p>
+            </div>
+            <?php else: ?>
             <?php foreach ($recent_announcements as $ann):
                 $is_urgent = ($ann['category'] == 'Urgent');
                 $is_long = mb_strlen($ann['message']) > 160;
@@ -473,6 +478,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                 <?php endif; ?>
             </article>
             <?php endforeach; ?>
+            <?php endif; ?>
         </div>
         </div>
     </section>
@@ -498,9 +504,14 @@ $recent_announcements = array_slice($announcements, 0, 3);
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <?php 
+                <?php
                 $posts_query = mysqli_query($conn, "SELECT * FROM posts ORDER BY created_at DESC LIMIT 6");
-                while($post = mysqli_fetch_assoc($posts_query)):
+                if (mysqli_num_rows($posts_query) === 0): ?>
+                <div class="col-span-full py-20 text-center bg-slate-50 dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+                    <p class="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs sm:text-sm">Learning materials are being prepared. Enrolled students get access first.</p>
+                </div>
+                <?php else: ?>
+                <?php while($post = mysqli_fetch_assoc($posts_query)):
                 ?>
                 <article class="bg-slate-50 dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden hover:border-slate-200 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 group flex flex-col justify-between p-8 hover:-translate-y-1">
                     <div>
@@ -519,6 +530,7 @@ $recent_announcements = array_slice($announcements, 0, 3);
                     <?php endif; ?>
                 </article>
                 <?php endwhile; ?>
+                <?php endif; ?>
             </div>
         </div>
     </section>
