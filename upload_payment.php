@@ -120,14 +120,14 @@ if (isset($_POST['submit_payment'])) {
                     <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1">Amount Paid (PHP)</label>
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₱</span>
-                        <input type="number" step="0.01" name="amount" placeholder="0.00" required
+                        <input type="number" step="0.01" min="0.01" name="amount" id="amount-input" placeholder="0.00" required
                             class="w-full pl-9 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 input-focus font-bold text-slate-700">
                     </div>
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1">Reference Number</label>
-                    <input type="text" name="reference_number" placeholder="Enter transaction ID" required
+                    <input type="text" name="reference_number" maxlength="100" placeholder="Enter transaction ID" required
                         class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 input-focus font-bold text-slate-700">
                 </div>
 
@@ -157,9 +157,9 @@ if (isset($_POST['submit_payment'])) {
                         </div>
                         <div id="upload-placeholder" class="text-center">
                             <svg class="w-8 h-8 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <p class="text-xs font-bold text-slate-400">Click to upload receipt or drag and drop</p>
+                            <p class="text-xs font-bold text-slate-400">Click to upload receipt � JPG, PNG or PDF</p>
                         </div>
-                        <input type="file" name="receipt" id="receipt-input" accept="image/*" required
+                        <input type="file" name="receipt" id="receipt-input" accept="image/*,.pdf" required
                             class="absolute inset-0 opacity-0 cursor-pointer">
                     </div>
                 </div>
@@ -196,7 +196,14 @@ if (isset($_POST['submit_payment'])) {
         }
 
         // Advanced Alert on Submit
-        document.getElementById('paymentForm').onsubmit = function() {
+        // Validate before submit so a server-side rejection never costs the receipt file
+        document.getElementById('paymentForm').onsubmit = function(event) {
+            const amount = parseFloat(document.getElementById('amount-input').value);
+            if (!amount || amount <= 0) {
+                event.preventDefault();
+                Swal.fire({ icon: 'error', title: 'Invalid amount', text: 'Enter an amount greater than zero before submitting.' });
+                return false;
+            }
             Swal.fire({
                 title: 'Submitting...',
                 text: 'Please wait while we secure your transaction.',
