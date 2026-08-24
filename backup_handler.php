@@ -46,7 +46,7 @@ header('Expires: 0');
 
 echo "-- C-Familia Tutorial Services Database Backup\n";
 echo "-- Generated: " . date('Y-m-d H:i:s') . "\n";
-echo "-- Database : {$dbname}\n";
+echo "-- Database : " . ($config['dbname'] ?? '') . "\n";
 echo "-- Tables   : " . implode(', ', $selected_tables) . "\n";
 echo "-- Server   : " . mysqli_get_server_info($conn) . "\n\n";
 echo "SET FOREIGN_KEY_CHECKS=0;\n";

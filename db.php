@@ -8,6 +8,8 @@ if (!is_file($config_file)) {
 
 $config = require $config_file;
 
+mysqli_report(MYSQLI_REPORT_OFF);
+
 $conn = mysqli_connect(
     $config['host'] ?? 'localhost',
     $config['user'] ?? '',
@@ -16,7 +18,9 @@ $conn = mysqli_connect(
 );
 
 if (!$conn) {
-    die("Database connection failed: " . mysqli_connect_error());
+    error_log('Database connection failed: ' . mysqli_connect_error());
+    http_response_code(500);
+    die('Database connection failed. Please try again later.');
 }
 
 mysqli_set_charset($conn, "utf8mb4");
