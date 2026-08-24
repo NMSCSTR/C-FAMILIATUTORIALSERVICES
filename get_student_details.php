@@ -1,16 +1,46 @@
 <?php
-include 'db.php';
-$user_id = mysqli_real_escape_string($conn, $_GET['user_id']);
-$sql = "SELECT * FROM users JOIN enrollments ON users.id = enrollments.user_id WHERE users.id = '$user_id' LIMIT 1";
-$user = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-$payments = mysqli_query($conn, "SELECT * FROM payments WHERE user_id = '$user_id' ORDER BY created_at DESC");
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 
-$total_paid_res = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(amount) as paid FROM payments WHERE user_id = '$user_id' AND status = 'paid'"));
-$total_paid = $total_paid_res['paid'] ?? 0;
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    exit('Unauthorized');
+}
+
+include 'db.php';
+
+$user_id = filter_input(INPUT_GET, 'user_id', FILTER_VALIDATE_INT);
+
+if ($user_id === false || $user_id === null || $user_id <= 0) {
+    http_response_code(400);
+    exit('Invalid user id.');
+}
+
+$stmt = $conn->prepare("SELECT * FROM users JOIN enrollments ON users.id = enrollments.user_id WHERE users.id = ? LIMIT 1");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+
+if (!$user) {
+    http_response_code(404);
+    exit('Student not found.');
+}
+
+$pay_stmt = $conn->prepare("SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC");
+$pay_stmt->bind_param("i", $user_id);
+$pay_stmt->execute();
+$payments = $pay_stmt->get_result();
+
+$total_stmt = $conn->prepare("SELECT SUM(amount) as paid FROM payments WHERE user_id = ? AND status = 'paid'");
+$total_stmt->bind_param("i", $user_id);
+$total_stmt->execute();
+$total_paid = $total_stmt->get_result()->fetch_assoc()['paid'] ?? 0;
 
 // Fetch current grades if they exist
-$grades_query = mysqli_query($conn, "SELECT * FROM exam_result WHERE user_id = '$user_id' LIMIT 1");
-$grades = mysqli_fetch_assoc($grades_query);
+$grades_stmt = $conn->prepare("SELECT * FROM exam_result WHERE user_id = ? LIMIT 1");
+$grades_stmt->bind_param("i", $user_id);
+$grades_stmt->execute();
+$grades = $grades_stmt->get_result()->fetch_assoc();
 
 $diag = $grades['diagnostic_exam'] ?? '';
 $pree = $grades['preboard_exam'] ?? '';
@@ -19,10 +49,10 @@ $comp = $grades['compre_exam'] ?? '';
 
 <div class="flex items-center gap-6 mb-10 p-6 bg-slate-900/60 rounded-[2rem] border border-slate-800 backdrop-blur-xl">
     <?php if (!empty($user['profile_pic'])): ?>
-        <img src="uploads/profiles/<?= $user['profile_pic'] ?>" alt="Profile Picture" class="w-20 h-20 rounded-3xl object-cover shadow-lg shadow-blue-950/50 ring-4 ring-slate-800">
+        <img src="uploads/profiles/<?= htmlspecialchars($user['profile_pic'], ENT_QUOTES, 'UTF-8') ?>" alt="Profile Picture" class="w-20 h-20 rounded-3xl object-cover shadow-lg shadow-blue-950/50 ring-4 ring-slate-800">
     <?php else: ?>
         <div class="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-blue-950/50">
-            <?= substr($user['firstname'], 0, 1) ?>
+            <?= htmlspecialchars(substr((string) $user['firstname'], 0, 1), ENT_QUOTES, 'UTF-8') ?>
         </div>
     <?php endif; ?>
     
@@ -45,7 +75,8 @@ $comp = $grades['compre_exam'] ?? '';
         </div>
         <p class="text-[11px] text-slate-300 mb-6 leading-relaxed relative z-10">Input grade values below. Leaving an exam field empty completely clears the target dashboard card visibility layer.</p>
         
-        <form onsubmit="submitGradesForm(event, <?= intval($user_id) ?>)" class="space-y-4 relative z-10">
+        <form onsubmit="submitGradesForm(event, <?= (int) $user_id ?>)" class="space-y-4 relative z-10">
+            <?= csrf_field() ?>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="text-[10px] font-bold text-slate-300 block mb-1.5 px-1">Diagnostic Exam</label>

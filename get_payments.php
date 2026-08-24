@@ -1,12 +1,28 @@
 <?php
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    exit('Unauthorized');
+}
+
 include 'db.php';
-$user_id = mysqli_real_escape_string($conn, $_GET['user_id']);
 
-$query = "SELECT * FROM payments WHERE user_id = '$user_id' ORDER BY created_at DESC";
-$res = mysqli_query($conn, $query);
+$user_id = filter_input(INPUT_GET, 'user_id', FILTER_VALIDATE_INT);
 
-if(mysqli_num_rows($res) > 0) {
-    while($p = mysqli_fetch_assoc($res)) {
+if ($user_id === false || $user_id === null || $user_id <= 0) {
+    http_response_code(400);
+    exit('Invalid user id.');
+}
+
+$stmt = $conn->prepare("SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$res = $stmt->get_result();
+
+if($res->num_rows > 0) {
+    while($p = $res->fetch_assoc()) {
         $color = match ($p['status']) {
             'paid' => 'emerald',
             'pending' => 'amber',
@@ -14,14 +30,16 @@ if(mysqli_num_rows($res) > 0) {
             'refunded', 'cancelled' => 'slate',
             default => 'rose',
         };
-        $statusLabel = str_replace('_', ' ', $p['status']);
+        $statusLabel = htmlspecialchars(str_replace('_', ' ', $p['status']), ENT_QUOTES, 'UTF-8');
+        $ref = htmlspecialchars($p['reference_number'] ?: 'N/A', ENT_QUOTES, 'UTF-8');
+        $method = htmlspecialchars(strtoupper((string) $p['payment_method']), ENT_QUOTES, 'UTF-8');
         echo '
         <div class="mb-10 relative pl-8 border-l-2 border-slate-100 last:border-0 pb-2">
             <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-4 border-white bg-'.$color.'-500 shadow-sm shadow-'.$color.'-200"></div>
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-[10px] font-black uppercase text-slate-400 tracking-wider">'.date('M d, Y • h:i A', strtotime($p['created_at'])).'</p>
-                    <h4 class="text-lg font-bold text-slate-900 mt-1">₱'.number_format($p['amount'], 2).'</h4>
+                    <h4 class="text-lg font-bold text-slate-900 mt-1">₱'.number_format((float) $p['amount'], 2).'</h4>
                 </div>
                 <span class="text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-widest bg-'.$color.'-50 text-'.$color.'-600 border border-'.$color.'-100">
                     '.$statusLabel.'
@@ -29,8 +47,8 @@ if(mysqli_num_rows($res) > 0) {
             </div>
             <div class="mt-4 bg-slate-50 rounded-2xl p-4 border border-slate-100">
                 <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Transaction Details</p>
-                <p class="text-xs font-semibold text-slate-600">Ref: <span class="text-slate-900">'.($p['reference_number'] ?: 'N/A').'</span></p>
-                <p class="text-xs font-semibold text-slate-600 mt-1">Method: <span class="text-slate-900 uppercase">'.$p['payment_method'].'</span></p>
+                <p class="text-xs font-semibold text-slate-600">Ref: <span class="text-slate-900">'.$ref.'</span></p>
+                <p class="text-xs font-semibold text-slate-600 mt-1">Method: <span class="text-slate-900">'.$method.'</span></p>
             </div>
         </div>';
     }
