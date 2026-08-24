@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/lib/csrf.php';
+secure_session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit();
@@ -368,7 +369,8 @@ if ($al_exists) {
         if (checked.length === 0) { return; }
 
         const tables = Array.from(checked).map(cb => cb.value).join(',');
-        const url = `backup_handler.php?tables=${encodeURIComponent(tables)}`;
+        const csrfToken = <?= json_encode(csrf_token()) ?>;
+        const url = `backup_handler.php?tables=${encodeURIComponent(tables)}&csrf_token=${encodeURIComponent(csrfToken)}`;
 
         // Show progress bar briefly
         const progress = document.getElementById('downloadProgress');
