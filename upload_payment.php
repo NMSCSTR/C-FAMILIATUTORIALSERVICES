@@ -38,7 +38,7 @@ if (isset($_POST['submit_payment'])) {
         if (!$ok) {
             $error = $upload_error;
         } else {
-            $stmt = $conn->prepare("INSERT INTO payments (user_id, amount, reference_number, payment_type, payment_method, receipt, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())");
+            $stmt = $conn->prepare("INSERT INTO payments (user_id, amount, reference_number, payment_type, payment_method, receipt, status, created_at, payment_date) VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW(), CURDATE())");
             $stmt->bind_param("idssss", $user_id, $amount, $ref_no, $p_type, $p_method, $file_name);
 
             if ($stmt->execute()) {
