@@ -135,7 +135,7 @@ if (isset($_POST['submit_enrollment'])) {
                 <div class="glass-card rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden">
                     
                     <?php if($error): ?>
-                        <div class="mb-8 p-4 bg-rose-950/20 text-rose-400 rounded-2xl border border-rose-900/30 flex items-center gap-3 text-sm font-bold animate-pulse">
+                        <div role="alert" class="mb-8 p-4 bg-rose-950/20 text-rose-400 rounded-2xl border border-rose-900/30 flex items-center gap-3 text-sm font-bold animate-pulse">
                             <span>🚫</span> <?= $error ?>
                         </div>
                     <?php endif; ?>
@@ -189,9 +189,9 @@ if (isset($_POST['submit_enrollment'])) {
 
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 ml-1">Review Location</label>
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 ml-1" for="enrolled_at">Review Location</label>
                                     <div class="relative">
-                                        <select name="enrolled_at" required class="w-full p-5 rounded-2xl border border-slate-800 bg-slate-950 text-white focus:border-blue-500 outline-none transition font-bold appearance-none">
+                                        <select id="enrolled_at" name="enrolled_at" required class="w-full p-5 rounded-2xl border border-slate-800 bg-slate-950 text-white focus:border-blue-500 outline-none transition font-bold appearance-none">
                                             <option value="" disabled selected class="text-slate-600">Select Location</option>
                                             <option value="Tubod">Tubod, Lanao Del Norte</option>
                                             <option value="Oroqueta">Oroqueta City</option>
@@ -202,9 +202,9 @@ if (isset($_POST['submit_enrollment'])) {
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 ml-1">Schedule Batch</label>
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 ml-1" for="batch">Schedule Batch</label>
                                     <div class="relative">
-                                        <select name="batch" required class="w-full p-5 rounded-2xl border border-slate-800 bg-slate-950 text-white focus:border-blue-500 outline-none transition font-bold appearance-none">
+                                        <select id="batch" name="batch" required class="w-full p-5 rounded-2xl border border-slate-800 bg-slate-950 text-white focus:border-blue-500 outline-none transition font-bold appearance-none">
                                             <option value="" disabled selected class="text-slate-600">Select a Batch</option>
                                             <option value="January <?= date('Y') ?>">January <?= date('Y') ?></option>
                                             <option value="August <?= date('Y') ?>">August <?= date('Y') ?></option>

@@ -108,7 +108,7 @@ if (isset($_POST['submit_payment'])) {
             </h2>
 
             <?php if($error): ?>
-                <div class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm font-bold rounded-r-xl">
+                <div role="alert" class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm font-bold rounded-r-xl">
                     <?= $error ?>
                 </div>
             <?php endif; ?>
@@ -117,7 +117,7 @@ if (isset($_POST['submit_payment'])) {
                 <?= csrf_field() ?>
                 
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1">Amount Paid (PHP)</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1" for="amount-input">Amount Paid (PHP)</label>
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₱</span>
                         <input type="number" step="0.01" min="0.01" name="amount" id="amount-input" placeholder="0.00" required
@@ -126,8 +126,8 @@ if (isset($_POST['submit_payment'])) {
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1">Reference Number</label>
-                    <input type="text" name="reference_number" maxlength="100" placeholder="Enter transaction ID" required
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1" for="reference-number">Reference Number</label>
+                    <input type="text" id="reference-number" name="reference_number" maxlength="100" placeholder="Enter transaction ID" required
                         class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 input-focus font-bold text-slate-700">
                 </div>
 
@@ -141,13 +141,13 @@ if (isset($_POST['submit_payment'])) {
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1">Method / Platform</label>
-                    <input type="text" name="payment_method" placeholder="e.g. GCash, BPI, PayMaya" required
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1" for="payment-method">Method / Platform</label>
+                    <input type="text" id="payment-method" name="payment_method" placeholder="e.g. GCash, BPI, PayMaya" required
                         class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 input-focus font-bold text-slate-700">
                 </div>
 
                 <div class="md:col-span-2 space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1">Proof of Transaction (Receipt)</label>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider ml-1" for="receipt-input">Proof of Transaction (Receipt)</label>
                     <div class="group relative w-full h-44 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center transition-all hover:border-indigo-400 hover:bg-indigo-50/30 overflow-hidden">
                         <div id="preview-container" class="hidden absolute inset-0 bg-white">
                             <img id="receipt-preview" class="w-full h-full object-contain p-2" src="" alt="Preview">

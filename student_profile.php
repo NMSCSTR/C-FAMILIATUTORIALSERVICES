@@ -166,13 +166,13 @@ $user = $stmt->get_result()->fetch_assoc();
 
             <div class="p-4 sm:p-10 max-w-8xl mx-auto">
                 <?php if($success_msg): ?>
-                <div class="mb-8 p-4 bg-emerald-950/20 border border-emerald-900/30 text-emerald-400 rounded-2xl flex items-center gap-3">
+                <div role="status" class="mb-8 p-4 bg-emerald-950/20 border border-emerald-900/30 text-emerald-400 rounded-2xl flex items-center gap-3">
                     <span class="text-lg">✨</span>
                     <span class="font-bold text-sm"><?= $success_msg ?></span>
                 </div>
                 <?php endif; ?>
                 <?php if(isset($error_msg) && $error_msg): ?>
-                <div class="mb-8 p-4 bg-rose-950/20 border border-rose-900/30 text-rose-400 rounded-2xl flex items-center gap-3">
+                <div role="alert" class="mb-8 p-4 bg-rose-950/20 border border-rose-900/30 text-rose-400 rounded-2xl flex items-center gap-3">
                     <span class="text-lg">⚠️</span>
                     <span class="font-bold text-sm"><?= $error_msg ?></span>
                 </div>
@@ -201,40 +201,40 @@ $user = $stmt->get_result()->fetch_assoc();
                     <div class="glass-card rounded-[2.5rem] p-6 sm:p-10 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">First Name</label>
-                                <input type="text" name="firstname" value="<?= htmlspecialchars($user['firstname']) ?>" required 
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="firstname">First Name</label>
+                                <input type="text" id="firstname" name="firstname" value="<?= htmlspecialchars($user['firstname']) ?>" required 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                             </div>
 
                             <div>
-                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Middle Name</label>
-                                <input type="text" name="middlename" value="<?= htmlspecialchars($user['middlename']) ?>" 
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="middlename">Middle Name</label>
+                                <input type="text" id="middlename" name="middlename" value="<?= htmlspecialchars($user['middlename']) ?>" 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                             </div>
 
                             <div>
-                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Last Name</label>
-                                <input type="text" name="lastname" value="<?= htmlspecialchars($user['lastname']) ?>" required 
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="lastname">Last Name</label>
+                                <input type="text" id="lastname" name="lastname" value="<?= htmlspecialchars($user['lastname']) ?>" required 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Birthday</label>
-                                <input type="date" name="birthday" value="<?= htmlspecialchars($user['birthday'] ?? '') ?>" required 
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="birthday">Birthday</label>
+                                <input type="date" id="birthday" name="birthday" value="<?= htmlspecialchars($user['birthday'] ?? '') ?>" required 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                             </div>
 
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Cellphone #</label>
-                                <input type="text" name="cellphone_no" value="<?= htmlspecialchars($user['cellphone_no'] ?? '') ?>" required placeholder="0917XXXXXXX" 
+                                <input type="text" id="cellphone_no" name="cellphone_no" value="<?= htmlspecialchars($user['cellphone_no'] ?? '') ?>" required placeholder="0917XXXXXXX" 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                             </div>
 
                             <div>
-                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">FB / Messenger Account</label>
-                                <input type="text" name="fb_messenger_account" value="<?= htmlspecialchars($user['fb_messenger_account'] ?? '') ?>" placeholder="Profile link or username" 
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest" for="fb_messenger_account">FB / Messenger Account</label>
+                                <input type="text" id="fb_messenger_account" name="fb_messenger_account" value="<?= htmlspecialchars($user['fb_messenger_account'] ?? '') ?>" placeholder="Profile link or username" 
                                        class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                             </div>
                         </div>
@@ -257,7 +257,7 @@ $user = $stmt->get_result()->fetch_assoc();
 
                         <div>
                             <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Full Address</label>
-                            <textarea name="address" required rows="2" placeholder="House No., Street, Barangay, City, Province" 
+                            <textarea id="address" name="address" required rows="2" placeholder="House No., Street, Barangay, City, Province" 
                                       class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white resize-none"><?= htmlspecialchars($user['address'] ?? '') ?></textarea>
                         </div>
 
@@ -266,12 +266,12 @@ $user = $stmt->get_result()->fetch_assoc();
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Parent / Guardian Name</label>
-                                    <input type="text" name="parents_name_guardian" value="<?= htmlspecialchars($user['parents_name_guardian'] ?? '') ?>" required 
+                                    <input type="text" id="parents_name_guardian" name="parents_name_guardian" value="<?= htmlspecialchars($user['parents_name_guardian'] ?? '') ?>" required 
                                            class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                                 </div>
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-500 mb-3 block ml-1 tracking-widest">Parent Phone Number</label>
-                                    <input type="text" name="parents_phone_no" value="<?= htmlspecialchars($user['parents_phone_no'] ?? '') ?>" required 
+                                    <input type="text" id="parents_phone_no" name="parents_phone_no" value="<?= htmlspecialchars($user['parents_phone_no'] ?? '') ?>" required 
                                            class="w-full px-6 py-4 rounded-2xl border border-slate-800 bg-slate-950 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-white">
                                 </div>
                             </div>

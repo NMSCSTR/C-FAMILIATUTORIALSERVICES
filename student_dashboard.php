@@ -350,7 +350,7 @@ $grades = $grades_stmt->get_result()->fetch_assoc();
                     <p class="text-slate-400 text-sm mb-6">Your testimonial will be featured on our landing page.</p>
                     <form action="" method="POST">
                         <?= csrf_field() ?>
-                        <textarea name="testimonial_content" required class="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none text-sm min-h-[120px] text-white placeholder:text-slate-600" placeholder="How was your experience with C-Familia?"></textarea>
+                        <textarea name="testimonial_content" required aria-label="Write your testimonial" class="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none text-sm min-h-[120px] text-white placeholder:text-slate-600" placeholder="How was your experience with C-Familia?"></textarea>
                         <button type="submit" name="submit_testimonial" class="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-950/40 transition">Submit Review</button>
                     </form>
                 </div>
