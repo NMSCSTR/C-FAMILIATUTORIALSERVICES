@@ -202,8 +202,9 @@ if (isset($_POST['login'])) {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
                         </div>
-                        <input type="password" name="password" id="password-input" required placeholder="••••••••"
+                        <input type="password" name="password" id="password-input" required placeholder="••••••••" autocomplete="current-password" aria-describedby="capslock-note"
                                class="w-full pl-12 pr-12 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
+                        <p id="capslock-note" role="status" class="hidden mt-1.5 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                         
                         <!-- Toggle visibility button -->
                         <button type="button" id="password-toggle-btn" 
@@ -268,6 +269,19 @@ if (isset($_POST['login'])) {
                 }
             });
         }
+
+        // Caps Lock hint
+        (function () {
+            const note = document.getElementById('capslock-note');
+            const handler = function (e) {
+                if (typeof e.getModifierState === 'function') {
+                    note.classList.toggle('hidden', !e.getModifierState('CapsLock'));
+                }
+            };
+            passwordInput.addEventListener('keydown', handler);
+            passwordInput.addEventListener('keyup', handler);
+            passwordInput.addEventListener('blur', function () { note.classList.add('hidden'); });
+        })();
 
         // Form submit loading feedback
         if (loginForm && submitBtn) {

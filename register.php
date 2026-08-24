@@ -399,8 +399,10 @@ $field = function (string $key) use ($old): string {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                     </svg>
                                 </div>
-                                <input type="password" name="password" id="password-input" required placeholder="••••••••"
+                                <input type="password" name="password" id="password-input" required minlength="8" placeholder="••••••••" autocomplete="new-password" aria-describedby="password-hint capslock-note"
                                        class="w-full pl-12 pr-12 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
+                                <p id="password-hint" class="mt-1.5 ml-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">At least 8 characters.</p>
+                                <p id="capslock-note" role="status" class="hidden mt-1 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                                 
                                 <button type="button" id="password-toggle-btn" 
                                         class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
@@ -423,8 +425,10 @@ $field = function (string $key) use ($old): string {
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                     </svg>
                                 </div>
-                                <input type="password" name="confirm_password" id="confirm-password-input" required placeholder="••••••••"
+                                <input type="password" name="confirm_password" id="confirm-password-input" required placeholder="••••••••" autocomplete="new-password" aria-describedby="match-note capslock-note-confirm"
                                        class="w-full pl-12 pr-12 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-800 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300 font-medium">
+                                <p id="match-note" class="hidden mt-1.5 ml-1 text-[11px] font-bold text-rose-600 dark:text-rose-400">Passwords do not match yet.</p>
+                                <p id="capslock-note-confirm" role="status" class="hidden mt-1 ml-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">⚠ Caps Lock is on</p>
                                 
                                 <button type="button" id="confirm-password-toggle-btn" 
                                         class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80">
@@ -510,6 +514,47 @@ $field = function (string $key) use ($old): string {
                 }
             });
         }
+
+        // Live password guidance
+        const hintEl = document.getElementById('password-hint');
+        const matchNote = document.getElementById('match-note');
+        const HINT_DEFAULT = 'At least 8 characters.';
+
+        function updatePasswordGuidance() {
+            const pw = passwordInput.value;
+            const confirm = confirmPasswordInput.value;
+
+            const tooShort = pw.length > 0 && pw.length < 8;
+            hintEl.textContent = tooShort ? (8 - pw.length) + ' more character' + (8 - pw.length === 1 ? '' : 's') + ' needed.' : HINT_DEFAULT;
+            hintEl.classList.toggle('text-rose-600', tooShort);
+            hintEl.classList.toggle('dark:text-rose-400', tooShort);
+            hintEl.classList.toggle('text-slate-500', !tooShort);
+            hintEl.classList.toggle('dark:text-slate-400', !tooShort);
+
+            const mismatch = confirm.length > 0 && pw !== confirm;
+            matchNote.classList.toggle('hidden', !mismatch);
+            submitBtn.disabled = mismatch;
+            submitBtn.classList.toggle('opacity-60', mismatch);
+            submitBtn.classList.toggle('cursor-not-allowed', mismatch);
+        }
+
+        passwordInput.addEventListener('input', updatePasswordGuidance);
+        confirmPasswordInput.addEventListener('input', updatePasswordGuidance);
+
+        // Caps Lock hints
+        function attachCapsLock(input, note) {
+            if (!input || !note) return;
+            const handler = function (e) {
+                if (typeof e.getModifierState === 'function') {
+                    note.classList.toggle('hidden', !e.getModifierState('CapsLock'));
+                }
+            };
+            input.addEventListener('keydown', handler);
+            input.addEventListener('keyup', handler);
+            input.addEventListener('blur', function () { note.classList.add('hidden'); });
+        }
+        attachCapsLock(passwordInput, document.getElementById('capslock-note'));
+        attachCapsLock(confirmPasswordInput, document.getElementById('capslock-note-confirm'));
 
         // Form submit loading feedback
         if (registerForm && submitBtn) {
