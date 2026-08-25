@@ -14,6 +14,10 @@ function Gate() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" redirect={Boolean(token)} />
         <Stack.Screen name="(tabs)" redirect={!token} />
+        <Stack.Screen
+          name="enroll"
+          options={{ headerShown: true, title: 'Enroll', headerTintColor: '#0f172a' }}
+        />
       </Stack>
     </>
   );
