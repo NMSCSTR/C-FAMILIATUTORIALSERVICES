@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { API_BASE_URL } from './config';
+import { API_BASE_URL, API_QUERY_ROUTES } from './config';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -18,6 +18,14 @@ export function bindAuthHooks(get: TokenGetter, unauthorized: OnUnauthorized): v
   tokenGetter = get;
   onUnauthorized = unauthorized;
 }
+
+api.interceptors.request.use((config) => {
+  if (API_QUERY_ROUTES && config.url) {
+    config.params = { ...(config.params ?? {}), route: String(config.url) };
+    config.url = '/';
+  }
+  return config;
+});
 
 api.interceptors.request.use(async (config) => {
   const token = await tokenGetter();
