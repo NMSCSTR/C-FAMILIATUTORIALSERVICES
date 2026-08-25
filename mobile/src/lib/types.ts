@@ -73,3 +73,49 @@ export type DashboardPayload = {
   recent_payments: Payment[];
   announcements: Announcement[];
 };
+
+export type ProgramOption = {
+  name: string;
+  fee: number;
+  desc: string;
+  icon: string;
+};
+
+export type LocationOption = {
+  value: string;
+  label: string;
+};
+
+export type EnrollmentOptions = {
+  programs: ProgramOption[];
+  batches: string[];
+  locations: LocationOption[];
+};
+
+export type EnrollmentPayload = {
+  enrollment: Enrollment | null;
+  total_paid: number;
+  balance: number | null;
+  exam_result: ExamResult | null;
+};
+
+export type Post = {
+  id: number;
+  title: string;
+  content: string;
+  author: string;
+  has_file: boolean;
+  file_url: string | null;
+  created_at: string | null;
+};
+
+export type Paginated<T> = {
+  data: { announcements: T[]; meta: PaginationMeta };
+};
+
+export type PaginationMeta = {
+  page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
+};
