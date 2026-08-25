@@ -177,6 +177,19 @@ function bearer_token(): ?string
 
 function api_request_path(): string
 {
+    $path_info = $_SERVER['PATH_INFO'] ?? '';
+    if (is_string($path_info)) {
+        $path = ltrim(str_replace('\\', '/', $path_info), '/');
+        if ($path !== '') {
+            return self_trim_index_php($path);
+        }
+    }
+
+    $route = isset($_GET['route']) && is_string($_GET['route']) ? $_GET['route'] : '';
+    if (trim($route) !== '') {
+        return self_trim_index_php(ltrim($route, '/'));
+    }
+
     $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $uri = is_string($uri) && $uri !== '' ? $uri : '/';
 
@@ -187,14 +200,28 @@ function api_request_path(): string
         return '';
     }
 
-    $path = ltrim($uri, '/');
+    return self_trim_index_php(ltrim($uri, '/'));
+}
 
+function self_trim_index_php(string $path): string
+{
     if (strncasecmp($path, 'index.php', 9) === 0) {
         $path = substr($path, 9);
         $path = ltrim($path, '/');
     }
 
     return trim($path, '/');
+}
+
+function api_route_url(string $path): string
+{
+    $path = ltrim($path, '/');
+
+    if (!empty(api_config()['force_query_urls'])) {
+        return public_base_url() . '/api/index.php?route=' . rawurlencode($path);
+    }
+
+    return public_base_url() . '/api/' . $path;
 }
 
 function public_base_url(): string

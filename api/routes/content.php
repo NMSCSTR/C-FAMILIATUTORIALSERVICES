@@ -23,7 +23,7 @@ function serialize_post(array $p): array
         'author'     => (string) ($p['author'] ?? 'Admin'),
         'has_file'   => $file !== '',
         'file_url'   => $file !== ''
-            ? public_base_url() . '/api/posts/' . (int) $p['id'] . '/file'
+            ? api_route_url('posts/' . (int) $p['id'] . '/file')
             : null,
         'created_at' => $p['created_at'] ?? null,
     ];

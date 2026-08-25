@@ -13,7 +13,7 @@ function serialize_payment(array $p): array
         'status'           => (string) ($p['status'] ?? 'pending'),
         'receipt'          => $receipt !== '' ? $receipt : null,
         'receipt_url'      => $receipt !== ''
-            ? public_base_url() . '/api/payments/' . (int) $p['id'] . '/receipt'
+            ? api_route_url('payments/' . (int) $p['id'] . '/receipt')
             : null,
         'payment_date'     => $p['payment_date'] ?? null,
         'created_at'       => $p['created_at'] ?? null,
