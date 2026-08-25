@@ -1,8 +1,8 @@
-import { useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
-import { Banner, StatusBadge } from '@/components/ui';
+import { Banner, Button, StatusBadge } from '@/components/ui';
 import { api, apiErrorMessage } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import type { DashboardPayload } from '@/lib/types';
@@ -10,6 +10,50 @@ import type { DashboardPayload } from '@/lib/types';
 function peso(amount: number | null | undefined): string {
   const value = Number(amount ?? 0);
   return `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function EnrollButton() {
+  return (
+    <Link href="/enroll" asChild>
+      <Pressable className="mt-3 items-center rounded-2xl bg-brand py-3.5 active:bg-brand-dark">
+        <Text className="text-sm font-bold text-white">Enroll now</Text>
+      </Pressable>
+    </Link>
+  );
+}
+
+function ExamScores({
+  scores,
+}: {
+  scores: { diagnostic_exam: number | null; preboard_exam: number | null; compre_exam: number | null };
+}) {
+  const rows = [
+    { label: 'Diagnostic', value: scores.diagnostic_exam },
+    { label: 'Pre-Board', value: scores.preboard_exam },
+    { label: 'Comprehensive', value: scores.compre_exam },
+  ];
+
+  return (
+    <View className="mb-4 rounded-3xl border border-slate-200 bg-white p-5">
+      <Text className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        Exam Results
+      </Text>
+      <View className="mt-2 gap-y-2">
+        {rows.map((row) => (
+          <View key={row.label} className="flex-row items-center justify-between">
+            <Text className="text-sm font-semibold text-slate-600">{row.label}</Text>
+            <Text
+              className={`text-base font-extrabold ${
+                row.value === null ? 'text-slate-300' : row.value >= 75 ? 'text-emerald-600' : 'text-rose-500'
+              }`}
+            >
+              {row.value === null ? 'Not taken' : `${row.value}%`}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
 }
 
 export default function DashboardScreen() {
@@ -95,16 +139,26 @@ export default function DashboardScreen() {
                 ) : null}
               </>
             ) : (
-              <Text className="mt-2 text-sm font-medium text-slate-500">
-                Not enrolled yet. Enroll from the web portal — mobile enrollment is coming soon.
-              </Text>
+              <>
+                <Text className="mt-2 text-sm font-medium text-slate-500">
+                  You have not enrolled yet. Pick your program and batch to get started.
+                </Text>
+                <EnrollButton />
+              </>
             )}
           </View>
 
+          {data.exam_result ? <ExamScores scores={data.exam_result} /> : null}
+
           <View className="mb-4 rounded-3xl border border-slate-200 bg-white p-5">
-            <Text className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Recent Payments
-            </Text>
+            <View className="flex-row items-center justify-between">
+              <Text className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Recent Payments
+              </Text>
+              <Link href="/(tabs)/payments" asChild>
+                <Text className="text-xs font-bold text-brand">See all</Text>
+              </Link>
+            </View>
             {data.recent_payments.length === 0 ? (
               <Text className="mt-2 text-sm font-medium text-slate-500">No payments yet.</Text>
             ) : (
@@ -123,9 +177,14 @@ export default function DashboardScreen() {
           </View>
 
           <View className="rounded-3xl border border-slate-200 bg-white p-5">
-            <Text className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Announcements
-            </Text>
+            <View className="flex-row items-center justify-between">
+              <Text className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Announcements
+              </Text>
+              <Link href="/announcements" asChild>
+                <Text className="text-xs font-bold text-brand">See all</Text>
+              </Link>
+            </View>
             {data.announcements.length === 0 ? (
               <Text className="mt-2 text-sm font-medium text-slate-500">Nothing new right now.</Text>
             ) : (

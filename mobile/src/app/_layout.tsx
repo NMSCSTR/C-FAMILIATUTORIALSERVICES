@@ -30,6 +30,14 @@ function Gate() {
           name="announcements/[id]"
           options={{ headerShown: true, title: 'Announcement', headerTintColor: '#0f172a' }}
         />
+        <Stack.Screen
+          name="profile-edit"
+          options={{ headerShown: true, title: 'Edit Profile', headerTintColor: '#0f172a' }}
+        />
+        <Stack.Screen
+          name="change-password"
+          options={{ headerShown: true, title: 'Change Password', headerTintColor: '#0f172a' }}
+        />
       </Stack>
     </>
   );

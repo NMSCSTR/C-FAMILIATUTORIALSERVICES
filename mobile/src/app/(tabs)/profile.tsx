@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { Link } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui';
@@ -47,11 +48,14 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <View className="mt-6">
+      <View className="mt-6 gap-y-3">
+        <Link href="/profile-edit" asChild>
+          <Button title="Edit profile" variant="outline" onPress={() => {}} />
+        </Link>
+        <Link href="/change-password" asChild>
+          <Button title="Change password" variant="outline" onPress={() => {}} />
+        </Link>
         <Button title="Log out" variant="outline" onPress={() => void logout()} />
-        <Text className="mt-4 text-center text-xs font-medium text-slate-400">
-          Profile editing arrives in the next update.
-        </Text>
       </View>
     </ScrollView>
   );
