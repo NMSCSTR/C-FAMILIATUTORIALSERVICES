@@ -22,6 +22,14 @@ function Gate() {
           name="payment-new"
           options={{ headerShown: true, title: 'New Payment', headerTintColor: '#0f172a' }}
         />
+        <Stack.Screen
+          name="announcements/index"
+          options={{ headerShown: true, title: 'Announcements', headerTintColor: '#0f172a' }}
+        />
+        <Stack.Screen
+          name="announcements/[id]"
+          options={{ headerShown: true, title: 'Announcement', headerTintColor: '#0f172a' }}
+        />
       </Stack>
     </>
   );
