@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as SecureStore from 'expo-secure-store';
 
@@ -29,39 +29,25 @@ export async function authHeader(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-function safeFileName(url: string): string {
-  const raw = url.split('?')[0].split('/').pop() ?? 'download';
-  const clean = /^[A-Za-z0-9._-]+$/.test(raw) ? raw : 'download.bin';
-  return 'gated-' + Date.now().toString(36) + '-' + clean;
-}
-
-export async function downloadGatedFile(url: string): Promise<string> {
+export async function downloadGatedFile(url: string): Promise<File> {
   const headers = await authHeader();
-  const base = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
 
-  if (!base) {
-    throw new Error('No storage directory available on this device.');
-  }
-
-  const result = await FileSystem.downloadAsync(url, base + safeFileName(url), { headers });
-
-  if (result.status < 200 || result.status >= 300) {
-    throw new Error('Download failed.');
-  }
-
-  return result.uri;
+  return File.downloadFileAsync(url, Paths.cache, {
+    idempotent: true,
+    headers,
+  });
 }
 
 export async function shareGatedFile(url: string): Promise<void> {
-  const uri = await downloadGatedFile(url);
+  const file = await downloadGatedFile(url);
   const available = await Sharing.isAvailableAsync();
 
   if (!available) {
     throw new Error('Sharing is not available on this device.');
   }
 
-  await Sharing.shareAsync(uri, {
-    mimeType: mimeFor(uri) ?? 'application/octet-stream',
+  await Sharing.shareAsync(file.uri, {
+    mimeType: mimeFor(file.name) ?? 'application/octet-stream',
     dialogTitle: 'Open file',
   });
 }
