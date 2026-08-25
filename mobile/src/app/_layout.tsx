@@ -18,6 +18,10 @@ function Gate() {
           name="enroll"
           options={{ headerShown: true, title: 'Enroll', headerTintColor: '#0f172a' }}
         />
+        <Stack.Screen
+          name="payment-new"
+          options={{ headerShown: true, title: 'New Payment', headerTintColor: '#0f172a' }}
+        />
       </Stack>
     </>
   );
