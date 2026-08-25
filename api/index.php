@@ -9,6 +9,8 @@ require_once API_ROOT . '/routes/auth.php';
 require_once API_ROOT . '/routes/profile.php';
 require_once API_ROOT . '/routes/enrollment.php';
 require_once API_ROOT . '/routes/payments.php';
+require_once API_ROOT . '/routes/dashboard.php';
+require_once API_ROOT . '/routes/content.php';
 
 $routes = [
     ['POST', '#^auth/register$#', 'auth_register', false],
@@ -29,6 +31,17 @@ $routes = [
     ['POST', '#^payments/(\d+)/cancel$#',          'payment_cancel',         true],
     ['POST', '#^payments/(\d+)/refund-request$#',  'payment_refund_request', true],
     ['GET',  '#^payments/(\d+)/receipt$#',         'payment_receipt',        true],
+
+    ['GET',  '#^dashboard$#',        'dashboard_get',       true],
+
+    ['GET',  '#^posts$#',            'posts_list',          true],
+    ['GET',  '#^posts/(\d+)/file$#', 'post_file',           true],
+
+    ['GET',  '#^announcements$#',    'announcements_list',  true],
+    ['GET',  '#^passers$#',          'passers_list',        true],
+    ['GET',  '#^gallery$#',          'gallery_list',        true],
+    ['GET',  '#^testimonials$#',     'testimonials_list',   true],
+    ['POST', '#^testimonials$#',     'testimonial_create',  true],
 ];
 
 $path_matched = false;
