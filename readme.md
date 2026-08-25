@@ -172,6 +172,37 @@ The app is designed to run behind Apache or Nginx with PHP-FPM. General outline:
 
 ---
 
+## 📱 Student REST API (`/api`) & Mobile Deployment
+
+The React Native app consumes a JSON API under `/api`. Same database, same uploads folder — web and mobile stay in sync.
+
+### Deploying to production
+
+```bash
+# 1. On the server, pull the latest code
+cd ~/public_html/cfam && git pull origin main
+
+# 2. Sync the database (CLI-only, idempotent — safe to re-run)
+php migrations/migrate_production.php
+
+# 3. One-time Apache setup for pretty API URLs (/api/auth/login instead of /api/index.php/auth/login)
+sudo a2enmod rewrite
+# ensure the vhost <Directory> block matches the real docroot and has: AllowOverride All
+sudo systemctl reload apache2
+```
+
+**Verify:** `curl -s https://c-familia.online/api/auth/me` → JSON 401 envelope (not HTML).
+If rewrite can't be enabled, the API also works via `https://c-familia.online/api/index.php/<route>`.
+
+### Server config
+
+- Copy `api/config.sample.php` → `api/config.php` (already gitignored). Defaults work at the domain root; set `base_url` only if serving from a subfolder behind a proxy.
+- `rate_limit_max_attempts` (per email) / `rate_limit_ip_max_attempts` (per IP) control login throttling over `rate_limit_window_minutes`.
+
+> ⚠️ Rotate any credentials that ever touched the repo, and keep `config.php` files out of git.
+
+
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome — feel free to open a pull request or start a discussion.
