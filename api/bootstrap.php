@@ -12,7 +12,10 @@ if (!isset($conn) || !($conn instanceof mysqli)) {
 }
 
 require_once API_ROOT . '/lib/http.php';
+require_once APP_ROOT . '/lib/uploads.php';
+require_once APP_ROOT . '/lib/programs.php';
 require_once API_ROOT . '/lib/tokens.php';
+require_once API_ROOT . '/lib/files.php';
 
 cors_headers();
 

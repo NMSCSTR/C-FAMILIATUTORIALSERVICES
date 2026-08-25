@@ -6,12 +6,29 @@ $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 $path = api_request_path();
 
 require_once API_ROOT . '/routes/auth.php';
+require_once API_ROOT . '/routes/profile.php';
+require_once API_ROOT . '/routes/enrollment.php';
+require_once API_ROOT . '/routes/payments.php';
 
 $routes = [
     ['POST', '#^auth/register$#', 'auth_register', false],
     ['POST', '#^auth/login$#',    'auth_login',    false],
     ['POST', '#^auth/logout$#',   'auth_logout',   true],
     ['GET',  '#^auth/me$#',       'auth_me',       true],
+
+    ['GET',  '#^profile$#',          'profile_get',      true],
+    ['POST', '#^profile$#',          'profile_update',   true],
+    ['POST', '#^profile/password$#', 'profile_password', true],
+
+    ['GET',  '#^enrollment/options$#', 'enrollment_options', true],
+    ['GET',  '#^enrollment$#',         'enrollment_get',     true],
+    ['POST', '#^enrollment$#',         'enrollment_create',  true],
+
+    ['GET',  '#^payments$#',                       'payments_list',          true],
+    ['POST', '#^payments$#',                       'payment_submit',         true],
+    ['POST', '#^payments/(\d+)/cancel$#',          'payment_cancel',         true],
+    ['POST', '#^payments/(\d+)/refund-request$#',  'payment_refund_request', true],
+    ['GET',  '#^payments/(\d+)/receipt$#',         'payment_receipt',        true],
 ];
 
 $path_matched = false;
