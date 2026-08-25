@@ -22,10 +22,9 @@ if (!$user_data) {
 
 $enrollee_name = $user_data['firstname'] . ' ' . ($user_data['middlename'] ? $user_data['middlename'] . ' ' : '') . $user_data['lastname'];
 
-// 2. Configuration for Dynamic Programs & Fees
-$programs = [
-    "Criminology Review" => ["fee" => 13500.00, "desc" => "Comprehensive CLE board preparation.", "icon" => "👮"]
-];
+require_once __DIR__ . '/lib/programs.php';
+
+$programs = cfts_programs();
 
 $message = "";
 $error = "";
@@ -193,10 +192,9 @@ if (isset($_POST['submit_enrollment'])) {
                                     <div class="relative">
                                         <select id="enrolled_at" name="enrolled_at" required class="w-full p-5 rounded-2xl border border-slate-800 bg-slate-950 text-white focus:border-blue-500 outline-none transition font-bold appearance-none">
                                             <option value="" disabled selected class="text-slate-600">Select Location</option>
-                                            <option value="Tubod">Tubod, Lanao Del Norte</option>
-                                            <option value="Oroqueta">Oroqueta City</option>
-                                            <option value="Ozamis">Ozamis City</option>
-                                            <option value="Iligan">Iligan City</option>
+                                            <?php foreach (cfts_locations() as $loc_value => $loc_label): ?>
+                                            <option value="<?= $loc_value ?>"><?= $loc_label ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                         <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs">▼</div>
                                     </div>
@@ -206,8 +204,9 @@ if (isset($_POST['submit_enrollment'])) {
                                     <div class="relative">
                                         <select id="batch" name="batch" required class="w-full p-5 rounded-2xl border border-slate-800 bg-slate-950 text-white focus:border-blue-500 outline-none transition font-bold appearance-none">
                                             <option value="" disabled selected class="text-slate-600">Select a Batch</option>
-                                            <option value="Batch January <?= date('Y') ?>">Batch January <?= date('Y') ?></option>
-                                            <option value="Batch August <?= date('Y') ?>">Batch August <?= date('Y') ?></option>
+                                            <?php foreach (cfts_batch_options() as $batch_option): ?>
+                                            <option value="<?= $batch_option ?>"><?= $batch_option ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                         <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs">▼</div>
                                     </div>
