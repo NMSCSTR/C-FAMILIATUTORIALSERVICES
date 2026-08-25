@@ -16,6 +16,7 @@ require_once APP_ROOT . '/lib/uploads.php';
 require_once APP_ROOT . '/lib/programs.php';
 require_once API_ROOT . '/lib/tokens.php';
 require_once API_ROOT . '/lib/files.php';
+require_once API_ROOT . '/lib/ratelimit.php';
 
 cors_headers();
 

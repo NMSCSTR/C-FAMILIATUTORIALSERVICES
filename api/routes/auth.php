@@ -142,6 +142,11 @@ function auth_login(mysqli $conn, array $params, ?array $ctx): void
     $email = strtolower(input_str($in, 'email'));
     $password = input_str($in, 'password');
 
+    if (login_rate_limited($conn, $email)) {
+        api_fail(429, 'too_many_attempts', 'Too many failed login attempts. Try again in about '
+            . login_retry_after_minutes($conn, $email) . ' minute(s).');
+    }
+
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
     $stmt->bind_param('s', $email);
     $stmt->execute();
@@ -149,7 +154,7 @@ function auth_login(mysqli $conn, array $params, ?array $ctx): void
     $stmt->close();
 
     if (!$user || !password_verify($password, (string) $user['password'])) {
-        log_activity($conn, 'login.failed', 'Invalid credentials attempt');
+        log_activity($conn, 'login.failed', 'Invalid credentials attempt for ' . $email);
         api_fail(401, 'invalid_credentials', 'Invalid email or password.');
     }
 

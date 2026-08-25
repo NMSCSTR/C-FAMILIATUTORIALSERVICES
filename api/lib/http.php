@@ -182,12 +182,19 @@ function api_request_path(): string
 
     $pos = strrpos($uri, '/api/');
     if ($pos !== false) {
-        $uri = '/' . substr($uri, $pos + 5);
+        $uri = substr($uri, $pos + 5);
     } elseif (preg_match('#/api$#i', $uri)) {
-        $uri = '/';
+        return '';
     }
 
-    return trim($uri, '/');
+    $path = ltrim($uri, '/');
+
+    if (strncasecmp($path, 'index.php', 9) === 0) {
+        $path = substr($path, 9);
+        $path = ltrim($path, '/');
+    }
+
+    return trim($path, '/');
 }
 
 function public_base_url(): string
